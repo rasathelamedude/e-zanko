@@ -1,7 +1,6 @@
-import LoginPage from "./pages/LoginPage"
+import LoginPage from "./pages/auth/LoginPage"
 
 function App() {
-
   return (
     <>
       <LoginPage />
