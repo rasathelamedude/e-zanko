@@ -13,3 +13,18 @@ export async function login(payload: LoginPayload): Promise<LoginResponse> {
 
   throw Error("Invalid email or password");
 }
+
+export async function getProfile(token: string) {
+  // TODO: call GET /api/profile endpoint once it's implemented
+  // `token` is stored inside cookies and sent to the backend automatically
+
+  if (token !== "mock-jwt-token-abc123") {
+    throw Error("Invalid token loggin out user");
+  }
+
+  return {
+    id: "1",
+    email: "test@institution.edu.krd",
+    username: "Test User",
+  };
+}
