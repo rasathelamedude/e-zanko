@@ -1,6 +1,6 @@
-import { Button } from "../components/ui/button"; 
-import { Label } from "../components/ui/label";
-import { Input } from "../components/ui/input";
+import { Button } from "../../components/ui/button"; 
+import { Label } from "../../components/ui/label";
+import { Input } from "../../components/ui/input";
 import { useState } from "react";
 import logo from "../assets/images/kurdistan-region-goverment-logo.png";
 
