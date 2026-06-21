@@ -6,3 +6,10 @@ export interface University{
     president: string;
     status: string;
 }
+
+export interface Faculty{
+    id: string;
+    name: string;
+    dean: string;
+    status: string;
+}
