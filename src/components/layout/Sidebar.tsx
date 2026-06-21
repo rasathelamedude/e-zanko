@@ -1,29 +1,39 @@
 import { NavLink } from "react-router-dom";
 import { useUserStore } from "../../store/userStore";
+import type { UserRole } from "../../types/auth";
 
-interface NavItem {
+type NavItem = {
   label: string;
   to: string;
-  badge?: number;
-}
+};
 
-const NAV_ITEMS: NavItem[] = [
-  { label: "Dashboard", to: "/dashboard" },
-  { label: "Universities", to: "/universities" },
-  { label: "Letters Inbox", to: "/letters-inbox" },
-  { label: "Sent Letters", to: "/sent-letters" },
-  { label: "Reports", to: "/reports" },
-  { label: "Settings", to: "/settings" },
-];
+// Specific nav items for each role
+const NAV_ITEMS: Record<UserRole, NavItem[]> = {
+  MINISTRY_ADMIN: [
+    { label: "Dashboard", to: "/dashboard" },
+    { label: "Universities", to: "/universities" },
+    { label: "Letters Inbox", to: "/letters-inbox" },
+    { label: "Sent Letters", to: "/sent-letters" },
+    { label: "Reports", to: "/reports" },
+    { label: "Settings", to: "/settings" },
+  ],
+  UNIVERSITY_PRESIDENT: [],
+  ADMIN: [],
+  DEAN: [],
+  HEAD_OF_DEPARTMENT: [],
+};
 
 const Sidebar = () => {
   const user = useUserStore((state) => state.user);
+
+  // Get nav items based on user role
+  const navItems = user?.role ? NAV_ITEMS[user?.role as UserRole] : [];
 
   return (
     <aside className="w-64 h-screen bg-white border-r border-slate-200 flex flex-col">
       {/* Nav */}
       <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
-        {NAV_ITEMS.map((item) => (
+        {navItems.map((item: NavItem) => (
           <NavLink
             key={item.to}
             to={item.to}
@@ -36,11 +46,6 @@ const Sidebar = () => {
             }
           >
             <span>{item.label}</span>
-            {item.badge ? (
-              <span className="bg-[#cc7a2b] text-white text-xs font-bold rounded-full min-w-5 h-5 px-1.5 flex items-center justify-center">
-                {item.badge}
-              </span>
-            ) : null}
           </NavLink>
         ))}
       </nav>
