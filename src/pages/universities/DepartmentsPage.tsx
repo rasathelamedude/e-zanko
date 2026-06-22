@@ -2,61 +2,61 @@ import {
   DataTable,
   type DataTableColumn,
 } from "../../components/common/DataTable";
-import type { Faculty, FacultyStatus } from "../../types/hierarchy";
+import type { Department, DepartmentStatus } from "../../types/hierarchy";
 import { Badge } from "../../components/ui/badge";
 import { Button } from "../../components/ui/button";
 import { useState } from "react";
 import { Input } from "../../components/ui/input";
 import Modal from "../../components/common/Modal";
-import { useUserStore } from "../../store/userStore";
 import PageHeader from "../../components/common/PageHeader";
+import { useUserStore } from "../../store/userStore";
 
-const mockFaculties: Faculty[] = [
+const mockDepartments: Department[] = [
   {
     id: "1",
-    name: "College of Engineering",
-    dean: "Dr. Sara Ahmed",
+    name: "Software Engineering",
+    headOfDepartment: "Dr. Karim Yusuf",
     status: "ACTIVE",
   },
   {
     id: "2",
-    name: "College of Medicine",
-    dean: "Dr. Diyar Omar",
+    name: "Civil Engineering",
+    headOfDepartment: "Dr. Shko Rauf",
     status: "ACTIVE",
   },
   {
     id: "3",
-    name: "College of Law",
-    dean: "Dr. Lana Jabar",
+    name: "Electrical Engineering",
+    headOfDepartment: "Dr. Dinya Salam",
     status: "ACTIVE",
   },
   {
     id: "4",
-    name: "College of Science",
-    dean: "Dr. Rebin Faraj",
+    name: "Computer Science",
+    headOfDepartment: "Dr. Hawre Aziz",
     status: "ACTIVE",
   },
   {
     id: "5",
-    name: "College of Education",
-    dean: "Dr. Awat Hama",
+    name: "Architecture",
+    headOfDepartment: "Dr. Niga Star",
     status: "UNDER_REVIEW",
   },
 ];
 
-const statusStyles: Record<FacultyStatus, string> = {
+const statusStyles: Record<DepartmentStatus, string> = {
   ACTIVE: "bg-emerald-100 text-emerald-700 hover:bg-emerald-100",
   UNDER_REVIEW: "bg-amber-100 text-amber-700 hover:bg-amber-100",
   INACTIVE: "bg-gray-100 text-gray-700 hover:bg-gray-100",
 };
 
-const statusLabels: Record<FacultyStatus, string> = {
+const statusLabels: Record<DepartmentStatus, string> = {
   ACTIVE: "Active",
   UNDER_REVIEW: "Under review",
   INACTIVE: "Inactive",
 };
 
-function FacultiesPage() {
+function DepartmentsPage() {
   const user = useUserStore((state) => state.user);
   const [showPopup, setShowPopup] = useState(false);
 
@@ -64,12 +64,12 @@ function FacultiesPage() {
     setShowPopup((prev) => !prev);
   }
 
-  function handleAddFaculty() {
+  function handleAddDepartment() {
     // Submit logic here
     setShowPopup(false);
   }
 
-  const columns: DataTableColumn<Faculty>[] = [
+  const columns: DataTableColumn<Department>[] = [
     {
       key: "name",
       header: "Name",
@@ -80,9 +80,9 @@ function FacultiesPage() {
       ),
     },
     {
-      key: "dean",
-      header: "Dean",
-      render: (u) => u.dean,
+      key: "headOfDepartment",
+      header: "Head Of Department",
+      render: (u) => u.headOfDepartment,
     },
     {
       key: "status",
@@ -100,22 +100,22 @@ function FacultiesPage() {
     <div className="px-5">
       <PageHeader
         title="Ministry of Higher Education"
-        locationTitle="Faculties"
+        locationTitle="Departments"
         role={user?.role || ""}
         year="2023-2024"
       />
 
       <div className="flex justify-between my-3">
         <div className="flex gap-5">
-          <h1 className="font-bold">Faculties</h1>
-          <p className="text-gray-500">{mockFaculties.length} records</p>
+          <h1 className="font-bold">Departments</h1>
+          <p className="text-gray-500">{mockDepartments.length} records</p>
         </div>
         <div>
           <Button
             onClick={handleModal}
             className="bg-white border-teal-700 text-teal-700 hover:bg-teal-50"
           >
-            + Add Faculty
+            + Add Department
           </Button>
         </div>
       </div>
@@ -123,23 +123,23 @@ function FacultiesPage() {
 
       <DataTable
         columns={columns}
-        data={mockFaculties}
+        data={mockDepartments}
         getRowId={(u) => u.id}
       />
 
       {showPopup && (
         <Modal
-          title="Add Faculty"
-          confirmLabel="Add Faculty"
+          title="Add Department"
+          confirmLabel="Add Department"
           onClose={() => setShowPopup(false)}
-          onConfirm={handleAddFaculty}
+          onConfirm={handleAddDepartment}
         >
-          <Input placeholder="Faculty name" className="mb-2" />
-          <Input placeholder="Dean" />
+          <Input placeholder="Department name" className="mb-2" />
+          <Input placeholder="Head of Dept." />
         </Modal>
       )}
     </div>
   );
 }
 
-export default FacultiesPage;
+export default DepartmentsPage;

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { getDashboardAnalytics } from "../../../api/dashboard";
-import DashboardTitle from "../../../components/common/DashboardTitle";
+import PageHeader from "../../../components/common/PageHeader";
 import StatCard from "../../../components/common/StatCard";
 import { useUserStore } from "../../../store/userStore";
 import BarChart from "../../../components/common/BarChart";
@@ -60,8 +60,9 @@ const MinistryDashboard = () => {
 
   return (
     <div className="max-w-7xl w-full">
-      <DashboardTitle
+      <PageHeader
         title="Ministry of Higher Education"
+        locationTitle="Dashboard"
         role={user?.role || ""}
         year="2023-2024"
       />
