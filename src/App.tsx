@@ -3,6 +3,7 @@ import DashboardPage from "./pages/dashboard"; // Automatically imports index.ts
 import FacultiesPage from "./pages/universities/FacultiesPage"
 import UniversitiesPage from "./pages/universities/UniversitiesPage"
 import { Route, Routes } from "react-router-dom";
+import Sidebar from "./components/layout/Sidebar"
 
 function App() {
   return (

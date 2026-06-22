@@ -1,6 +1,15 @@
+export type UserRole = 
+    | "MINISTRY_ADMIN" 
+    | "UNIVERSITY_PRESIDENT" 
+    | "ADMIN" 
+    | "DEAN" 
+    | "HEAD_OF_DEPARTMENT";
+
 export interface User {
     id: string;
     username: string;
+    name: string;
+    role: UserRole;
     email: string;
     role: string;
 }
