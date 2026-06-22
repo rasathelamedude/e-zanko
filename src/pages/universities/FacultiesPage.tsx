@@ -2,11 +2,14 @@ import {
   DataTable,
   type DataTableColumn,
 } from "../../components/common/DataTable";
-import type { Faculty, UniversityStatus } from "../../types/hierarchy";
+import type { Faculty, FacultyStatus } from "../../types/hierarchy";
 import { Badge } from "../../components/ui/badge";
 import { Button } from "../../components/ui/button";
 import { useState } from "react";
 import { Input } from "../../components/ui/input";
+import Modal from "../../components/common/Modal";
+import { useUserStore } from "../../store/userStore";
+import PageHeader from "../../components/common/PageHeader";
 
 const mockFaculties: Faculty[] = [
   {
@@ -41,23 +44,29 @@ const mockFaculties: Faculty[] = [
   },
 ];
 
-const statusStyles: Record<UniversityStatus, string> = {
+const statusStyles: Record<FacultyStatus, string> = {
   ACTIVE: "bg-emerald-100 text-emerald-700 hover:bg-emerald-100",
   UNDER_REVIEW: "bg-amber-100 text-amber-700 hover:bg-amber-100",
   INACTIVE: "bg-gray-100 text-gray-700 hover:bg-gray-100",
 };
 
-const statusLabels: Record<UniversityStatus, string> = {
+const statusLabels: Record<FacultyStatus, string> = {
   ACTIVE: "Active",
   UNDER_REVIEW: "Under review",
   INACTIVE: "Inactive",
 };
 
 function FacultiesPage() {
+  const user = useUserStore((state) => state.user);
   const [showPopup, setShowPopup] = useState(false);
 
   function handleModal() {
     setShowPopup((prev) => !prev);
+  }
+
+  function handleAddFaculty() {
+    // Submit logic here
+    setShowPopup(false);
   }
 
   const columns: DataTableColumn<Faculty>[] = [
@@ -89,15 +98,12 @@ function FacultiesPage() {
 
   return (
     <div className="px-5">
-      <div>
-        <p className="text-teal-600 font-bold text-sm py-1">
-          Ministry of Higher Education
-        </p>
-        <h1 className="font-extrabold text-2xl py-1">Faculties</h1>
-        <p className="text-gray-500 py-1">
-          System Administrator · Academic Year 2025–2026
-        </p>
-      </div>
+      <PageHeader
+        title="Ministry of Higher Education"
+        locationTitle="Faculties"
+        role={user?.role || ""}
+        year="2023-2024"
+      />
 
       <div className="flex justify-between my-3">
         <div className="flex gap-5">
@@ -122,19 +128,15 @@ function FacultiesPage() {
       />
 
       {showPopup && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-          <div className="bg-white p-4 rounded-lg shadow-md w-full max-w-md mx-4">
-            <h1 className="text-xl font-bold">Add faculty</h1>
-            <Input placeholder="Faculty name" className="my-2" />
-            <Input placeholder="Dean" />
-            <div className="flex justify-end gap-5 p-4">
-              <Button onClick={() => setShowPopup((prev) => !prev)} className="bg-white border-teal-700 text-gray-800 hover:bg-white">
-                Cancel
-              </Button>
-              <Button className="bg-teal-700 text-white">Add Faculty</Button>
-            </div>
-          </div>
-        </div>
+        <Modal
+          title="Add Faculty"
+          confirmLabel="Add Faculty"
+          onClose={() => setShowPopup(false)}
+          onConfirm={handleAddFaculty}
+        >
+          <Input placeholder="Faculty name" className="mb-2" />
+          <Input placeholder="Dean" />
+        </Modal>
       )}
     </div>
   );
