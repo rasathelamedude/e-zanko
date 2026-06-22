@@ -12,8 +12,7 @@ const NAV_ITEMS: Record<UserRole, NavItem[]> = {
   MINISTRY_ADMIN: [
     { label: "Dashboard", to: "/dashboard" },
     { label: "Universities", to: "/universities" },
-    { label: "Letters Inbox", to: "/letters-inbox" },
-    { label: "Sent Letters", to: "/sent-letters" },
+    { label: "Letters", to: "/letters" },
     { label: "Reports", to: "/reports" },
     { label: "Settings", to: "/settings" },
   ],
