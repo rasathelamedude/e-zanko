@@ -11,6 +11,7 @@ export interface User {
     name: string;
     role: UserRole;
     email: string;
+    role: string;
 }
 
 export interface LoginPayload {

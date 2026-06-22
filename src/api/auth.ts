@@ -6,7 +6,12 @@ export async function login(payload: LoginPayload): Promise<LoginResponse> {
     payload.password === "12345"
   ) {
     return {
-      user: { id: "1", email: payload.email, username: "Test User" },
+      user: {
+        id: "1",
+        email: payload.email,
+        username: "Test User",
+        role: "MinistryAdmin",
+      },
       token: "mock-jwt-token-abc123",
     };
   }
