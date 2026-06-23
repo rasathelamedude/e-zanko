@@ -1,12 +1,12 @@
 import React from "react";
 import { Navigate } from "react-router-dom";
-import type { HierarchyLevel } from "../../types/auth";
+import type { UserScope } from "../../types/auth";
 
 interface ProtectedRoutesProps {
   readonly children: React.ReactNode;
   isAuthenticated: boolean;
-  userLevel: HierarchyLevel;
-  requiredLevel?: HierarchyLevel;
+  userLevel: UserScope;
+  requiredLevel?: UserScope;
 }
 
 const ProtectedRoutes = ({

@@ -16,34 +16,64 @@ import { mockUniversities } from "./UniversitiesPage";
 
 export const mockDepartments: Department[] = [
   {
-    id: "1",
+    id: 1,
+    facultyId: 1,
     name: "Software Engineering",
     headOfDepartment: "Dr. Karim Yusuf",
     status: "ACTIVE",
+    adminId: null,
+    isActive: true,
+    createdAt: "2024-01-01T00:00:00Z",
+    updatedAt: "2024-01-01T00:00:00Z",
+    deletedAt: null,
   },
   {
-    id: "2",
+    id: 2,
+    facultyId: 1,
     name: "Civil Engineering",
     headOfDepartment: "Dr. Shko Rauf",
     status: "ACTIVE",
+    adminId: null,
+    isActive: true,
+    createdAt: "2024-01-01T00:00:00Z",
+    updatedAt: "2024-01-01T00:00:00Z",
+    deletedAt: null,
   },
   {
-    id: "3",
+    id: 3,
+    facultyId: 1,
     name: "Electrical Engineering",
     headOfDepartment: "Dr. Dinya Salam",
     status: "ACTIVE",
+    adminId: null,
+    isActive: true,
+    createdAt: "2024-01-01T00:00:00Z",
+    updatedAt: "2024-01-01T00:00:00Z",
+    deletedAt: null,
   },
   {
-    id: "4",
+    id: 4,
+    facultyId: 1,
     name: "Computer Science",
     headOfDepartment: "Dr. Hawre Aziz",
     status: "ACTIVE",
+    adminId: null,
+    isActive: true,
+    createdAt: "2024-01-01T00:00:00Z",
+    updatedAt: "2024-01-01T00:00:00Z",
+    deletedAt: null,
   },
   {
-    id: "5",
+    id: 5,
+    facultyId: 1,
     name: "Architecture",
     headOfDepartment: "Dr. Niga Star",
     status: "UNDER_REVIEW",
+    adminId: null,
+    isActive: false,
+    createdAt: "2024-01-01T00:00:00Z",
+    updatedAt: "2024-01-01T00:00:00Z",
+    deletedAt: null,
   },
 ];
 
@@ -65,8 +95,10 @@ function DepartmentsPage() {
   const { universityId, facultyId } = useParams();
   const navigate = useNavigate();
 
-  const university = mockUniversities.find((u) => u.id === universityId);
-  const faculty = mockFaculties.find((u) => u.id === facultyId);
+  const university = mockUniversities.find(
+    (u) => String(u.id) === universityId,
+  );
+  const faculty = mockFaculties.find((u) => String(u.id) === facultyId);
 
   function handleModal() {
     setShowPopup((prev) => !prev);
@@ -82,7 +114,14 @@ function DepartmentsPage() {
       key: "name",
       header: "Name",
       render: (u) => (
-        <span onClick={() => navigate(`/universities/${universityId}/faculties/${facultyId}/departments/${u.id}/courses`)} className="font-medium text-teal-700 cursor-pointer">
+        <span
+          onClick={() =>
+            navigate(
+              `/universities/${universityId}/faculties/${facultyId}/departments/${u.id}/courses`,
+            )
+          }
+          className="font-medium text-teal-700 cursor-pointer"
+        >
           {u.name}
         </span>
       ),
@@ -151,7 +190,7 @@ function DepartmentsPage() {
       <DataTable
         columns={columns}
         data={mockDepartments}
-        getRowId={(u) => u.id}
+        getRowId={(u) => String(u.id)}
       />
 
       {showPopup && (
