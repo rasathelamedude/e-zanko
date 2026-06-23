@@ -5,6 +5,7 @@ import CoursesPage from "./pages/universities/CoursesPage";
 import DepartmentsPage from "./pages/universities/DepartmentsPage";
 import FacultiesPage from "./pages/universities/FacultiesPage";
 import UniversitiesPage from "./pages/universities/UniversitiesPage";
+import ReportsPage from "./pages/reports";
 import { Route, Routes } from "react-router-dom";
 
 function App() {
@@ -28,6 +29,7 @@ function App() {
           path="/universities/:universityId/faculties/:facultyId/departments/:departmentId/courses"
           element={<CoursesPage />}
         />
+        <Route path="/reports" element={<ReportsPage />} />
       </Route>
     </Routes>
   );
