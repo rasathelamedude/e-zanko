@@ -7,7 +7,7 @@ interface Props {
   inboxHref?: string;
 }
 
-const RecentLetters = ({ letters, inboxHref = "/inbox" }: Props) => (
+const RecentLetters = ({ letters, inboxHref = "/letters" }: Props) => (
   <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
     <div className="px-6 py-4 border-b border-slate-200 flex items-center justify-between">
       <h3 className="font-bold text-slate-800">Recent letters</h3>
