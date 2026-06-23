@@ -1,32 +1,33 @@
-export type UserRole = 
-    | "MINISTRY_ADMIN" 
-    | "UNIVERSITY_PRESIDENT" 
-    | "ADMIN" 
-    | "DEAN" 
-    | "HEAD_OF_DEPARTMENT";
+export type UserRole =
+  | "MINISTRY_ADMIN"
+  | "MINISTRY_STAFF"
+  | "UNIVERSITY_ADMIN"
+  | "UNIVERSITY_STAFF"
+  | "DEAN"
+  | "DEPARTMENT_HEAD";
+
+// The heierarchy
+export type UserScope = "MINISTRY" | "UNIVERSITY" | "FACULTY" | "DEPARTMENT";
 
 export interface User {
-    id: string;
-    username: string;
-    name: string;
-    role: UserRole;
-    email: string;
+  id: string;
+  name: string;
+  email: string;
+  phone: string;
+  scope: UserScope;
+  role: UserRole;
+  scope_id: string;
+  is_active: boolean;
+}
+
+// token is sent via cookies
+export interface LoginResponse {
+  success: boolean;
+  message: string;
+  data: User;
 }
 
 export interface LoginPayload {
-    email: string;
-    password: string;
+  email: string;
+  password: string;
 }
-
-export interface LoginResponse {
-    user: User;
-    token: string;
-}
-
-export type HierarchyLevel =
-    | "MINISTRY"
-    | "MINISTRY_DEPT"
-    | "UNIVERSITY"
-    | "UNIV_PRESIDENCY_DEPT"
-    | "FACULTY"
-    | "DEPARTMENT";
