@@ -12,7 +12,18 @@ import { Button } from "../../components/ui/button";
 import { useState } from "react";
 import Modal from "../../components/common/Modal";
 import { Label } from "../../components/ui/label";
-import { Combobox, ComboboxContent, ComboboxEmpty, ComboboxInput, ComboboxItem, ComboboxList } from "../../components/ui/combobox";
+import {
+  Combobox,
+  ComboboxContent,
+  ComboboxEmpty,
+  ComboboxInput,
+  ComboboxItem,
+  ComboboxList,
+} from "../../components/ui/combobox";
+import { useNavigate, useParams } from "react-router-dom";
+import { mockUniversities } from "./UniversitiesPage";
+import { mockFaculties } from "./FacultiesPage";
+import { mockDepartments } from "./DepartmentsPage";
 
 const mockCourses: Course[] = [
   {
@@ -73,6 +84,12 @@ function CoursesPage() {
   const user = useUserStore((state) => state.user);
   const [showPopup, setShowPopup] = useState(false);
   const [filter, setFilter] = useState("");
+  const { universityId, facultyId, departmentId } = useParams();
+  const navigate = useNavigate();
+
+  const university = mockUniversities.find((u) => u.id === universityId);
+  const faculty = mockFaculties.find((u) => u.id === facultyId);
+  const department = mockDepartments.find((u) => u.id === departmentId);
 
   function handleModal() {
     setShowPopup((prev) => !prev);
@@ -164,6 +181,32 @@ function CoursesPage() {
 
   return (
     <div className="px-5">
+      <nav className="flex items-center gap-2 text-sm text-gray-500 mb-4">
+        <span
+          onClick={() => navigate("/universities")}
+          className="cursor-pointer hover:text-teal-700"
+        >
+          Universities
+        </span>
+        <span>/</span>
+        <span
+          onClick={() => navigate(`/universities/${universityId}/faculties`)}
+          className="cursor-pointer hover:text-teal-700"
+        >
+          {university?.name ?? "University"}
+        </span>
+        <span>/</span>
+        <span
+          onClick={() => navigate(`/universities/${universityId}/faculties/${facultyId}/departments`)}
+          className="cursor-pointer hover:text-teal-700"
+        >
+          {faculty?.name ?? "Faculty"}
+        </span>
+        <span>/</span>
+        <span className="text-gray-900 font-medium">
+          {department?.name ?? "Department"}
+        </span>
+      </nav>
       <div className="flex justify-between items-center">
         <PageHeader
           title="Ministry of higher education"
@@ -242,7 +285,7 @@ function CoursesPage() {
                 Assign Lecturer
               </Label>
               <Combobox items={lecturers}>
-                <ComboboxInput placeholder="Select a framework" />
+                <ComboboxInput placeholder="Select a lecturer" />
                 <ComboboxContent>
                   <ComboboxEmpty>No items found.</ComboboxEmpty>
                   <ComboboxList>

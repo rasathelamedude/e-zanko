@@ -10,8 +10,10 @@ import { Input } from "../../components/ui/input";
 import Modal from "../../components/common/Modal";
 import { useUserStore } from "../../store/userStore";
 import PageHeader from "../../components/common/PageHeader";
+import { useNavigate, useParams } from "react-router-dom";
+import { mockUniversities } from "./UniversitiesPage";
 
-const mockFaculties: Faculty[] = [
+export const mockFaculties: Faculty[] = [
   {
     id: "1",
     name: "College of Engineering",
@@ -59,6 +61,10 @@ const statusLabels: Record<FacultyStatus, string> = {
 function FacultiesPage() {
   const user = useUserStore((state) => state.user);
   const [showPopup, setShowPopup] = useState(false);
+  const { universityId } = useParams();
+  const navigate = useNavigate();
+
+  const university = mockUniversities.find((u) => u.id === universityId);
 
   function handleModal() {
     setShowPopup((prev) => !prev);
@@ -74,7 +80,10 @@ function FacultiesPage() {
       key: "name",
       header: "Name",
       render: (u) => (
-        <span className="font-medium text-teal-700 cursor-pointer">
+        <span
+          onClick={() => navigate(`/universities/${universityId}/faculties/${u.id}/departments`)}
+          className="font-medium text-teal-700 cursor-pointer"
+        >
           {u.name}
         </span>
       ),
@@ -98,6 +107,18 @@ function FacultiesPage() {
 
   return (
     <div className="px-5">
+      <nav className="flex items-center gap-2 text-sm text-gray-500 mb-4">
+        <span
+          onClick={() => navigate("/universities")}
+          className="cursor-pointer hover:text-teal-700"
+        >
+          Universities
+        </span>
+        <span>/</span>
+        <span className="text-gray-900 font-medium">
+          {university?.name ?? "Faculties"}
+        </span>
+      </nav>
       <PageHeader
         title="Ministry of Higher Education"
         locationTitle="Faculties"

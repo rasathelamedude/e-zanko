@@ -1,6 +1,8 @@
 import AppLayout from "./layouts/AppLayout";
 import LoginPage from "./pages/auth/LoginPage";
 import DashboardPage from "./pages/dashboard"; // Automatically imports index.tsx
+import CoursesPage from "./pages/universities/CoursesPage";
+import DepartmentsPage from "./pages/universities/DepartmentsPage";
 import FacultiesPage from "./pages/universities/FacultiesPage";
 import UniversitiesPage from "./pages/universities/UniversitiesPage";
 import { Route, Routes } from "react-router-dom";
@@ -17,6 +19,14 @@ function App() {
         <Route
           path="/universities/:universityId/faculties"
           element={<FacultiesPage />}
+        />
+        <Route
+          path="/universities/:universityId/faculties/:facultyId/departments"
+          element={<DepartmentsPage />}
+        />
+        <Route
+          path="/universities/:universityId/faculties/:facultyId/departments/:departmentId/courses"
+          element={<CoursesPage />}
         />
       </Route>
     </Routes>
