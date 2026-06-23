@@ -10,8 +10,11 @@ import { Input } from "../../components/ui/input";
 import Modal from "../../components/common/Modal";
 import PageHeader from "../../components/common/PageHeader";
 import { useUserStore } from "../../store/userStore";
+import { useNavigate, useParams } from "react-router-dom";
+import { mockFaculties } from "./FacultiesPage";
+import { mockUniversities } from "./UniversitiesPage";
 
-const mockDepartments: Department[] = [
+export const mockDepartments: Department[] = [
   {
     id: "1",
     name: "Software Engineering",
@@ -59,6 +62,11 @@ const statusLabels: Record<DepartmentStatus, string> = {
 function DepartmentsPage() {
   const user = useUserStore((state) => state.user);
   const [showPopup, setShowPopup] = useState(false);
+  const { universityId, facultyId } = useParams();
+  const navigate = useNavigate();
+
+  const university = mockUniversities.find((u) => u.id === universityId);
+  const faculty = mockFaculties.find((u) => u.id === facultyId);
 
   function handleModal() {
     setShowPopup((prev) => !prev);
@@ -74,7 +82,7 @@ function DepartmentsPage() {
       key: "name",
       header: "Name",
       render: (u) => (
-        <span className="font-medium text-teal-700 cursor-pointer">
+        <span onClick={() => navigate(`/universities/${universityId}/faculties/${facultyId}/departments/${u.id}/courses`)} className="font-medium text-teal-700 cursor-pointer">
           {u.name}
         </span>
       ),
@@ -98,6 +106,25 @@ function DepartmentsPage() {
 
   return (
     <div className="px-5">
+      <nav className="flex items-center gap-2 text-sm text-gray-500 mb-4">
+        <span
+          onClick={() => navigate("/universities")}
+          className="cursor-pointer hover:text-teal-700"
+        >
+          Universities
+        </span>
+        <span>/</span>
+        <span
+          onClick={() => navigate(`/universities/${universityId}/faculties`)}
+          className="cursor-pointer hover:text-teal-700"
+        >
+          {university?.name ?? "University"}
+        </span>
+        <span>/</span>
+        <span className="text-gray-900 font-medium">
+          {faculty?.name ?? "Faculty"}
+        </span>
+      </nav>
       <PageHeader
         title="Ministry of Higher Education"
         locationTitle="Departments"

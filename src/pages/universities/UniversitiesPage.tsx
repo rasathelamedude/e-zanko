@@ -7,8 +7,9 @@ import { Badge } from "../../components/ui/badge";
 import { Pencil, Trash2 } from "lucide-react";
 import { Input } from "../../components/ui/input";
 import { Button } from "../../components/ui/button";
+import { useNavigate } from "react-router-dom";
 
-const mockUniversities: University[] = [
+export const mockUniversities: University[] = [
   {
     id: "1",
     name: "Salahaddin University",
@@ -54,12 +55,13 @@ const statusLabels: Record<UniversityStatus, string> = {
 };
 
 function UniversitiesPage() {
+  const navigate = useNavigate();
   const columns: DataTableColumn<University>[] = [
     {
       key: "name",
       header: "Name",
       render: (u) => (
-        <span className="font-medium text-teal-700 cursor-pointer">{u.name}</span>
+        <span onClick={() => navigate(`/universities/${u.id}/faculties`)} className="font-medium text-teal-700 cursor-pointer">{u.name}</span>
       ),
     },
     {
