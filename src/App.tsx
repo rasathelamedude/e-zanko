@@ -1,6 +1,7 @@
 import AppLayout from "./layouts/AppLayout";
 import LoginPage from "./pages/auth/LoginPage";
 import DashboardPage from "./pages/dashboard"; // Automatically imports index.tsx
+import LettersPage from "./pages/letters";
 import CoursesPage from "./pages/universities/CoursesPage";
 import DepartmentsPage from "./pages/universities/DepartmentsPage";
 import FacultiesPage from "./pages/universities/FacultiesPage";
@@ -29,6 +30,7 @@ function App() {
           path="/universities/:universityId/faculties/:facultyId/departments/:departmentId/courses"
           element={<CoursesPage />}
         />
+        <Route path="/letters" element={<LettersPage />} />
         <Route path="/reports" element={<ReportsPage />} />
       </Route>
     </Routes>
