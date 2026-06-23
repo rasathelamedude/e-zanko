@@ -12,13 +12,13 @@ export type UserRole =
 export type UserScope = "MINISTRY" | "UNIVERSITY" | "FACULTY" | "DEPARTMENT";
 
 export interface User {
-  id: string;
+  id: number;
   name: string;
   email: string;
   phone: string;
   role: UserRole;
   scope: UserScope;
-  scopeId: string;
+  scopeId: number;
   isActive: boolean;
 }
 

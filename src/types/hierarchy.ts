@@ -18,6 +18,7 @@ export interface University {
   deletedAt: string | null;
 
   // Derived / UI Fields (Populated server-side)
+  status: "ACTIVE" | "INACTIVE";
   president?: string;
 }
 
@@ -33,6 +34,7 @@ export interface Faculty {
 
   // Derived / UI Fields (Populated server-side)
   dean: string;
+  status: "ACTIVE" | "INACTIVE";
 }
 
 export interface Department {
@@ -46,7 +48,7 @@ export interface Department {
   deletedAt: string | null;
 
   // Derived / UI Fields (Populated server-side)
-  status?: DepartmentStatus;
+  status: DepartmentStatus;
   headOfDepartment?: string;
 }
 
