@@ -4,7 +4,9 @@ export type UserRole =
   | "UNIVERSITY_ADMIN"
   | "UNIVERSITY_STAFF"
   | "DEAN"
-  | "DEPARTMENT_HEAD";
+  | "DEPARTMENT_HEAD"
+  | "LECTURER"
+  | "STUDENT";
 
 // The heierarchy
 export type UserScope = "MINISTRY" | "UNIVERSITY" | "FACULTY" | "DEPARTMENT";
@@ -14,10 +16,10 @@ export interface User {
   name: string;
   email: string;
   phone: string;
-  scope: UserScope;
   role: UserRole;
-  scope_id: string;
-  is_active: boolean;
+  scope: UserScope;
+  scopeId: string;
+  isActive: boolean;
 }
 
 // token is sent via cookies

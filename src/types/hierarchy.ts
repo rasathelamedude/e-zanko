@@ -3,30 +3,68 @@ export type FacultyStatus = "ACTIVE" | "UNDER_REVIEW" | "INACTIVE";
 export type DepartmentStatus = "ACTIVE" | "UNDER_REVIEW" | "INACTIVE";
 export type CourseStatus = "ACTIVE" | "INACTIVE";
 
-export interface University{
-    id: string;
-    name: string;
-    president: string;
-    status: string;
+export interface University {
+  id: number;
+  name: string;
+  adminId: number | null;
+  academicYear: string | null;
+  location: string;
+  startDate: string | null; // ISO Date String (YYYY-MM-DD)
+  endDate: string | null; // ISO Date String (YYYY-MM-DD)
+  establishedYear: string; // Explicitly required in Laravel schema
+  isActive: boolean;
+  createdAt: string; // ISO 8601 Timestamp
+  updatedAt: string; // ISO 8601 Timestamp
+  deletedAt: string | null;
+
+  // Derived / UI Fields (Populated server-side)
+  president?: string;
 }
-export interface Faculty{
-    id: string;
-    name: string;
-    dean: string;
-    status: string;
+
+export interface Faculty {
+  id: number;
+  universityId: number;
+  name: string;
+  adminId: number | null;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt: string | null;
+
+  // Derived / UI Fields (Populated server-side)
+  dean: string;
 }
-export interface Department{
-    id: string;
-    name: string;
-    headOfDepartment: string;
-    status: string;
+
+export interface Department {
+  id: number;
+  facultyId: number;
+  name: string;
+  adminId: number | null;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt: string | null;
+
+  // Derived / UI Fields (Populated server-side)
+  status?: DepartmentStatus;
+  headOfDepartment?: string;
 }
-export interface Course{
-    id: string;
-    code: string;
-    name: string;
-    department: string;
-    lecturer: string;
-    yearLevel: number;
-    isActive: boolean;
+
+export interface Course {
+  // Database Columns
+  id: number;
+  departmentId: number;
+  code: string;
+  name: string;
+  creditHours: number;
+  yearLevel: number;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt: string | null;
+
+  // Derived / UI Fields (Populated server-side)
+  status?: CourseStatus;
+  department?: string;
+  lecturer?: string;
 }
