@@ -8,6 +8,9 @@ import { Pencil, Trash2 } from "lucide-react";
 import { Input } from "../../components/ui/input";
 import { Button } from "../../components/ui/button";
 import { useNavigate } from "react-router-dom";
+import { useState } from "react";
+import Modal from "../../components/common/Modal";
+import { Label } from "../../components/ui/label";
 
 export const mockUniversities: University[] = [
   {
@@ -105,7 +108,18 @@ const statusLabels: Record<UniversityStatus, string> = {
 };
 
 function UniversitiesPage() {
+  const [showPopup, setShowPopup] = useState(false);
   const navigate = useNavigate();
+
+  function handleModal() {
+    setShowPopup((prev) => !prev);
+  }
+
+  function handleAddUniversity() {
+    // Submit logic here
+    setShowPopup(false);
+  }
+
   const columns: DataTableColumn<University>[] = [
     {
       key: "name",
@@ -170,11 +184,13 @@ function UniversitiesPage() {
             System Administrator · Academic Year 2025–2026
           </p>
         </div>
-        <Button className="bg-white border-teal-700 text-teal-700 hover:bg-teal-50">
+        <Button
+          onClick={handleModal}
+          className="bg-white border-teal-700 text-teal-700 hover:bg-teal-50"
+        >
           + Add University
         </Button>
       </div>
-
       <div className="flex justify-between my-3">
         <div className="flex gap-5">
           <h1 className="font-bold">Universities</h1>
@@ -185,12 +201,54 @@ function UniversitiesPage() {
         </div>
       </div>
       <hr />
-
       <DataTable
         columns={columns}
         data={mockUniversities}
         getRowId={(u) => String(u.id)}
       />
+
+      {showPopup && (
+        <Modal
+          title="Add University"
+          confirmLabel="Add University"
+          onClose={() => setShowPopup(false)}
+          onConfirm={handleAddUniversity}
+        >
+          <div className="flex flex-col gap-3">
+            <div>
+              <Label className="text-sm font-medium text-gray-700 mb-1">
+                Name
+              </Label>
+              <Input placeholder="e.g. University of Sulaimani" type="text" />
+            </div>
+
+            <div>
+              <Label className="text-sm font-medium text-gray-700 mb-1">
+                Location
+              </Label>
+              <Input placeholder="e.g. Sulaimani" type="text" />
+            </div>
+
+            <div>
+              <Label className="text-sm font-medium text-gray-700 mb-1">
+                Established Year
+              </Label>
+              <Input type="date" />
+            </div>
+
+            <div className="flex items-center justify-between py-1">
+              <Label className="text-sm font-medium text-gray-700">
+                Active
+              </Label>
+              <input
+                type="checkbox"
+                defaultChecked={true}
+                className="w-4 h-4 accent-teal-700"
+              />
+            </div>
+          </div>
+        </Modal>
+      )}
     </div>
   );
 }

@@ -12,6 +12,7 @@ import { useUserStore } from "../../store/userStore";
 import PageHeader from "../../components/common/PageHeader";
 import { useNavigate, useParams } from "react-router-dom";
 import { mockUniversities } from "./UniversitiesPage";
+import { Label } from "../../components/ui/label";
 
 export const mockFaculties: Faculty[] = [
   {
@@ -191,8 +192,14 @@ function FacultiesPage() {
           onClose={() => setShowPopup(false)}
           onConfirm={handleAddFaculty}
         >
-          <Input placeholder="Faculty name" className="mb-2" />
-          <Input placeholder="Dean" />
+          <div className="flex flex-col gap-3">
+            <div>
+              <Label className="text-sm font-medium text-gray-700 mb-1">
+                Name
+              </Label>
+              <Input placeholder="e.g. Faculty of Engineering" type="text" />
+            </div>
+          </div>
         </Modal>
       )}
     </div>
