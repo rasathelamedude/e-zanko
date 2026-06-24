@@ -1,27 +1,16 @@
 import type { LoginPayload, LoginResponse, User } from "../types/auth";
+import axios from "../lib/axios";
 
-export async function login(payload: LoginPayload): Promise<LoginResponse> {
-  if (
-    payload.email === "test@institution.edu.krd" &&
-    payload.password === "12345"
-  ) {
-    return {
-      success: true,
-      message: "Login successful",
-      data: {
-        id: 1,
-        name: "Test User",
-        email: "test@institution.edu.krd",
-        phone: "1234567890",
-        role: "MINISTRY_ADMIN",
-        scope: "MINISTRY",
-        scopeId: 123,
-        isActive: true,
-      },
-    };
+export async function login(payload: LoginPayload): Promise<User> {
+  const response = await axios.post<LoginResponse>("/api/auth/login", payload);
+
+  const { data, success, message } = response.data;
+
+  if (!success) {
+    throw new Error(message || "Login failed");
   }
 
-  throw Error("Invalid email or password");
+  return data;
 }
 
 export async function getProfile(token: string): Promise<User> {
