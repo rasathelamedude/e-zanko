@@ -1,11 +1,49 @@
-import { Button } from "../../components/ui/button"; 
+import { Button } from "../../components/ui/button";
 import { Label } from "../../components/ui/label";
 import { Input } from "../../components/ui/input";
 import { useState } from "react";
 import logo from "../../assets/images/kurdistan-region-goverment-logo.png";
+import { login } from "../../api/auth";
+import type { LoginPayload } from "../../types/auth";
+import { useMutation } from "@tanstack/react-query";
+import { useUserStore } from "../../store/userStore";
+import { ImSpinner } from "react-icons/im";
+import { LogInIcon } from "lucide-react";
 
 function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
+  const [loginPayload, setLoginPayload] = useState<LoginPayload>({
+    email: "",
+    password: "",
+  });
+
+  const { setUser } = useUserStore();
+
+  const { mutate, isPending, error } = useMutation({
+    mutationFn: (payload: LoginPayload) => login(payload),
+    onSuccess: (data) => {
+      // set the user as global state when login is successful
+      setUser(data);
+    },
+    onError: () => {
+      // set the user as null when login fails
+      setUser(null);
+    },
+  });
+
+  const handleLogin = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    mutate(loginPayload); // trigger the login function
+  };
+
+  const handlePayloadChange = async (
+    e: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    setLoginPayload({
+      ...loginPayload,
+      [e.target.name]: e.target.value,
+    });
+  };
 
   return (
     <div className="flex min-h-screen flex-col md:flex-row">
@@ -34,6 +72,8 @@ function LoginPage() {
           <div className="mt-6 space-y-2">
             <Label>Email address</Label>
             <Input
+              name="email"
+              onChange={handlePayloadChange}
               type="email"
               placeholder="name@institution.edu.krd"
               className="w-full"
@@ -53,16 +93,39 @@ function LoginPage() {
               </button>
             </div>
             <Input
+              name="password"
+              onChange={handlePayloadChange}
               type={showPassword ? "text" : "password"}
               placeholder="Enter your password"
               className="w-full"
             />
           </div>
 
-          <p className="text-teal-600 text-sm mt-3 font-bold text-right cursor-pointer text-align-right">Forgot password?</p>
+          <p className="text-teal-600 text-sm mt-3 font-bold text-right cursor-pointer text-align-right">
+            Forgot password?
+          </p>
 
-          <Button className="mt-6 w-full bg-teal-600 hover:bg-teal-700">
-            Sign in
+          {error && (
+            <p className="mt-4 text-sm font-semibold text-red-500">
+              {error.message}
+            </p>
+          )}
+
+          <Button
+            className={`mt-6 w-full bg-teal-600 hover:bg-teal-700 ${isPending ? "cursor-not-allowed opacity-50" : "cursor-pointer"}`}
+            onClick={handleLogin}
+          >
+            {isPending ? (
+              <>
+                <ImSpinner className="animate-spin mr-2" />
+                <span>Logging in...</span>
+              </>
+            ) : (
+              <>
+                <LogInIcon className="mr-2" />
+                <span>Login</span>
+              </>
+            )}
           </Button>
         </div>
       </div>
