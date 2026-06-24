@@ -1,6 +1,10 @@
 import { useState } from "react";
 import { Bell, Plus } from "lucide-react";
 import logo from "../../assets/images/logo.png";
+import { useMutation } from "@tanstack/react-query";
+import { logout } from "../../api/auth";
+import { useUserStore } from "../../store/userStore";
+import { useNavigate } from "react-router-dom";
 
 type Language = "EN" | "KU" | "AR";
 
@@ -25,6 +29,16 @@ const getInitials = (name?: string) => {
 export default function Header() {
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [language, setLanguage] = useState<Language>("EN");
+  const { setUser } = useUserStore();
+  const navigate = useNavigate();
+
+  const { mutate } = useMutation({
+    mutationFn: () => logout(),
+    onSuccess: () => {
+      setUser(null);
+      navigate("/login", { replace: true });
+    },
+  });
 
   /*
     TODO: Replace this object with the real Zustand user selector.
@@ -39,18 +53,22 @@ export default function Header() {
     role: "University Admin",
   };
 
+  const handleLogout = async () => {
+    mutate();
+  };
+
   const userName = user?.name ?? "User";
   const userRole = user?.role ?? "User";
   const userInitials = getInitials(userName);
 
   return (
-    <header className="fixed left-0 right-0 top-0 z-50 flex h-[82px] items-center border-b border-[#e4e9ef] bg-white shadow-[0_8px_28px_rgba(18,35,55,0.06)] max-md:static max-md:grid max-md:h-auto max-md:min-h-[82px]">
+    <header className="fixed left-0 right-0 top-0 z-50 flex h-20.5 items-center border-b border-[#e4e9ef] bg-white shadow-[0_8px_28px_rgba(18,35,55,0.06)] max-md:static max-md:grid max-md:h-auto max-md:min-h-20.5">
       {/* Top-left logo / brand area */}
-      <div className="flex h-full w-[270px] shrink-0 items-center gap-3 border-r border-[#e4e9ef] bg-white px-[18px] max-lg:w-[240px] max-md:h-[82px] max-md:w-full max-md:border-r-0 max-md:border-b">
+      <div className="flex h-full w-67.5 shrink-0 items-center gap-3 border-r border-[#e4e9ef] bg-white px-4.5 max-lg:w-60 max-md:h-20.5 max-md:w-full max-md:border-r-0 max-md:border-b">
         <img
           src={logo}
           alt="Kurdistan Regional Government logo"
-          className="h-[100px] w-[100px] shrink-0 object-contain max-sm:h-[46px] max-sm:w-[46px]"
+          className="h-25 w-25 shrink-0 object-contain max-sm:h-11.5 max-sm:w-11.5"
         />
 
         <div className="min-w-0">
@@ -65,9 +83,9 @@ export default function Header() {
       </div>
 
       {/* Main header area */}
-      <div className="flex h-full min-w-0 flex-1 items-center justify-between gap-5 bg-white px-[26px] max-md:h-auto max-md:flex-wrap max-md:p-4">
+      <div className="flex h-full min-w-0 flex-1 items-center justify-between gap-5 bg-white px-6.5 max-md:h-auto max-md:flex-wrap max-md:p-4">
         <div className="min-w-0">
-          <h1 className="truncate text-xl font-[850] tracking-[-0.025em] text-[#172033] max-sm:text-[17px]">
+          <h1 className="truncate text-xl font-[850] tracking-tight text-[#172033] max-sm:text-[17px]">
             {MINISTRY_NAME}
           </h1>
         </div>
@@ -75,7 +93,7 @@ export default function Header() {
         <div className="flex shrink-0 items-center gap-2.5 max-md:w-full max-md:flex-wrap">
           <button
             type="button"
-            className="inline-flex h-[42px] items-center gap-2 rounded-xl border border-[#0f7576] bg-[#0f7576] px-[13px] font-bold text-white shadow-[0_8px_18px_rgba(15,117,118,0.2)] transition hover:bg-[#0b5f60]"
+            className="inline-flex h-10.5 items-center gap-2 rounded-xl border border-[#0f7576] bg-[#0f7576] px-3.25 font-bold text-white shadow-[0_8px_18px_rgba(15,117,118,0.2)] transition hover:bg-[#0b5f60]"
           >
             <Plus className="h-4 w-4" strokeWidth={2.4} aria-hidden="true" />
             <span className="max-lg:hidden">Compose Letter</span>
@@ -84,12 +102,12 @@ export default function Header() {
           <button
             type="button"
             aria-label="Notifications"
-            className="relative inline-flex h-[42px] w-[42px] items-center justify-center rounded-xl border border-[#e4e9ef] bg-white text-[#46566a] transition hover:border-[#bfe0e0] hover:bg-[#f8fbfb] hover:text-[#0f7576]"
+            className="relative inline-flex h-10.5 w-10.5 items-center justify-center rounded-xl border border-[#e4e9ef] bg-white text-[#46566a] transition hover:border-[#bfe0e0] hover:bg-[#f8fbfb] hover:text-[#0f7576]"
           >
             <Bell className="h-5 w-5" strokeWidth={1.9} aria-hidden="true" />
 
             {NOTIFICATION_COUNT > 0 && (
-              <span className="absolute right-2 top-2 h-[9px] w-[9px] rounded-full border-2 border-white bg-[#cc7a2b]" />
+              <span className="absolute right-2 top-2 h-2.25 w-2.25 rounded-full border-2 border-white bg-[#cc7a2b]" />
             )}
           </button>
 
@@ -97,7 +115,7 @@ export default function Header() {
             aria-label="Language"
             value={language}
             onChange={(event) => setLanguage(event.target.value as Language)}
-            className="h-[42px] cursor-pointer rounded-xl border border-[#e4e9ef] bg-white px-3 font-bold text-[#46566a] outline-none transition hover:border-[#bfe0e0] hover:bg-[#f8fbfb]"
+            className="h-10.5 cursor-pointer rounded-xl border border-[#e4e9ef] bg-white px-3 font-bold text-[#46566a] outline-none transition hover:border-[#bfe0e0] hover:bg-[#f8fbfb]"
           >
             {languages.map((item) => (
               <option key={item} value={item}>
@@ -106,7 +124,7 @@ export default function Header() {
             ))}
           </select>
 
-          <div className="relative flex h-[50px] cursor-pointer items-center gap-2.5 border-l border-[#e4e9ef] pl-3.5 max-sm:pl-2">
+          <div className="relative flex h-12.5 cursor-pointer items-center gap-2.5 border-l border-[#e4e9ef] pl-3.5 max-sm:pl-2">
             <button
               type="button"
               onClick={() => setIsUserMenuOpen((current) => !current)}
@@ -114,7 +132,7 @@ export default function Header() {
               aria-expanded={isUserMenuOpen}
               aria-haspopup="menu"
             >
-              <span className="grid h-[38px] w-[38px] place-items-center rounded-full bg-[#dceeee] text-[13px] font-[850] text-[#0f7576]">
+              <span className="grid h-9.5 w-9.5 place-items-center rounded-full bg-[#dceeee] text-[13px] font-[850] text-[#0f7576]">
                 {userInitials}
               </span>
 
@@ -132,7 +150,7 @@ export default function Header() {
             {isUserMenuOpen && (
               <div
                 role="menu"
-                className="absolute right-0 top-14 z-[100] w-[210px] rounded-[14px] border border-[#e4e9ef] bg-white p-2 shadow-[0_22px_45px_rgba(18,35,55,0.14)]"
+                className="absolute right-0 top-14 z-100 w-52.5 rounded-[14px] border border-[#e4e9ef] bg-white p-2 shadow-[0_22px_45px_rgba(18,35,55,0.14)]"
               >
                 <a
                   href="#profile"
@@ -156,7 +174,7 @@ export default function Header() {
                 </a>
 
                 <a
-                  href="#logout"
+                  onClick={handleLogout}
                   className="flex rounded-[10px] px-2.5 py-2.5 text-[13px] font-bold text-[#46566a] hover:bg-[#f4f7f7] hover:text-[#0f7576]"
                 >
                   Logout
