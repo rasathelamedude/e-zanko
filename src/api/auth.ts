@@ -1,4 +1,4 @@
-import type { LoginPayload, LoginResponse } from "../types/auth";
+import type { LoginPayload, LoginResponse, User } from "../types/auth";
 
 export async function login(payload: LoginPayload): Promise<LoginResponse> {
   if (
@@ -6,20 +6,25 @@ export async function login(payload: LoginPayload): Promise<LoginResponse> {
     payload.password === "12345"
   ) {
     return {
-      user: {
-        id: "1",
-        email: payload.email,
-        username: "Test User",
-        role: "MinistryAdmin",
+      success: true,
+      message: "Login successful",
+      data: {
+        id: 1,
+        name: "Test User",
+        email: "test@institution.edu.krd",
+        phone: "1234567890",
+        role: "MINISTRY_ADMIN",
+        scope: "MINISTRY",
+        scopeId: 123,
+        isActive: true,
       },
-      token: "mock-jwt-token-abc123",
     };
   }
 
   throw Error("Invalid email or password");
 }
 
-export async function getProfile(token: string) {
+export async function getProfile(token: string): Promise<User> {
   // TODO: call GET /api/profile endpoint once it's implemented
   // `token` is stored inside cookies and sent to the backend automatically
 
@@ -28,8 +33,13 @@ export async function getProfile(token: string) {
   }
 
   return {
-    id: "1",
+    id: 1,
     email: "test@institution.edu.krd",
-    username: "Test User",
+    name: "Test User",
+    phone: "1234567890",
+    role: "MINISTRY_ADMIN",
+    scope: "MINISTRY",
+    scopeId: 1,
+    isActive: true,
   };
 }

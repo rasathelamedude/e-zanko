@@ -27,49 +27,74 @@ import { mockDepartments } from "./DepartmentsPage";
 
 const mockCourses: Course[] = [
   {
-    id: "1",
+    id: 1,
+    departmentId: 4,
     code: "CS101",
     name: "Introduction to Programming",
-    department: "Computer Science",
-    lecturer: "Dr. Hawre Aziz",
+    creditHours: 3,
     yearLevel: 1,
     isActive: true,
+    lecturer: "Dr. Hawre Aziz",
+    department: "Computer Science",
+    createdAt: "2024-01-01T00:00:00Z",
+    updatedAt: "2024-01-01T00:00:00Z",
+    deletedAt: null,
   },
   {
-    id: "2",
+    id: 2,
+    departmentId: 1,
     code: "SE201",
     name: "Data Structures",
-    department: "Software Engineering",
-    lecturer: "Dr. Karim Yusuf",
+    creditHours: 3,
     yearLevel: 2,
     isActive: true,
+    lecturer: "Dr. Karim Yusuf",
+    department: "Software Engineering",
+    createdAt: "2024-01-01T00:00:00Z",
+    updatedAt: "2024-01-01T00:00:00Z",
+    deletedAt: null,
   },
   {
-    id: "3",
+    id: 3,
+    departmentId: 2,
     code: "CE301",
     name: "Structural Analysis",
-    department: "Civil Engineering",
-    lecturer: "Dr. Shko Rauf",
+    creditHours: 3,
     yearLevel: 3,
     isActive: true,
+    lecturer: "Dr. Shko Rauf",
+    department: "Civil Engineering",
+    createdAt: "2024-01-01T00:00:00Z",
+    updatedAt: "2024-01-01T00:00:00Z",
+    deletedAt: null,
   },
   {
-    id: "4",
+    id: 4,
+    departmentId: 3,
     code: "EE201",
     name: "Circuit Theory",
-    department: "Electrical Engineering",
-    lecturer: "Dr. Dinya Salam",
+    creditHours: 3,
     yearLevel: 2,
     isActive: true,
+    lecturer: "Dr. Dinya Salam",
+    department: "Electrical Engineering",
+    createdAt: "2024-01-01T00:00:00Z",
+    updatedAt: "2024-01-01T00:00:00Z",
+    deletedAt: null,
   },
   {
-    id: "5",
+    id: 5,
+    departmentId: 5,
     code: "AR401",
     name: "Architectural Design",
-    department: "Architecture",
-    lecturer: "Dr. Niga Star",
+    creditHours: 4,
     yearLevel: 4,
     isActive: false,
+    lecturer: "Dr. Niga Star",
+    department: "Architecture",
+    createdAt: "2024-01-01T00:00:00Z",
+    updatedAt: "2024-01-01T00:00:00Z",
+    deletedAt: null,
   },
 ];
 
@@ -87,9 +112,9 @@ function CoursesPage() {
   const { universityId, facultyId, departmentId } = useParams();
   const navigate = useNavigate();
 
-  const university = mockUniversities.find((u) => u.id === universityId);
-  const faculty = mockFaculties.find((u) => u.id === facultyId);
-  const department = mockDepartments.find((u) => u.id === departmentId);
+  const university = mockUniversities.find((u) => String(u.id) === universityId);
+  const faculty = mockFaculties.find((u) => String(u.id) === facultyId);
+  const department = mockDepartments.find((u) => String(u.id) === departmentId);
 
   function handleModal() {
     setShowPopup((prev) => !prev);
@@ -197,7 +222,11 @@ function CoursesPage() {
         </span>
         <span>/</span>
         <span
-          onClick={() => navigate(`/universities/${universityId}/faculties/${facultyId}/departments`)}
+          onClick={() =>
+            navigate(
+              `/universities/${universityId}/faculties/${facultyId}/departments`,
+            )
+          }
           className="cursor-pointer hover:text-teal-700"
         >
           {faculty?.name ?? "Faculty"}
@@ -238,7 +267,7 @@ function CoursesPage() {
       <DataTable
         columns={columns}
         data={filteredCourses}
-        getRowId={(u) => u.id}
+        getRowId={(u) => String(u.id)}
       />
 
       {showPopup && (

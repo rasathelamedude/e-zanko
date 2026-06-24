@@ -15,34 +15,64 @@ import { mockUniversities } from "./UniversitiesPage";
 
 export const mockFaculties: Faculty[] = [
   {
-    id: "1",
+    id: 1,
+    universityId: 1,
     name: "College of Engineering",
     dean: "Dr. Sara Ahmed",
     status: "ACTIVE",
+    adminId: null,
+    isActive: true,
+    createdAt: "2024-01-01T00:00:00Z",
+    updatedAt: "2024-01-01T00:00:00Z",
+    deletedAt: null,
   },
   {
-    id: "2",
+    id: 2,
+    universityId: 1,
     name: "College of Medicine",
     dean: "Dr. Diyar Omar",
     status: "ACTIVE",
+    adminId: null,
+    isActive: true,
+    createdAt: "2024-01-01T00:00:00Z",
+    updatedAt: "2024-01-01T00:00:00Z",
+    deletedAt: null,
   },
   {
-    id: "3",
+    id: 3,
+    universityId: 1,
     name: "College of Law",
     dean: "Dr. Lana Jabar",
     status: "ACTIVE",
+    adminId: null,
+    isActive: true,
+    createdAt: "2024-01-01T00:00:00Z",
+    updatedAt: "2024-01-01T00:00:00Z",
+    deletedAt: null,
   },
   {
-    id: "4",
+    id: 4,
+    universityId: 1,
     name: "College of Science",
     dean: "Dr. Rebin Faraj",
     status: "ACTIVE",
+    adminId: null,
+    isActive: true,
+    createdAt: "2024-01-01T00:00:00Z",
+    updatedAt: "2024-01-01T00:00:00Z",
+    deletedAt: null,
   },
   {
-    id: "5",
+    id: 5,
+    universityId: 1,
     name: "College of Education",
     dean: "Dr. Awat Hama",
-    status: "UNDER_REVIEW",
+    status: "INACTIVE",
+    adminId: null,
+    isActive: false,
+    createdAt: "2024-01-01T00:00:00Z",
+    updatedAt: "2024-01-01T00:00:00Z",
+    deletedAt: null,
   },
 ];
 
@@ -64,7 +94,9 @@ function FacultiesPage() {
   const { universityId } = useParams();
   const navigate = useNavigate();
 
-  const university = mockUniversities.find((u) => u.id === universityId);
+  const university = mockUniversities.find(
+    (u) => String(u.id) === universityId,
+  );
 
   function handleModal() {
     setShowPopup((prev) => !prev);
@@ -81,7 +113,11 @@ function FacultiesPage() {
       header: "Name",
       render: (u) => (
         <span
-          onClick={() => navigate(`/universities/${universityId}/faculties/${u.id}/departments`)}
+          onClick={() =>
+            navigate(
+              `/universities/${universityId}/faculties/${u.id}/departments`,
+            )
+          }
           className="font-medium text-teal-700 cursor-pointer"
         >
           {u.name}
@@ -145,7 +181,7 @@ function FacultiesPage() {
       <DataTable
         columns={columns}
         data={mockFaculties}
-        getRowId={(u) => u.id}
+        getRowId={(u) => String(u.id)}
       />
 
       {showPopup && (

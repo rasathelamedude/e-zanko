@@ -11,34 +11,84 @@ import { useNavigate } from "react-router-dom";
 
 export const mockUniversities: University[] = [
   {
-    id: "1",
+    id: 1,
     name: "Salahaddin University",
     president: "Dr. Aram Qadir",
     status: "ACTIVE",
+    adminId: null,
+    academicYear: null,
+    location: "Erbil",
+    startDate: null,
+    endDate: null,
+    establishedYear: "1991-01-01",
+    isActive: true,
+    createdAt: "2024-01-01T00:00:00Z",
+    updatedAt: "2024-01-01T00:00:00Z",
+    deletedAt: null,
   },
   {
-    id: "2",
+    id: 2,
     name: "University of Sulaimani",
     president: "Dr. Shilan Rashid",
     status: "ACTIVE",
+    adminId: null,
+    academicYear: null,
+    location: "Sulaimani",
+    startDate: null,
+    endDate: null,
+    establishedYear: "1970-01-01",
+    isActive: true,
+    createdAt: "2024-01-01T00:00:00Z",
+    updatedAt: "2024-01-01T00:00:00Z",
+    deletedAt: null,
   },
   {
-    id: "3",
+    id: 3,
     name: "University of Duhok",
     president: "Dr. Hemin Tahir",
     status: "ACTIVE",
+    adminId: null,
+    academicYear: null,
+    location: "Duhok",
+    startDate: null,
+    endDate: null,
+    establishedYear: "1987-01-01",
+    isActive: true,
+    createdAt: "2024-01-01T00:00:00Z",
+    updatedAt: "2024-01-01T00:00:00Z",
+    deletedAt: null,
   },
   {
-    id: "4",
+    id: 4,
     name: "University of Halabja",
     president: "Dr. Nask Ali",
-    status: "UNDER_REVIEW",
+    status: "INACTIVE",
+    adminId: null,
+    academicYear: null,
+    location: "Halabja",
+    startDate: null,
+    endDate: null,
+    establishedYear: "2010-01-01",
+    isActive: false,
+    createdAt: "2024-01-01T00:00:00Z",
+    updatedAt: "2024-01-01T00:00:00Z",
+    deletedAt: null,
   },
   {
-    id: "5",
+    id: 5,
     name: "University of Garmian",
     president: "Dr. Karwan Saeed",
     status: "ACTIVE",
+    adminId: null,
+    academicYear: null,
+    location: "Kalar",
+    startDate: null,
+    endDate: null,
+    establishedYear: "2005-01-01",
+    isActive: true,
+    createdAt: "2024-01-01T00:00:00Z",
+    updatedAt: "2024-01-01T00:00:00Z",
+    deletedAt: null,
   },
 ];
 
@@ -61,7 +111,12 @@ function UniversitiesPage() {
       key: "name",
       header: "Name",
       render: (u) => (
-        <span onClick={() => navigate(`/universities/${u.id}/faculties`)} className="font-medium text-teal-700 cursor-pointer">{u.name}</span>
+        <span
+          onClick={() => navigate(`/universities/${u.id}/faculties`)}
+          className="font-medium text-teal-700 cursor-pointer"
+        >
+          {u.name}
+        </span>
       ),
     },
     {
@@ -72,7 +127,7 @@ function UniversitiesPage() {
     {
       key: "status",
       header: "Status",
-      render: (u) => (
+      render: (u: University) => (
         <Badge className={statusStyles[u.status]}>
           {statusLabels[u.status]}
         </Badge>
@@ -115,7 +170,9 @@ function UniversitiesPage() {
             System Administrator · Academic Year 2025–2026
           </p>
         </div>
-        <Button className="bg-white border-teal-700 text-teal-700 hover:bg-teal-50">+ Add University</Button>
+        <Button className="bg-white border-teal-700 text-teal-700 hover:bg-teal-50">
+          + Add University
+        </Button>
       </div>
 
       <div className="flex justify-between my-3">
@@ -132,7 +189,7 @@ function UniversitiesPage() {
       <DataTable
         columns={columns}
         data={mockUniversities}
-        getRowId={(u) => u.id}
+        getRowId={(u) => String(u.id)}
       />
     </div>
   );
