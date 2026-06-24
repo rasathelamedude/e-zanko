@@ -295,21 +295,15 @@ function CoursesPage() {
               <Input placeholder="e.g. CS101" type="text" />
             </div>
 
+            
             <div>
               <Label className="text-sm font-medium text-gray-700 mb-1">
-                Department
+                Credit hours
               </Label>
-              <select className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-teal-500">
-                <option value="">Select a department</option>
-                <option value="cs">Computer Science</option>
-                <option value="se">Software Engineering</option>
-                <option value="ce">Civil Engineering</option>
-                <option value="ee">Electrical Engineering</option>
-                <option value="ar">Architecture</option>
-              </select>
+              <Input placeholder="e.g. 3" type="number" min={1} max={6}/>
             </div>
 
-            <div>
+            {/* <div>
               <Label className="text-sm font-medium text-gray-700 mb-1">
                 Assign Lecturer
               </Label>
@@ -326,7 +320,7 @@ function CoursesPage() {
                   </ComboboxList>
                 </ComboboxContent>
               </Combobox>
-            </div>
+            </div> */}
 
             <div>
               <Label className="text-sm font-medium text-gray-700 mb-1">
@@ -339,6 +333,7 @@ function CoursesPage() {
                 <option value="3">Year 3</option>
                 <option value="4">Year 4</option>
                 <option value="5">Year 5</option>
+                <option value="6">Year 6</option>
               </select>
             </div>
           </div>

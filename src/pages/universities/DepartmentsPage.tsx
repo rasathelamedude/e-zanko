@@ -13,6 +13,7 @@ import { useUserStore } from "../../store/userStore";
 import { useNavigate, useParams } from "react-router-dom";
 import { mockFaculties } from "./FacultiesPage";
 import { mockUniversities } from "./UniversitiesPage";
+import { Label } from "../../components/ui/label";
 
 export const mockDepartments: Department[] = [
   {
@@ -170,7 +171,6 @@ function DepartmentsPage() {
         role={user?.role || ""}
         year="2023-2024"
       />
-
       <div className="flex justify-between my-3">
         <div className="flex gap-5">
           <h1 className="font-bold">Departments</h1>
@@ -200,8 +200,17 @@ function DepartmentsPage() {
           onClose={() => setShowPopup(false)}
           onConfirm={handleAddDepartment}
         >
-          <Input placeholder="Department name" className="mb-2" />
-          <Input placeholder="Head of Dept." />
+          <div className="flex flex-col gap-3">
+            <div>
+              <Label className="text-sm font-medium text-gray-700 mb-1">
+                Name
+              </Label>
+              <Input
+                placeholder="e.g. Department of electrical engineering"
+                type="text"
+              />
+            </div>
+          </div>
         </Modal>
       )}
     </div>
