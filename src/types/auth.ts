@@ -22,12 +22,23 @@ export interface User {
   isActive: boolean;
 }
 
-// token is sent via cookies
-export interface LoginResponse {
+/**
+ *
+ * All API responses share the same structure.
+ *
+ * They all have a success, message and a data field.
+ * Only data field's type changes from one endpoint to another.
+ *
+ * Therefore we can create a generic type for the data field.
+ */
+export interface ApiResponse<T = null> {
   success: boolean;
   message: string;
-  data: User;
+  data: T;
 }
+
+export type LoginResponse = ApiResponse<User>;
+export type LogoutResponse = ApiResponse<null>;
 
 export interface LoginPayload {
   email: string;
