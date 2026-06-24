@@ -7,8 +7,11 @@ type NavItem = {
   to: string;
 };
 
+// Exclude roles like students and lecturers which don't use the main admin nav.
+type AllowedUserRole = Exclude<UserRole, "STUDENT" | "LECTURER">;
+
 // Specific nav items for each role
-const NAV_ITEMS: Record<UserRole, NavItem[]> = {
+const NAV_ITEMS: Record<AllowedUserRole, NavItem[]> = {
   MINISTRY_ADMIN: [
     { label: "Dashboard", to: "/" },
     { label: "Universities", to: "/universities" },
@@ -16,24 +19,34 @@ const NAV_ITEMS: Record<UserRole, NavItem[]> = {
     { label: "Reports", to: "/reports" },
     { label: "Settings", to: "/settings" },
   ],
-  UNIVERSITY_PRESIDENT: [],
-  ADMIN: [],
+  MINISTRY_STAFF: [],
+  UNIVERSITY_ADMIN: [
+    { label: "Dashboard", to: "/" },
+    { label: "Faculties", to: "/faculties" },
+    { label: "Letters", to: "/letters" },
+    { label: "Reports", to: "/reports" },
+    { label: "Settings", to: "/settings" },
+  ],
+  UNIVERSITY_STAFF: [],
   DEAN: [],
-  HEAD_OF_DEPARTMENT: [],
+  DEPARTMENT_HEAD: [],
 };
 
 const Sidebar = () => {
   // const user = useUserStore((state) => state.user);
   const user: User = {
-    id: "1",
+    id: 1,
     email: "test@institution.edu.krd",
-    username: "Test User",
-    role: "MINISTRY_ADMIN",
     name: "Test User",
+    role: "MINISTRY_ADMIN",
+    scope: "MINISTRY",
+    scopeId: 1,
+    isActive: true,
+    phone: "1234567890",
   };
 
   // Get nav items based on user role
-  const navItems = user?.role ? NAV_ITEMS[user?.role as UserRole] : [];
+  const navItems = user?.role ? NAV_ITEMS[user?.role as AllowedUserRole] : [];
 
   return (
     <aside className="w-64 h-full bg-white border-r border-slate-200 flex flex-col">
