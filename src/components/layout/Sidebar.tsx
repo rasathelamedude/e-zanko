@@ -7,11 +7,10 @@ type NavItem = {
   to: string;
 };
 
-// Exclude roles like students and lecturers which don't use the main admin nav.
-type AllowedUserRole = Exclude<UserRole, "STUDENT" | "LECTURER">;
+type ManagementRoles = Exclude<UserRole, "STUDENT" | "LECTURER">;
 
 // Specific nav items for each role
-const NAV_ITEMS: Record<AllowedUserRole, NavItem[]> = {
+const NAV_ITEMS: Record<ManagementRoles, NavItem[]> = {
   MINISTRY_ADMIN: [
     { label: "Dashboard", to: "/" },
     { label: "Universities", to: "/universities" },
@@ -46,7 +45,7 @@ const Sidebar = () => {
   };
 
   // Get nav items based on user role
-  const navItems = user?.role ? NAV_ITEMS[user?.role as AllowedUserRole] : [];
+  const navItems = user?.role ? NAV_ITEMS[user?.role as ManagementRoles] : [];
 
   return (
     <aside className="w-64 h-full bg-white border-r border-slate-200 flex flex-col">
