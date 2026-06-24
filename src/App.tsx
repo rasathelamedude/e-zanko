@@ -28,11 +28,21 @@ function App() {
           <Route path="/letters" element={<LettersPage />} />
           <Route path="/reports" element={<ReportsPage />} />
 
-          {/* Dedicated Routes (MINISTRY_ADMIN) */}
+          {/* Dedicated Routes Level 1 (MINISTRY_ADMIN) */}
           <Route
             element={<ProtectedRoutes allowedRoles={["MINISTRY_ADMIN"]} />}
           >
             <Route path="/universities" element={<UniversitiesPage />} />
+          </Route>
+
+          {/* Dedicated Routes Level 2 (MINSITRY_ADMIN & UNIVERSITY_ADMIN) */}
+          <Route
+            element={
+              <ProtectedRoutes
+                allowedRoles={["MINISTRY_ADMIN", "UNIVERSITY_ADMIN"]}
+              />
+            }
+          >
             <Route
               path="/universities/:universityId/faculties"
               element={<FacultiesPage />}
@@ -41,6 +51,43 @@ function App() {
               path="/universities/:universityId/faculties/:facultyId/departments"
               element={<DepartmentsPage />}
             />
+            <Route
+              path="/universities/:universityId/faculties/:facultyId/departments/:departmentId/courses"
+              element={<CoursesPage />}
+            />
+          </Route>
+
+          {/* Dedicated Routes Level 3 (MINSITRY_ADMIN & UNIVERSITY_ADMIN & Dean) */} 
+          <Route
+            element={
+              <ProtectedRoutes
+                allowedRoles={["MINISTRY_ADMIN", "UNIVERSITY_ADMIN", "DEAN"]}
+              />
+            }
+          >
+            <Route
+              path="/universities/:universityId/faculties/:facultyId/departments"
+              element={<DepartmentsPage />}
+            />
+            <Route
+              path="/universities/:universityId/faculties/:facultyId/departments/:departmentId/courses"
+              element={<CoursesPage />}
+            />
+          </Route>
+
+          {/* Dedicated Routes Level 4 (... & DEPARTMENT HEAD) */}
+          <Route
+            element={
+              <ProtectedRoutes
+                allowedRoles={[
+                  "MINISTRY_ADMIN",
+                  "UNIVERSITY_ADMIN",
+                  "DEAN",
+                  "DEPARTMENT_HEAD",
+                ]}
+              />
+            }
+          >
             <Route
               path="/universities/:universityId/faculties/:facultyId/departments/:departmentId/courses"
               element={<CoursesPage />}
