@@ -1,3 +1,4 @@
+import SettingsPage from "./pages/settings";
 import AppLayout from "./layouts/AppLayout";
 import LoginPage from "./pages/auth/LoginPage";
 import DashboardPage from "./pages/dashboard"; // Automatically imports index.tsx
@@ -32,6 +33,7 @@ function App() {
         />
         <Route path="/letters" element={<LettersPage />} />
         <Route path="/reports" element={<ReportsPage />} />
+        <Route path="/settings" element={<SettingsPage />} />
       </Route>
     </Routes>
   );
