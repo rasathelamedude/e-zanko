@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getDashboardAnalytics } from "../../../api/dashboard";
+import { getMinistryDashboardAnalytics } from "../../../api/dashboard";
 import PageHeader from "../../../components/common/PageHeader";
 import StatCard from "../../../components/common/StatCard";
 import { useUserStore } from "../../../store/userStore";
@@ -31,6 +31,8 @@ const recentLetters: Letter[] = [
     title: "Open College of Data Science",
     university: "University of Sulaimani",
     date: "16 Jun 2026",
+    message: "",
+    letterType: "",
   },
   {
     id: 2,
@@ -38,6 +40,8 @@ const recentLetters: Letter[] = [
     title: "Close College of Fine Arts",
     university: "Salahaddin University",
     date: "15 Jun 2026",
+    message: "",
+    letterType: "",
   },
 ];
 
@@ -51,7 +55,7 @@ const MinistryDashboard = () => {
 
   useEffect(() => {
     const fetchAnalytics = async () => {
-      const analyticsData = await getDashboardAnalytics();
+      const analyticsData = await getMinistryDashboardAnalytics();
       setAnalytics(analyticsData);
     };
 
