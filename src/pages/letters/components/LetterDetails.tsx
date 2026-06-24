@@ -1,7 +1,7 @@
 import { Badge } from "../../../components/ui/badge";
 import { Button } from "../../../components/ui/button";
 import type { Letter } from "../../../types/letter";
-import { Check, X, Forward } from "lucide-react";
+import { Check, X, MoveUp, Forward } from "lucide-react";
 
 const statusStyles: Record<string, string> = {
   pending: "bg-amber-100 text-amber-700 hover:bg-amber-100",
@@ -23,23 +23,28 @@ function LetterDetails({ letter }: LetterDetailsProps) {
   return (
     <div className="border border-gray-200 rounded-xl p-6 bg-white h-full">
       {/* badge, date, actions */}
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex items-start justify-between mb-6">
         <div className="flex items-center gap-2">
           <Badge className={statusStyles[letter.status]}>
             {statusLabels[letter.status]}
           </Badge>
           <span className="text-xs text-gray-400">{letter.date}</span>
         </div>
+
+        {/* buttons */}
         {letter.status === "pending" && (
-          <div className="flex gap-2">
-            <Button className="bg-teal-700 text-white hover:bg-teal-800">
+          <div className="flex items-end gap-2">
+            <Button className="bg-teal-700 text-white rounded-lg hover:bg-teal-800">
               <Check className="w-4 h-4 mr-1" /> Approve
             </Button>
-            <Button className="border border-amber-500 bg-white text-amber-500 hover:bg-amber-50">
+            <Button className="bg-amber-500 text-white hover:bg-amber-600 shadow-sm">
               <Forward className="w-4 h-4 mr-1" /> Forward
             </Button>
-            <Button className="border border-red-500 bg-white text-red-500 hover:bg-red-50">
+            <Button className="border-2 border-red-500 bg-white text-red-600 hover:bg-red-50">
               <X className="w-4 h-4 mr-1" /> Reject
+            </Button>
+            <Button className="border-2 border-indigo-600 bg-white text-indigo-700 hover:bg-indigo-50">
+              <MoveUp className="w-4 h-4 mr-1" /> Sign & Raise
             </Button>
           </div>
         )}
