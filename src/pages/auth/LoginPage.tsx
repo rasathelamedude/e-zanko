@@ -9,6 +9,7 @@ import { useMutation } from "@tanstack/react-query";
 import { useUserStore } from "../../store/userStore";
 import { ImSpinner } from "react-icons/im";
 import { LogInIcon } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
@@ -16,6 +17,7 @@ function LoginPage() {
     email: "",
     password: "",
   });
+  const navigate = useNavigate();
 
   const { setUser } = useUserStore();
 
@@ -24,6 +26,7 @@ function LoginPage() {
     onSuccess: (data) => {
       // set the user as global state when login is successful
       setUser(data);
+      navigate('/');
     },
     onError: () => {
       // set the user as null when login fails
