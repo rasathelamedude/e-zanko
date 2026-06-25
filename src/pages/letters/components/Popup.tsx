@@ -25,7 +25,7 @@ function Popup({
   confirmDisabled,
 }: PopupProps) {
   return (
-    <div className="shadow-md px-4 py-2 rounded-xl">
+    <div className="bg-white shadow-md px-6 py-8 rounded-xl">
       <div className="flex items-center">
         <div className="bg-teal-50 rounded-2xl p-3">{icon}</div>
         <div className="ml-3">

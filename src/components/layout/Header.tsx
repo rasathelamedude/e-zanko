@@ -96,7 +96,7 @@ export default function Header() {
             className="inline-flex h-10.5 items-center gap-2 rounded-xl border border-[#0f7576] bg-[#0f7576] px-3.25 font-bold text-white shadow-[0_8px_18px_rgba(15,117,118,0.2)] transition hover:bg-[#0b5f60]"
           >
             <Plus className="h-4 w-4" strokeWidth={2.4} aria-hidden="true" />
-            <span className="max-lg:hidden">Compose Letter</span>
+            <span className="max-lg:hidden">Broadcast Letter</span>
           </button>
 
           <button
