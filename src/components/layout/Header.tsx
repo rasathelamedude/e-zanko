@@ -5,6 +5,7 @@ import { useMutation } from "@tanstack/react-query";
 import { logout } from "../../api/auth";
 import { useUserStore } from "../../store/userStore";
 import { useNavigate } from "react-router-dom";
+import ComposeLetter from "../common/ComposeLetter";
 
 type Language = "EN" | "KU" | "AR";
 
@@ -29,6 +30,7 @@ const getInitials = (name?: string) => {
 export default function Header() {
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [language, setLanguage] = useState<Language>("EN");
+  const [composePopup, setComposePopup] = useState(false);
   const { setUser } = useUserStore();
   const navigate = useNavigate();
 
@@ -81,13 +83,15 @@ export default function Header() {
 
         <div className="flex shrink-0 items-center gap-2.5 max-md:w-full max-md:flex-wrap">
           <button
+            onClick={() => setComposePopup(true)}
             type="button"
             className="inline-flex h-10.5 items-center gap-2 rounded-xl border border-[#0f7576] bg-[#0f7576] px-3.25 font-bold text-white shadow-[0_8px_18px_rgba(15,117,118,0.2)] transition hover:bg-[#0b5f60]"
           >
             <Plus className="h-4 w-4" strokeWidth={2.4} aria-hidden="true" />
             <span className="max-lg:hidden">
               {user?.role === "MINISTRY_ADMIN" ? "Broadcast" : "Compose"}
-               Letter</span>
+              Letter
+            </span>
           </button>
 
           <button
@@ -174,6 +178,10 @@ export default function Header() {
             )}
           </div>
         </div>
+
+        {composePopup && (
+          <ComposeLetter onClose={() => setComposePopup(false)} />
+        )}
       </div>
     </header>
   );
