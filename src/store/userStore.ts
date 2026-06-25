@@ -9,7 +9,17 @@ interface UserStore {
 }
 
 export const useUserStore = create<UserStore>((set) => ({
-  user: null,
+  user: {
+    id: 1,
+    email: "test@institution.edu.krd",
+    username: "Test User",
+    role: "MINISTRY_ADMIN",
+    name: "Test User",
+    scope: "MINISTRY",
+    scopeId: 1,
+    isActive: true,
+    phone: "1234567890",
+  },
   isAuthLoading: false,
 
   setUser: (user: User | null) => set({ user }),

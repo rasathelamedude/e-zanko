@@ -1,21 +1,15 @@
 import PageHeader from "../../../components/common/PageHeader";
-import type { User } from "../../../types/auth";
+import { useUserStore } from "../../../store/userStore";
 
 const MinistrySettingsPage = () => {
-  const user: User = {
-    id: "1",
-    email: "a.mahmoud@mohe.gov.krd",
-    username: "Dr. A. Mahmoud",
-    role: "MINISTRY_ADMIN",
-    name: "Dr. A. Mahmoud",
-  };
+  const { user } = useUserStore();
 
   return (
     <div className="p-8 bg-slate-50 min-h-screen space-y-8">
       <PageHeader
         title="Ministry of higher education"
         locationTitle="Settings"
-        role={user.role}
+        role={user?.role ?? ""}
         year="2023-2024"
       />
 
@@ -31,9 +25,9 @@ const MinistrySettingsPage = () => {
             </div>
 
             <div>
-              <h3 className="text-xl font-bold text-slate-900">{user.name}</h3>
+              <h3 className="text-xl font-bold text-slate-900">{user?.name}</h3>
               <p className="text-slate-500">System Administrator</p>
-              <p className="text-slate-500">{user.email}</p>
+              <p className="text-slate-500">{user?.email}</p>
             </div>
           </div>
 

@@ -1,6 +1,6 @@
 import { NavLink } from "react-router-dom";
-// import { useUserStore } from "../../store/userStore";
-import type { User, UserRole } from "../../types/auth";
+import { useUserStore } from "../../store/userStore";
+import type { UserRole } from "../../types/auth";
 
 type NavItem = {
   label: string;
@@ -32,17 +32,7 @@ const NAV_ITEMS: Record<ManagementRoles, NavItem[]> = {
 };
 
 const Sidebar = () => {
-  // const user = useUserStore((state) => state.user);
-  const user: User = {
-    id: 1,
-    email: "test@institution.edu.krd",
-    name: "Test User",
-    role: "UNIVERSITY_ADMIN",
-    scope: "UNIVERSITY",
-    scopeId: 1,
-    isActive: true,
-    phone: "1234567890",
-  };
+  const user = useUserStore((state) => state.user);
 
   // Get nav items based on user role
   const navItems = user?.role ? NAV_ITEMS[user?.role as ManagementRoles] : [];

@@ -1,18 +1,10 @@
 import StatCard from "../../../components/common/StatCard";
 import BarChartCard from "../../../components/common/BarChart";
 import PageHeader from "../../../components/common/PageHeader";
-import type { User } from "../../../types/auth";
-// import { useUserStore } from "../../../store/userStore";
+import { useUserStore } from "../../../store/userStore";
 
 const MinistryReportsPage = () => {
-  // const { user } = useUserStore();
-  const user: User = {
-    id: "1",
-    email: "test@institution.edu.krd",
-    username: "Test User",
-    role: "MINISTRY_ADMIN",
-    name: "Test User",
-  };
+  const { user } = useUserStore();
 
   const monthlyLettersData = [
     { label: "Jan", value: 28 },

@@ -1,17 +1,9 @@
-import type { User } from "../../types/auth";
 import MinistryReportsPage from "./components/MinistryReportsPage";
-// import { useUserStore } from "../../store/userStore";
+import { useUserStore } from "../../store/userStore";
+import type { User } from "../../types/auth";
 
 const ReportsPage = () => {
-  // const { user } = useUserStore();
-
-  const user: User = {
-    id: "1",
-    email: "test@institution.edu.krd",
-    username: "Test User",
-    role: "MINISTRY_ADMIN",
-    name: "Test User",
-  };
+  const { user } = useUserStore() as { user: User };
 
   if (user.role === "MINISTRY_ADMIN") return <MinistryReportsPage />;
 };
