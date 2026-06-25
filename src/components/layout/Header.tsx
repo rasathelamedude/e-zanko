@@ -40,18 +40,7 @@ export default function Header() {
     },
   });
 
-  /*
-    TODO: Replace this object with the real Zustand user selector.
-
-    Example:
-    import { useAuthStore } from "../../store/authStore";
-
-    const user = useAuthStore((state) => state.user);
-  */
-  const user = {
-    name: "Ahmed Mohammed",
-    role: "University Admin",
-  };
+  const user = useUserStore((state) => state.user);
 
   const handleLogout = async () => {
     mutate();

@@ -3,7 +3,7 @@ import BarChart from "../../../components/common/BarChart";
 import DonutChart from "../../../components/common/DonutChart";
 import RecentLetters from "../../../components/common/RecentLetters";
 import type { Letter } from "../../../types/letter";
-// import { useUserStore } from "../../../store/userStore";
+import { useUserStore } from "../../../store/userStore";
 import StatCard from "../../../components/common/StatCard";
 import PageHeader from "../../../components/common/PageHeader";
 import { getUniversityDashboardAnalytics } from "../../../api/dashboard";
@@ -69,18 +69,7 @@ const UniversityDashboard = () => {
     totalActiveDeans: 0,
   });
 
-  // const user = useUserStore((state) => state.user);
-
-  const user = {
-    id: 1,
-    email: "test@institution.edu.krd",
-    name: "Test User",
-    role: "UNIVERSITY_ADMIN",
-    scope: "UNIVERSITY",
-    scopeId: 1,
-    isActive: true,
-    phone: "1234567890",
-  };
+  const user = useUserStore((state) => state.user);
 
   useEffect(() => {
     const fetchAnalytics = async () => {

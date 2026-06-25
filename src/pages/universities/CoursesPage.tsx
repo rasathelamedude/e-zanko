@@ -12,14 +12,14 @@ import { Button } from "../../components/ui/button";
 import { useState } from "react";
 import Modal from "../../components/common/Modal";
 import { Label } from "../../components/ui/label";
-import {
-  Combobox,
-  ComboboxContent,
-  ComboboxEmpty,
-  ComboboxInput,
-  ComboboxItem,
-  ComboboxList,
-} from "../../components/ui/combobox";
+// import {
+//   Combobox,
+//   ComboboxContent,
+//   ComboboxEmpty,
+//   ComboboxInput,
+//   ComboboxItem,
+//   ComboboxList,
+// } from "../../components/ui/combobox";
 import { useNavigate, useParams } from "react-router-dom";
 import { mockUniversities } from "./UniversitiesPage";
 import { mockFaculties } from "./FacultiesPage";
@@ -98,7 +98,7 @@ const mockCourses: Course[] = [
   },
 ];
 
-const lecturers = mockCourses.map((course) => course.lecturer);
+// const lecturers = mockCourses.map((course) => course.lecturer);
 
 const statusStyles: Record<CourseStatus, string> = {
   ACTIVE: "bg-emerald-100 text-emerald-700 hover:bg-emerald-100",
@@ -112,7 +112,9 @@ function CoursesPage() {
   const { universityId, facultyId, departmentId } = useParams();
   const navigate = useNavigate();
 
-  const university = mockUniversities.find((u) => String(u.id) === universityId);
+  const university = mockUniversities.find(
+    (u) => String(u.id) === universityId,
+  );
   const faculty = mockFaculties.find((u) => String(u.id) === facultyId);
   const department = mockDepartments.find((u) => String(u.id) === departmentId);
 
@@ -295,12 +297,11 @@ function CoursesPage() {
               <Input placeholder="e.g. CS101" type="text" />
             </div>
 
-            
             <div>
               <Label className="text-sm font-medium text-gray-700 mb-1">
                 Credit hours
               </Label>
-              <Input placeholder="e.g. 3" type="number" min={1} max={6}/>
+              <Input placeholder="e.g. 3" type="number" min={1} max={6} />
             </div>
 
             {/* <div>
