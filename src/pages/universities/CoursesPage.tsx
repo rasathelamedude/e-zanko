@@ -20,7 +20,7 @@ import { Label } from "../../components/ui/label";
 //   ComboboxItem,
 //   ComboboxList,
 // } from "../../components/ui/combobox";
-import { useNavigate, useParams } from "react-router-dom";
+import { Navigate, useParams } from "react-router-dom";
 import { mockUniversities } from "./UniversitiesPage";
 import { mockFaculties } from "./FacultiesPage";
 import { mockDepartments } from "./DepartmentsPage";
@@ -110,7 +110,6 @@ function CoursesPage() {
   const [showPopup, setShowPopup] = useState(false);
   const [filter, setFilter] = useState("");
   const { universityId, facultyId, departmentId } = useParams();
-  const navigate = useNavigate();
 
   const university = mockUniversities.find(
     (u) => String(u.id) === universityId,
@@ -205,6 +204,14 @@ function CoursesPage() {
       ),
     },
   ];
+
+  if (
+    (user?.scope === "UNIVERSITY" && user?.scopeId !== Number(universityId)) ||
+    (user?.scope === "FACULTY" && user?.scopeId !== Number(facultyId)) ||
+    (user?.scope === "DEPARTMENT" && user?.scopeId !== Number(departmentId))
+  ) {
+    return <Navigate to="/forbidden" replace />;
+  }
 
   return (
     <div className="px-5">

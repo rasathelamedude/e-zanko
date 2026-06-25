@@ -10,7 +10,7 @@ import { Input } from "../../components/ui/input";
 import Modal from "../../components/common/Modal";
 import { useUserStore } from "../../store/userStore";
 import PageHeader from "../../components/common/PageHeader";
-import { useNavigate, useParams } from "react-router-dom";
+import { Navigate, useNavigate, useParams } from "react-router-dom";
 import { mockUniversities } from "./UniversitiesPage";
 import { Label } from "../../components/ui/label";
 
@@ -141,6 +141,10 @@ function FacultiesPage() {
       ),
     },
   ];
+
+  if (user?.scope === "UNIVERSITY" && user?.scopeId !== Number(universityId)) {
+    return <Navigate to="/forbidden" replace />;
+  }
 
   return (
     <div className="px-5">

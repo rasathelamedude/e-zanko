@@ -11,12 +11,14 @@ import UniversitiesPage from "./pages/universities/UniversitiesPage";
 import ReportsPage from "./pages/reports";
 import { Route, Routes } from "react-router-dom";
 import ProtectedRoutes from "./components/common/ProtectedRoute";
+import ForbiddenPage from "./pages/auth/ForbiddenPage";
 
 function App() {
   return (
     <Routes>
       <Route path="/login" element={<LoginPage />} />
       <Route path="/unauthorized" element={<UnauthorizedPage />} />
+      <Route path="/forbidden" element={<ForbiddenPage />} />
 
       {/* Routes under ProtectedRoutes require logged in users */}
       <Route element={<ProtectedRoutes />}>

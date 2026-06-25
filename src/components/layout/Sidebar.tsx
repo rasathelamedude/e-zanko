@@ -9,30 +9,30 @@ type NavItem = {
 
 type ManagementRoles = Exclude<UserRole, "STUDENT" | "LECTURER">;
 
-// Specific nav items for each role
-const NAV_ITEMS: Record<ManagementRoles, NavItem[]> = {
-  MINISTRY_ADMIN: [
-    { label: "Dashboard", to: "/" },
-    { label: "Universities", to: "/universities" },
-    { label: "Letters", to: "/letters" },
-    { label: "Reports", to: "/reports" },
-    { label: "Settings", to: "/settings" },
-  ],
-  MINISTRY_STAFF: [],
-  UNIVERSITY_ADMIN: [
-    { label: "Dashboard", to: "/" },
-    { label: "Faculties", to: "/universities/:universityId/faculties" },
-    { label: "Letters", to: "/letters" },
-    { label: "Reports", to: "/reports" },
-    { label: "Settings", to: "/settings" },
-  ],
-  UNIVERSITY_STAFF: [],
-  DEAN: [],
-  DEPARTMENT_HEAD: [],
-};
-
 const Sidebar = () => {
   const user = useUserStore((state) => state.user);
+
+  // Specific nav items for each role
+  const NAV_ITEMS: Record<ManagementRoles, NavItem[]> = {
+    MINISTRY_ADMIN: [
+      { label: "Dashboard", to: "/" },
+      { label: "Universities", to: "/universities" },
+      { label: "Letters", to: "/letters" },
+      { label: "Reports", to: "/reports" },
+      { label: "Settings", to: "/settings" },
+    ],
+    MINISTRY_STAFF: [],
+    UNIVERSITY_ADMIN: [
+      { label: "Dashboard", to: "/" },
+      { label: "Faculties", to: `/universities/${user?.scopeId}/faculties` },
+      { label: "Letters", to: "/letters" },
+      { label: "Reports", to: "/reports" },
+      { label: "Settings", to: "/settings" },
+    ],
+    UNIVERSITY_STAFF: [],
+    DEAN: [],
+    DEPARTMENT_HEAD: [],
+  };
 
   // Get nav items based on user role
   const navItems = user?.role ? NAV_ITEMS[user?.role as ManagementRoles] : [];
