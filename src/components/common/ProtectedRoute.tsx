@@ -1,31 +1,26 @@
-import React from "react";
-import { Navigate } from "react-router-dom";
-import type { UserScope } from "../../types/auth";
+import { Navigate, Outlet } from "react-router-dom";
+import type { UserRole } from "../../types/auth";
+import { useUserStore } from "../../store/userStore";
 
 interface ProtectedRoutesProps {
-  readonly children: React.ReactNode;
-  isAuthenticated: boolean;
-  userLevel: UserScope;
-  requiredLevel?: UserScope;
+  allowedRoles?: UserRole[];
 }
 
-const ProtectedRoutes = ({
-  children,
-  isAuthenticated,
-  userLevel,
-  requiredLevel,
-}: ProtectedRoutesProps) => {
+const ProtectedRoutes = ({ allowedRoles }: ProtectedRoutesProps) => {
+  const { user } = useUserStore();
+  const isAuthenticated = user !== null;
+
   // Check if the user is logged in
   if (!isAuthenticated) {
     return <Navigate to={"/login"} replace />;
   }
 
   // Check if the user has the required level to access the route
-  if (requiredLevel && userLevel !== requiredLevel) {
+  if (allowedRoles && !allowedRoles.includes(user.role)) {
     return <Navigate to={"/unauthorized"} replace />;
   }
 
-  return <>{children}</>;
+  return <Outlet />;
 };
 
 export default ProtectedRoutes;
