@@ -217,9 +217,9 @@ function LetterDetails({ letter }: LetterDetailsProps) {
                 onCancel={closePopup}
                 onConfirm={handleConfirm}
               >
-                <label className="text-sm font-medium text-gray-700">
+                <Label className="text-sm font-medium text-gray-700">
                   Forward to
-                </label>
+                </Label>
                 <select className="w-full border rounded-md p-2 mt-1">
                   <option>Dean's Office</option>
                   <option>Registrar</option>
@@ -245,6 +245,14 @@ function LetterDetails({ letter }: LetterDetailsProps) {
                     </Label>
                     <Input placeholder="e.g. Dr. Aram Mahmoud" />
                   </div>
+
+                  <Label className="text-sm font-medium text-gray-700">
+                    Raise to
+                  </Label>
+                  <select className="w-full border rounded-md p-2 mt-1">
+                    <option>Dean's Office</option>
+                    <option>Registrar</option>
+                  </select>
                   <p className="text-gray-500 font-semibold">Sign and Raise</p>
                 </div>
               </Popup>
