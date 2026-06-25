@@ -10,7 +10,7 @@ import { Input } from "../../components/ui/input";
 import Modal from "../../components/common/Modal";
 import PageHeader from "../../components/common/PageHeader";
 import { useUserStore } from "../../store/userStore";
-import { useNavigate, useParams } from "react-router-dom";
+import { Navigate, useNavigate, useParams } from "react-router-dom";
 import { mockFaculties } from "./FacultiesPage";
 import { mockUniversities } from "./UniversitiesPage";
 import { Label } from "../../components/ui/label";
@@ -143,6 +143,13 @@ function DepartmentsPage() {
       ),
     },
   ];
+
+  if (
+    (user?.scope === "UNIVERSITY" && user?.scopeId !== Number(universityId)) ||
+    (user?.scope === "FACULTY" && user?.scopeId !== Number(facultyId))
+  ) {
+    return <Navigate to="/forbidden" replace />;
+  }
 
   return (
     <div className="px-5">
