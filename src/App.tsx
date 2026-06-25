@@ -1,4 +1,5 @@
 import SettingsPage from "./pages/settings";
+import UnauthorizedPage from "./pages/auth/UnauthorizedPage";
 import AppLayout from "./layouts/AppLayout";
 import LoginPage from "./pages/auth/LoginPage";
 import DashboardPage from "./pages/dashboard"; // Automatically imports index.tsx
@@ -15,6 +16,7 @@ function App() {
   return (
     <Routes>
       <Route path="/login" element={<LoginPage />} />
+      <Route path="/unauthorized" element={<UnauthorizedPage />} />
 
       {/* Routes under ProtectedRoutes require logged in users */}
       <Route element={<ProtectedRoutes />}>
@@ -57,7 +59,7 @@ function App() {
             />
           </Route>
 
-          {/* Dedicated Routes Level 3 (MINSITRY_ADMIN & UNIVERSITY_ADMIN & Dean) */} 
+          {/* Dedicated Routes Level 3 (MINSITRY_ADMIN & UNIVERSITY_ADMIN & Dean) */}
           <Route
             element={
               <ProtectedRoutes
