@@ -8,6 +8,8 @@ export type UserRole =
   | "LECTURER"
   | "STUDENT";
 
+export type EZankoRoles = Omit<UserRole, "STUDENT" | "LECTURER">; 
+
 // The heierarchy
 export type UserScope = "MINISTRY" | "UNIVERSITY" | "FACULTY" | "DEPARTMENT";
 
