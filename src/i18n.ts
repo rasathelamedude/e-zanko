@@ -4,6 +4,16 @@ import en from "./locales/en/translation.json";
 import ar from "./locales/ar/translation.json";
 import ku from "./locales/ku/translation.json";
 
+const rtlLanguages = new Set(["ar", "ku"]);
+
+const updateDocumentDirection = (language: string) => {
+  const baseLanguage = language.split("-")[0].toLowerCase();
+  const direction = rtlLanguages.has(baseLanguage) ? "rtl" : "ltr";
+
+  document.documentElement.lang = baseLanguage;
+  document.documentElement.dir = direction;
+};
+
 i18n.use(initReactI18next).init({
   resources: {
     en: { translation: en },
@@ -16,5 +26,9 @@ i18n.use(initReactI18next).init({
   ns: ["translation"],
   defaultNS: "translation",
 });
+
+i18n.on("languageChanged", updateDocumentDirection);
+
+updateDocumentDirection(i18n.resolvedLanguage || i18n.language);
 
 export default i18n;

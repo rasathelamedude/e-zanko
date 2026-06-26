@@ -4,6 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
+    "i18n:extract": "node extract-i18n.cjs",
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
