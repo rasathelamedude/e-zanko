@@ -1,6 +1,4 @@
 import { useEffect, useState } from "react";
-import BarChart from "../../../components/common/BarChart";
-import DonutChart from "../../../components/common/DonutChart";
 import RecentLetters from "../../../components/common/RecentLetters";
 import type { Letter } from "../../../types/letter";
 import { useUserStore } from "../../../store/userStore";
@@ -31,21 +29,6 @@ const recentLetters: Letter[] = [
     message: "",
     letterType: "",
   },
-];
-
-const lettersByStatus = [
-  { label: "Pending", value: 18, color: "#d97706" },
-  { label: "Approved", value: 46, color: "#228b22" },
-  { label: "Rejected", value: 8, color: "#dc2626" },
-];
-
-const studentsPerFaculty = [
-  { label: "Engineering", value: 500 },
-  { label: "Arts", value: 300 },
-  { label: "Science", value: 200 },
-  { label: "Business", value: 150 },
-  { label: "Medicine", value: 100 },
-  { label: "Law", value: 50 },
 ];
 
 const departmentActivity = [
