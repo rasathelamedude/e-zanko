@@ -1,4 +1,5 @@
 import type { FallbackProps } from "react-error-boundary";
+import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { IoWarningOutline } from "react-icons/io5";
 
@@ -12,6 +13,7 @@ const ErrorBoundaryFallback = ({
   error,
   resetErrorBoundary,
 }: FallbackProps) => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
 
   // When user clicks return to dashboard
@@ -29,16 +31,16 @@ const ErrorBoundaryFallback = ({
           <IoWarningOutline className="w-8 h-8" />
         </div>
         <h1 className="text-2xl font-bold text-slate-900 mb-2">
-          Something went wrong
+          {t("Something went wrong")}
         </h1>
         <p className="text-slate-500 mb-6 text-sm">
-          {error?.message || "An unexpected system error occurred."}
+          {error?.message || t("An unexpected system error occurred.")}
         </p>
         <button
           onClick={handleReset}
           className="bg-[#14746f] hover:bg-[#0f766e] text-white font-medium py-2 px-6 rounded-md transition-colors w-full"
         >
-          Return to Dashboard
+          {t("Return to Dashboard")}
         </button>
       </div>
     </div>

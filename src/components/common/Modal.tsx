@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { Button } from "../ui/button";
 
 interface ModalProps {
@@ -8,7 +9,15 @@ interface ModalProps {
   children: React.ReactNode;
 }
 
-function Modal({ title, confirmLabel = "Confirm", onConfirm, onClose, children }: ModalProps) {
+function Modal({
+  title,
+  confirmLabel,
+  onConfirm,
+  onClose,
+  children,
+}: ModalProps) {
+  const { t } = useTranslation();
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
       <div className="bg-white p-4 rounded-lg shadow-md w-full max-w-md mx-4">
@@ -19,10 +28,10 @@ function Modal({ title, confirmLabel = "Confirm", onConfirm, onClose, children }
             onClick={onClose}
             className="bg-white border-teal-700 text-gray-800 hover:bg-white"
           >
-            Cancel
+            {t("Cancel")}
           </Button>
           <Button onClick={onConfirm} className="bg-teal-700 text-white">
-            {confirmLabel}
+            {confirmLabel ?? t("Confirm")}
           </Button>
         </div>
       </div>

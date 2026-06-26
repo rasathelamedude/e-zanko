@@ -43,5 +43,13 @@
   "You don't have permission to view this page. Your current role doesn't include the privileges needed for this resource.": "You don't have permission to view this page. Your current role doesn't include the privileges needed for this resource.",
   "letter this week": "letter this week",
   "letters this week": "letters this week",
-  "No records found.": "No records found."
+  "No records found.": "No records found.",
+  "total": "total",
+  "An unexpected system error occurred.": "An unexpected system error occurred.",
+  "Return to Dashboard": "Return to Dashboard",
+  "Something went wrong": "Something went wrong",
+  "Cancel": "Cancel",
+  "Confirm": "Confirm",
+  "Recent letters": "Recent letters",
+  "View inbox": "View inbox"
 }
