@@ -7,6 +7,7 @@ import { useUserStore } from "../../store/userStore";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import i18n from "../../i18n";
+import ComposeLetter from "../common/ComposeLetter";
 
 type Language = "en" | "ku" | "ar";
 
@@ -46,6 +47,8 @@ export default function Header() {
   );
 
   const { t } = useTranslation();
+  const [language, setLanguage] = useState<Language>("EN");
+  const [composePopup, setComposePopup] = useState(false);
   const { setUser } = useUserStore();
   const navigate = useNavigate();
 
@@ -109,6 +112,7 @@ export default function Header() {
 
         <div className="flex shrink-0 items-center gap-2.5 max-md:w-full max-md:flex-wrap">
           <button
+            onClick={() => setComposePopup(true)}
             type="button"
             className="inline-flex h-10.5 items-center gap-2 rounded-xl border border-[#0f7576] bg-[#0f7576] px-3.25 font-bold text-white shadow-[0_8px_18px_rgba(15,117,118,0.2)] transition hover:bg-[#0b5f60]"
           >
@@ -201,6 +205,10 @@ export default function Header() {
             )}
           </div>
         </div>
+
+        {composePopup && (
+          <ComposeLetter onClose={() => setComposePopup(false)} />
+        )}
       </div>
     </header>
   );
