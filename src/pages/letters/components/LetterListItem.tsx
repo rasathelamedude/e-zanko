@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { Paperclip } from "lucide-react";
 import { Badge } from "../../../components/ui/badge";
 import type { Letter } from "../../../types/letter";
@@ -20,6 +21,8 @@ interface LetterListItemProps {
 }
 
 function LetterListItem({ letter, onClick }: LetterListItemProps) {
+  const { t } = useTranslation();
+
   return (
     <div
       onClick={() => onClick?.(letter)}
@@ -27,7 +30,7 @@ function LetterListItem({ letter, onClick }: LetterListItemProps) {
     >
       <div className="flex items-center gap-3">
         <Badge className={statusStyles[letter.status]}>
-          {statusLabels[letter.status]}
+          {t(statusLabels[letter.status])}
         </Badge>
         <div>
           <p className="text-sm font-semibold text-gray-800">{letter.title}</p>

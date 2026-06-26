@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Badge } from "../../../components/ui/badge";
 import { Button } from "../../../components/ui/button";
 import type { Letter } from "../../../types/letter";
@@ -26,6 +27,7 @@ interface LetterDetailsProps {
 }
 
 function LetterDetails({ letter }: LetterDetailsProps) {
+  const { t } = useTranslation();
   const [activeAction, setActiveAction] = useState<ActionType>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -42,6 +44,7 @@ function LetterDetails({ letter }: LetterDetailsProps) {
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+
   function closePopup() {
     setActiveAction(null);
   }
@@ -50,13 +53,14 @@ function LetterDetails({ letter }: LetterDetailsProps) {
     // action logic here
     closePopup();
   }
+
   return (
     <div className="border border-gray-200 rounded-xl p-6 bg-white h-full">
       {/* badge, date, actions */}
       <div className="flex items-start justify-between mb-6">
         <div className="flex items-center gap-2">
           <Badge className={statusStyles[letter.status]}>
-            {statusLabels[letter.status]}
+            {t(statusLabels[letter.status])}
           </Badge>
           <span className="text-xs text-gray-400">{letter.date}</span>
         </div>
@@ -67,12 +71,12 @@ function LetterDetails({ letter }: LetterDetailsProps) {
               onClick={() => setDropdownOpen((prev) => !prev)}
               className="bg-teal-700 text-white hover:bg-teal-800 flex items-center gap-1"
             >
-              Actions <ChevronDown className="w-4 h-4" />
+              {t("Actions")} <ChevronDown className="w-4 h-4" />
             </Button>
 
             {/* dropdown buttons */}
             {dropdownOpen && (
-              <div className="absolute right-0 mt-1 w-48 bg-white border border-gray-200 rounded-lg shadow-md z-10 overflow-hidden">
+              <div className="absolute end-0 mt-1 w-48 bg-white border border-gray-200 rounded-lg shadow-md z-10 overflow-hidden">
                 <button
                   onClick={() => {
                     setActiveAction("approve");
@@ -80,7 +84,7 @@ function LetterDetails({ letter }: LetterDetailsProps) {
                   }}
                   className="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50"
                 >
-                  <Check className="w-4 h-4 text-teal-700" /> Approve
+                  <Check className="w-4 h-4 text-teal-700" /> {t("Approve")}
                 </button>
                 <button
                   onClick={() => {
@@ -89,7 +93,7 @@ function LetterDetails({ letter }: LetterDetailsProps) {
                   }}
                   className="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50"
                 >
-                  <X className="w-4 h-4 text-red-500" /> Reject
+                  <X className="w-4 h-4 text-red-500" /> {t("Reject")}
                 </button>
                 <button
                   onClick={() => {
@@ -98,7 +102,7 @@ function LetterDetails({ letter }: LetterDetailsProps) {
                   }}
                   className="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50"
                 >
-                  <Forward className="w-4 h-4 text-gray-500" /> Forward
+                  <Forward className="w-4 h-4 text-gray-500" /> {t("Forward")}
                 </button>
                 <button
                   onClick={() => {
@@ -107,7 +111,8 @@ function LetterDetails({ letter }: LetterDetailsProps) {
                   }}
                   className="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50"
                 >
-                  <MoveUp className="w-4 h-4 text-gray-500" /> Sign & Raise
+                  <MoveUp className="w-4 h-4 text-gray-500" />{" "}
+                  {t("Sign & Raise")}
                 </button>
               </div>
             )}
@@ -120,7 +125,7 @@ function LetterDetails({ letter }: LetterDetailsProps) {
 
       {/* sender */}
       <div className="pb-4 mb-4 border-b border-gray-100">
-        <p className="text-xs text-gray-400 mb-1">Sender</p>
+        <p className="text-xs text-gray-400 mb-1">{t("Sender")}</p>
         <p className="text-sm font-semibold text-gray-800">
           {letter.university}
         </p>
@@ -128,7 +133,7 @@ function LetterDetails({ letter }: LetterDetailsProps) {
 
       {/* message */}
       <div>
-        <p className="text-xs text-gray-400 mb-2">Message</p>
+        <p className="text-xs text-gray-400 mb-2">{t("Message")}</p>
         <p className="text-sm text-gray-700 leading-relaxed">
           {letter.message}
         </p>
@@ -144,65 +149,68 @@ function LetterDetails({ letter }: LetterDetailsProps) {
             <div onClick={(e) => e.stopPropagation()}>
               <Popup
                 icon={<Check className="text-teal-700" />}
-                title="Approve Letter"
+                title={t("Approve Letter")}
                 subtitle={letter.title}
-                confirmLabel="Sign and Approve"
+                confirmLabel={t("Sign and Approve")}
                 onCancel={closePopup}
                 onConfirm={handleConfirm}
               >
                 <p className="text-gray-600 text-sm my-3">
-                  You are signing and approving{" "}
+                  {t("You are signing and approving")}{" "}
                   <span className="font-bold text-black">{letter.title}</span>{" "}
-                  from{" "}
+                  {t("from")}{" "}
                   <span className="font-bold text-black">
                     {letter.university}
                   </span>
                 </p>
-                <p className="flex  gap-3 bg-teal-50 p-3 rounded-lg">
+                <p className="flex gap-3 bg-teal-50 p-3 rounded-lg">
                   <Zap className="text-teal-700" />
-                  On approval: Faculty archived
+                  {t("On approval: Faculty archived")}
                 </p>
 
                 <Label className="text-sm font-medium text-gray-700 mt-3">
-                  Enter your full name to sign
+                  {t("Enter your full name to sign")}
                 </Label>
-                <Input placeholder="Your full name" type="text" />
+                <Input placeholder={t("Your full name")} type="text" />
 
                 <p className="text-sm text-gray-500 mt-5">
-                  Your typed name becomes the official signature on this letter.
+                  {t(
+                    "Your typed name becomes the official signature on this letter.",
+                  )}
                 </p>
               </Popup>
             </div>
           )}
+
           {activeAction === "reject" && (
             <div onClick={(e) => e.stopPropagation()}>
               <Popup
                 icon={<X className="text-red-600" />}
-                title="Reject Letter"
+                title={t("Reject Letter")}
                 subtitle={letter.title}
-                confirmLabel="Confirm rejection"
+                confirmLabel={t("Confirm rejection")}
                 onCancel={closePopup}
                 onConfirm={handleConfirm}
               >
                 <p className="text-gray-600 text-sm my-3">
-                  You are rejecting{" "}
+                  {t("You are rejecting")}{" "}
                   <span className="font-bold text-black">{letter.title}</span>{" "}
-                  from{" "}
+                  {t("from")}{" "}
                   <span className="font-bold text-black">
                     {letter.university}
                   </span>
                 </p>
                 <Label className="text-sm font-medium text-gray-700">
-                  Rejection reason (optional)
+                  {t("Rejection reason (optional)")}
                 </Label>
                 <textarea
                   className="w-full border rounded-md p-2 mt-1"
                   rows={2}
                 />
                 <Label className="text-sm font-medium text-gray-700">
-                  Enter your full name to confirm
+                  {t("Enter your full name to confirm")}
                 </Label>
-                <Input placeholder="Your full name" type="text" />
+                <Input placeholder={t("Your full name")} type="text" />
               </Popup>
             </div>
           )}
@@ -211,18 +219,20 @@ function LetterDetails({ letter }: LetterDetailsProps) {
             <div onClick={(e) => e.stopPropagation()}>
               <Popup
                 icon={<Forward className="text-amber-600" />}
-                title="Forward Letter"
-                subtitle="Forward this letter to a colleague or a higher office - no signature added"
-                confirmLabel="Forward"
+                title={t("Forward Letter")}
+                subtitle={t(
+                  "Forward this letter to a colleague or a higher office - no signature added",
+                )}
+                confirmLabel={t("Forward")}
                 onCancel={closePopup}
                 onConfirm={handleConfirm}
               >
                 <Label className="text-sm font-medium text-gray-700">
-                  Forward to
+                  {t("Forward to")}
                 </Label>
                 <select className="w-full border rounded-md p-2 mt-1">
-                  <option>Dean's Office</option>
-                  <option>Registrar</option>
+                  <option>{t("Dean's Office")}</option>
+                  <option>{t("Registrar")}</option>
                 </select>
               </Popup>
             </div>
@@ -232,28 +242,32 @@ function LetterDetails({ letter }: LetterDetailsProps) {
             <div onClick={(e) => e.stopPropagation()}>
               <Popup
                 icon={<MoveUp className="text-indigo-700" />}
-                title="Sign & Raise"
-                subtitle="Sign this letter and raise it to a higher office for further actions"
-                confirmLabel="Sign and Raise"
+                title={t("Sign & Raise")}
+                subtitle={t(
+                  "Sign this letter and raise it to a higher office for further actions",
+                )}
+                confirmLabel={t("Sign and Raise")}
                 onCancel={closePopup}
                 onConfirm={handleConfirm}
               >
                 <div className="flex flex-col gap-3">
                   <div>
                     <Label className="text-sm font-medium text-gray-700">
-                      Enter your full name to sign
+                      {t("Enter your full name to sign")}
                     </Label>
-                    <Input placeholder="e.g. Dr. Aram Mahmoud" />
+                    <Input placeholder={t("e.g. Dr. Aram Mahmoud")} />
                   </div>
 
                   <Label className="text-sm font-medium text-gray-700">
-                    Raise to
+                    {t("Raise to")}
                   </Label>
                   <select className="w-full border rounded-md p-2 mt-1">
-                    <option>Dean's Office</option>
-                    <option>Registrar</option>
+                    <option>{t("Dean's Office")}</option>
+                    <option>{t("Registrar")}</option>
                   </select>
-                  <p className="text-gray-500 font-semibold">Sign and Raise</p>
+                  <p className="text-gray-500 font-semibold">
+                    {t("Sign and Raise")}
+                  </p>
                 </div>
               </Popup>
             </div>

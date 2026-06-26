@@ -1,7 +1,8 @@
+import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Badge } from "../../../components/ui/badge";
 import type { Letter } from "../../../types/letter";
 import { getLetters, mockLetters } from "../../../api/letters";
-import { useEffect, useState } from "react";
 
 const statusStyles: Record<string, string> = {
   pending: "bg-amber-100 text-amber-700 hover:bg-amber-100",
@@ -21,7 +22,9 @@ interface LetterCardProps {
 }
 
 function LetterCard({ selectedLetterId, onSelect }: LetterCardProps) {
+  const { t } = useTranslation();
   const [letters, setLetters] = useState<Letter[]>([]);
+
   useEffect(() => {
     const fetchData = async () => {
       const data = await getLetters();
@@ -30,22 +33,23 @@ function LetterCard({ selectedLetterId, onSelect }: LetterCardProps) {
 
     fetchData();
   }, []);
+
   return (
     <div className="border border-gray-200 rounded-xl overflow-hidden bg-white h-full">
       <div className="px-4 py-3 border-b border-gray-100">
         <h2 className="font-semibold text-sm">
-          Inbox
-          <span className="text-gray-400 ml-1">{letters.length}</span>
+          {t("Inbox")}
+          <span className="text-gray-400 ms-1">{letters.length}</span>
         </h2>
       </div>
       {letters.map((letter, index) => (
         <div
           key={letter.id}
           onClick={() => onSelect(letter)}
-          className={`px-4 py-4 cursor-pointer transition-colors border-l-4 ${
+          className={`px-4 py-4 cursor-pointer transition-colors border-s-4 ${
             selectedLetterId === letter.id
-              ? "border-l-teal-700 bg-teal-50/50"
-              : "border-l-transparent hover:bg-gray-50"
+              ? "border-s-teal-700 bg-teal-50/50"
+              : "border-s-transparent hover:bg-gray-50"
           } ${index !== mockLetters.length - 1 ? "border-b border-gray-100" : ""}`}
         >
           <div className="flex items-center justify-between mb-1">
@@ -53,7 +57,7 @@ function LetterCard({ selectedLetterId, onSelect }: LetterCardProps) {
               {letter.university}
             </p>
             <Badge className={statusStyles[letter.status]}>
-              {statusLabels[letter.status]}
+              {t(statusLabels[letter.status])}
             </Badge>
           </div>
           <p className="text-sm font-medium text-gray-700">{letter.title}</p>
