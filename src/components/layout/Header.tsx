@@ -47,7 +47,7 @@ export default function Header() {
   );
 
   const { t } = useTranslation();
-  const [language, setLanguage] = useState<Language>("EN");
+
   const [composePopup, setComposePopup] = useState(false);
   const { setUser } = useUserStore();
   const navigate = useNavigate();
