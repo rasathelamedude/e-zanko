@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import type { LetterStatus } from "../../types/letter";
 
 interface Props {
@@ -16,12 +17,16 @@ const STATUS_LABEL: Record<LetterStatus, string> = {
   rejected: "Rejected",
 };
 
-const StatusBadge = ({ status }: Props) => (
-  <span
-    className={`px-3 py-1 text-xs font-medium rounded-md whitespace-nowrap ${STATUS_STYLES[status]}`}
-  >
-    {STATUS_LABEL[status]}
-  </span>
-);
+const StatusBadge = ({ status }: Props) => {
+  const { t } = useTranslation();
+
+  return (
+    <span
+      className={`px-3 py-1 text-xs font-medium rounded-md whitespace-nowrap ${STATUS_STYLES[status]}`}
+    >
+      {t(STATUS_LABEL[status])}
+    </span>
+  );
+};
 
 export default StatusBadge;

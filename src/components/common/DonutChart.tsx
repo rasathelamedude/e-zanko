@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { Cell, Pie, PieChart, ResponsiveContainer } from "recharts";
 
 interface DonutSegment {
@@ -12,6 +13,7 @@ interface Props {
 }
 
 const DonutChartCard = ({ title, segments }: Props) => {
+  const { t } = useTranslation();
   const total = segments.reduce((sum, s) => sum + s.value, 0);
 
   return (
@@ -39,16 +41,15 @@ const DonutChartCard = ({ title, segments }: Props) => {
             </PieChart>
           </ResponsiveContainer>
 
-          {/* Recharts has no built-in centered label, so it's overlaid on top of the chart */}
           <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
             <span className="text-xl font-bold text-slate-800 leading-none">
               {total}
             </span>
-            <span className="text-xs text-slate-500 mt-1">total</span>
+            <span className="text-xs text-slate-500 mt-1">{t("total")}</span>
           </div>
         </div>
 
-        <div className="flex flex-col gap-4 ml-6 w-full">
+        <div className="flex flex-col gap-4 ms-6 w-full">
           {segments.map((s) => (
             <div
               key={s.label}

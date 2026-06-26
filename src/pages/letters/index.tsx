@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import PageHeader from "../../components/common/PageHeader";
 import { useUserStore } from "../../store/userStore";
 import InboxLetters from "./components/InboxLetters";
@@ -7,23 +8,24 @@ import ArchivedLetters from "./components/ArchivedLetters";
 
 type Tab = "inbox" | "outbox" | "archived";
 
-const tabs: { label: string; value: Tab }[] = [
-  { label: "Inbox", value: "inbox" },
-  { label: "Outbox", value: "outbox" },
-  { label: "Archived", value: "archived" },
-];
-
 const LettersPage = () => {
+  const { t } = useTranslation();
   const user = useUserStore((state) => state.user);
   const [activeTab, setActiveTab] = useState<"inbox" | "outbox" | "archived">(
     "inbox",
   );
 
+  const tabs: { label: string; value: Tab }[] = [
+    { label: t("Inbox"), value: "inbox" },
+    { label: t("Outbox"), value: "outbox" },
+    { label: t("Archived"), value: "archived" },
+  ];
+
   return (
     <div>
       <PageHeader
-        title="Ministry of higher educations"
-        locationTitle="Letters"
+        title={t("Ministry of higher educations")}
+        locationTitle={t("Letters")}
         role={user?.role || ""}
         year="2023-2024"
       />

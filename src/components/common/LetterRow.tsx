@@ -12,7 +12,7 @@ const LetterRow = ({ status, title, university, date }: Letter) => (
         </p>
       </div>
     </div>
-    <span className="text-slate-300 group-hover:text-teal-700 transition-colors">
+    <span className="text-slate-300 group-hover:text-teal-700 transition-colors rtl:rotate-180">
       &rarr;
     </span>
   </div>

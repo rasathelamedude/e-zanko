@@ -1,86 +1,125 @@
 const fs = require("fs");
 const path = require("path");
 
-const root = path.join(__dirname, "src");
-const outDir = path.join(root, "locales", "en");
-const exts = [".tsx", ".ts", ".jsx", ".js", ".html"];
+const projectRoot = __dirname;
+const sourceRoot = path.join(projectRoot, "src");
 
-function walk(dir, files = []) {
-  if (!fs.existsSync(dir)) return files;
-  const entries = fs.readdirSync(dir, { withFileTypes: true });
-  for (const e of entries) {
-    const res = path.join(dir, e.name);
-    if (e.isDirectory()) walk(res, files);
-    else if (exts.includes(path.extname(res))) files.push(res);
+const localeFiles = {
+  en: path.join(sourceRoot, "locales", "en", "translation.json"),
+  ar: path.join(sourceRoot, "locales", "ar", "translation.json"),
+  ku: path.join(sourceRoot, "locales", "ku", "translation.json"),
+};
+
+const codeExtensions = new Set([".ts", ".tsx", ".js", ".jsx"]);
+
+function walkCodeFiles(directory, files = []) {
+  if (!fs.existsSync(directory)) return files;
+
+  const entries = fs.readdirSync(directory, { withFileTypes: true });
+
+  for (const entry of entries) {
+    const fullPath = path.join(directory, entry.name);
+
+    if (entry.isDirectory()) {
+      if (["locales", "node_modules", "dist"].includes(entry.name)) continue;
+
+      walkCodeFiles(fullPath, files);
+      continue;
+    }
+
+    if (codeExtensions.has(path.extname(entry.name))) {
+      files.push(fullPath);
+    }
   }
+
   return files;
 }
 
-function isLikelyUIString(str) {
-  if (!str) return false;
-  const s = str.trim();
-  if (s.length < 2) return false;
-  if (s.length > 200) return false;
-  if (/[<>{}=;`$/\\]/.test(s)) return false;
-  if (/^https?:\/\//.test(s)) return false;
-  if (/^[0-9\s:,-]+$/.test(s)) return false;
-  if (/^[a-z0-9-_]+$/i.test(s)) return false;
-  return true;
+function extractTranslationKeys(content) {
+  const keys = new Set();
+
+  // Matches static translations:
+  // t("Logout"), t('Logout'), t(`Logout`)
+  // Does not extract dynamic values such as t(`Hello ${name}`)
+  const translationPattern = /\bt\s*\(\s*(["'`])((?:\\.|[\s\S])*?)\1/g;
+
+  let match;
+
+  while ((match = translationPattern.exec(content))) {
+    const quote = match[1];
+    const rawKey = match[2];
+
+    if (quote === "`" && rawKey.includes("${")) continue;
+
+    const key = rawKey.trim().replace(/\\(["'`\\])/g, "$1");
+
+    if (key) {
+      keys.add(key);
+    }
+  }
+
+  return keys;
 }
 
-function extractFromContent(content) {
-  const found = new Set();
-
-  const tagTextRegex = />\s*([^<>{}][^<>{}]*)\s*</g;
-  let m;
-  while ((m = tagTextRegex.exec(content))) {
-    const s = m[1].trim();
-    if (isLikelyUIString(s)) found.add(s);
+function readJson(filePath) {
+  if (!fs.existsSync(filePath)) {
+    throw new Error(`Missing locale file: ${filePath}`);
   }
 
-  const attrRegex =
-    /(?:placeholder|alt|title|aria-label|aria-labelledby|aria-describedby|label|value)=['`"]([^'"`]{2,200})['`"]/gi;
-  while ((m = attrRegex.exec(content))) {
-    const s = m[1].trim();
-    if (isLikelyUIString(s)) found.add(s);
+  const content = fs.readFileSync(filePath, "utf8");
+  const parsed = JSON.parse(content);
+
+  if (typeof parsed !== "object" || Array.isArray(parsed) || parsed === null) {
+    throw new Error(`Locale file must contain a JSON object: ${filePath}`);
   }
 
-  const strLitRegex =
-    /(?:const|let|var|export)\s+[A-Za-z0-9_$]+\s*[:=][\s\S]*?['`"]([^'"`]{2,200})['`"]/g;
-  while ((m = strLitRegex.exec(content))) {
-    const s = m[1].trim();
-    if (isLikelyUIString(s)) found.add(s);
-  }
+  return parsed;
+}
 
-  return Array.from(found);
+function writeJson(filePath, data) {
+  fs.writeFileSync(filePath, `${JSON.stringify(data, null, 2)}\n`, "utf8");
 }
 
 function main() {
-  const files = walk(root);
-  const all = new Set();
-  for (const f of files) {
-    const content = fs.readFileSync(f, "utf8");
-    const items = extractFromContent(content);
-    for (const it of items) all.add(it);
+  const sourceFiles = walkCodeFiles(sourceRoot);
+  const allKeys = new Set();
+
+  for (const filePath of sourceFiles) {
+    const content = fs.readFileSync(filePath, "utf8");
+
+    for (const key of extractTranslationKeys(content)) {
+      allKeys.add(key);
+    }
   }
 
-  const indexHtml = path.join(__dirname, "index.html");
-  if (fs.existsSync(indexHtml)) {
-    const content = fs.readFileSync(indexHtml, "utf8");
-    const items = extractFromContent(content);
-    for (const it of items) all.add(it);
+  const keys = [...allKeys].sort((a, b) => a.localeCompare(b));
+
+  if (keys.length === 0) {
+    console.log("No static t() keys found.");
+    return;
   }
 
-  const arr = Array.from(all).sort((a, b) => a.localeCompare(b));
-  if (!fs.existsSync(outDir)) fs.mkdirSync(outDir, { recursive: true });
+  console.log(`Found ${keys.length} translation key(s).`);
 
-  const outObj = {};
-  for (const s of arr) outObj[s] = s;
+  for (const [language, filePath] of Object.entries(localeFiles)) {
+    const translations = readJson(filePath);
+    let addedCount = 0;
 
-  const outPath = path.join(outDir, "translation.json");
-  fs.writeFileSync(outPath, JSON.stringify(outObj, null, 2), "utf8");
+    for (const key of keys) {
+      if (Object.prototype.hasOwnProperty.call(translations, key)) {
+        continue;
+      }
 
-  console.log(`Found ${arr.length} candidate strings. Written to ${outPath}`);
+      translations[key] = language === "en" ? key : "";
+      addedCount += 1;
+    }
+
+    if (addedCount > 0) {
+      writeJson(filePath, translations);
+    }
+
+    console.log(`${language}: added ${addedCount} key(s).`);
+  }
 }
 
 main();

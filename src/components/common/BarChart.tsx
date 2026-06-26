@@ -17,7 +17,9 @@ const BarChartCard = ({ title, subtitle, data }: Props) => {
       <h3 className="font-bold text-slate-800 mb-8">
         {title}{" "}
         {subtitle && (
-          <span className="text-slate-400 font-normal">&middot; {subtitle}</span>
+          <span className="text-slate-400 font-normal">
+            &middot; {subtitle}
+          </span>
         )}
       </h3>
 

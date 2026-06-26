@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import {
   DataTable,
   type DataTableColumn,
@@ -108,6 +109,7 @@ const statusLabels: Record<UniversityStatus, string> = {
 };
 
 function UniversitiesPage() {
+  const { t } = useTranslation();
   const [showPopup, setShowPopup] = useState(false);
   const navigate = useNavigate();
 
@@ -123,7 +125,7 @@ function UniversitiesPage() {
   const columns: DataTableColumn<University>[] = [
     {
       key: "name",
-      header: "Name",
+      header: t("Name"),
       render: (u) => (
         <span
           onClick={() => navigate(`/universities/${u.id}/faculties`)}
@@ -135,34 +137,34 @@ function UniversitiesPage() {
     },
     {
       key: "president",
-      header: "President",
+      header: t("President"),
       render: (u) => u.president,
     },
     {
       key: "status",
-      header: "Status",
+      header: t("Status"),
       render: (u: University) => (
         <Badge className={statusStyles[u.status]}>
-          {statusLabels[u.status]}
+          {t(statusLabels[u.status])}
         </Badge>
       ),
     },
     {
       key: "actions",
-      header: "Actions",
+      header: t("Actions"),
       align: "right",
       render: (u) => (
         <div className="flex justify-end gap-2">
           <button
             onClick={() => console.log("edit", u.id)}
-            aria-label={`Edit ${u.name}`}
+            aria-label={`${t("Edit")} ${u.name}`}
             className="rounded-md p-2 text-teal-600 hover:bg-teal-50"
           >
             <Pencil className="h-4 w-4 cursor-pointer" />
           </button>
           <button
             onClick={() => console.log("delete", u.id)}
-            aria-label={`Delete ${u.name}`}
+            aria-label={`${t("Delete")} ${u.name}`}
             className="rounded-md p-2 text-red-600 hover:bg-red-50"
           >
             <Trash2 className="h-4 w-4 cursor-pointer" />
@@ -177,30 +179,35 @@ function UniversitiesPage() {
       <div className="flex items-center justify-between">
         <div>
           <p className="text-teal-600 font-bold text-sm py-1">
-            Ministry of Higher Education
+            {t("Ministry of Higher Education")}
           </p>
-          <h1 className="font-extrabold text-2xl py-1">Universities</h1>
+          <h1 className="font-extrabold text-2xl py-1">{t("Universities")}</h1>
           <p className="text-gray-500 py-1">
-            System Administrator · Academic Year 2025–2026
+            {t("System Administrator")} · {t("Academic Year")} 2025–2026
           </p>
         </div>
         <Button
           onClick={handleModal}
           className="bg-white border-teal-700 text-teal-700 hover:bg-teal-50"
         >
-          + Add University
+          + {t("Add University")}
         </Button>
       </div>
+
       <div className="flex justify-between my-3">
         <div className="flex gap-5">
-          <h1 className="font-bold">Universities</h1>
-          <p className="text-gray-500">{mockUniversities.length} records</p>
+          <h1 className="font-bold">{t("Universities")}</h1>
+          <p className="text-gray-500">
+            {mockUniversities.length} {t("records")}
+          </p>
         </div>
         <div>
-          <Input placeholder="Filter..." />
+          <Input placeholder={t("Filter...")} />
         </div>
       </div>
+
       <hr />
+
       <DataTable
         columns={columns}
         data={mockUniversities}
@@ -209,36 +216,39 @@ function UniversitiesPage() {
 
       {showPopup && (
         <Modal
-          title="Add University"
-          confirmLabel="Add University"
+          title={t("Add University")}
+          confirmLabel={t("Add University")}
           onClose={() => setShowPopup(false)}
           onConfirm={handleAddUniversity}
         >
           <div className="flex flex-col gap-3">
             <div>
               <Label className="text-sm font-medium text-gray-700 mb-1">
-                Name
+                {t("Name")}
               </Label>
-              <Input placeholder="e.g. University of Sulaimani" type="text" />
+              <Input
+                placeholder={t("e.g. University of Sulaimani")}
+                type="text"
+              />
             </div>
 
             <div>
               <Label className="text-sm font-medium text-gray-700 mb-1">
-                Location
+                {t("Location")}
               </Label>
-              <Input placeholder="e.g. Sulaimani" type="text" />
+              <Input placeholder={t("e.g. Sulaimani")} type="text" />
             </div>
 
             <div>
               <Label className="text-sm font-medium text-gray-700 mb-1">
-                Established Year
+                {t("Established Year")}
               </Label>
               <Input type="date" />
             </div>
 
             <div className="flex items-center justify-between py-1">
               <Label className="text-sm font-medium text-gray-700">
-                Active
+                {t("Active")}
               </Label>
               <input
                 type="checkbox"

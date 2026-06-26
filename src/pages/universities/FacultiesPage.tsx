@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import {
   DataTable,
   type DataTableColumn,
@@ -90,6 +91,7 @@ const statusLabels: Record<FacultyStatus, string> = {
 };
 
 function FacultiesPage() {
+  const { t } = useTranslation();
   const user = useUserStore((state) => state.user);
   const [showPopup, setShowPopup] = useState(false);
   const { universityId } = useParams();
@@ -111,7 +113,7 @@ function FacultiesPage() {
   const columns: DataTableColumn<Faculty>[] = [
     {
       key: "name",
-      header: "Name",
+      header: t("Name"),
       render: (u) => (
         <span
           onClick={() =>
@@ -127,16 +129,16 @@ function FacultiesPage() {
     },
     {
       key: "dean",
-      header: "Dean",
+      header: t("Dean"),
       render: (u) => u.dean,
     },
     {
       key: "status",
-      header: "Status",
+      header: t("Status"),
       align: "right",
       render: (u) => (
         <Badge className={statusStyles[u.status]}>
-          {statusLabels[u.status]}
+          {t(statusLabels[u.status])}
         </Badge>
       ),
     },
@@ -153,34 +155,38 @@ function FacultiesPage() {
           onClick={() => navigate("/universities")}
           className="cursor-pointer hover:text-teal-700"
         >
-          Universities
+          {t("Universities")}
         </span>
         <span>/</span>
         <span className="text-gray-900 font-medium">
-          {university?.name ?? "Faculties"}
+          {university?.name ?? t("Faculties")}
         </span>
       </nav>
+
       <PageHeader
-        title="Ministry of Higher Education"
-        locationTitle="Faculties"
+        title={t("Ministry of Higher Education")}
+        locationTitle={t("Faculties")}
         role={user?.role || ""}
         year="2023-2024"
       />
 
       <div className="flex justify-between my-3">
         <div className="flex gap-5">
-          <h1 className="font-bold">Faculties</h1>
-          <p className="text-gray-500">{mockFaculties.length} records</p>
+          <h1 className="font-bold">{t("Faculties")}</h1>
+          <p className="text-gray-500">
+            {mockFaculties.length} {t("records")}
+          </p>
         </div>
         <div>
           <Button
             onClick={handleModal}
             className="bg-white border-teal-700 text-teal-700 hover:bg-teal-50"
           >
-            + Add Faculty
+            + {t("Add Faculty")}
           </Button>
         </div>
       </div>
+
       <hr />
 
       <DataTable
@@ -191,17 +197,20 @@ function FacultiesPage() {
 
       {showPopup && (
         <Modal
-          title="Add Faculty"
-          confirmLabel="Add Faculty"
+          title={t("Add Faculty")}
+          confirmLabel={t("Add Faculty")}
           onClose={() => setShowPopup(false)}
           onConfirm={handleAddFaculty}
         >
           <div className="flex flex-col gap-3">
             <div>
               <Label className="text-sm font-medium text-gray-700 mb-1">
-                Name
+                {t("Name")}
               </Label>
-              <Input placeholder="e.g. Faculty of Engineering" type="text" />
+              <Input
+                placeholder={t("e.g. Faculty of Engineering")}
+                type="text"
+              />
             </div>
           </div>
         </Modal>

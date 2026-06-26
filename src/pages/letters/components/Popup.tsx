@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { Button } from "../../../components/ui/button";
 import { type ReactNode } from "react";
 
@@ -18,17 +19,19 @@ function Popup({
   title,
   subtitle,
   children,
-  cancelLabel = "Cancel",
+  cancelLabel,
   confirmLabel,
   onCancel,
   onConfirm,
   confirmDisabled,
 }: PopupProps) {
+  const { t } = useTranslation();
+
   return (
     <div className="bg-white shadow-md px-6 py-8 rounded-xl">
       <div className="flex items-center">
         <div className="bg-teal-50 rounded-2xl p-3">{icon}</div>
-        <div className="ml-3">
+        <div className="ms-3">
           <p className="font-bold text-xl">{title}</p>
           <p className="text-gray-500 text-sm">{subtitle}</p>
         </div>
@@ -41,7 +44,7 @@ function Popup({
           onClick={onCancel}
           className="bg-white border-teal-700 text-gray-800 hover:bg-white"
         >
-          {cancelLabel}
+          {cancelLabel ?? t("Cancel")}
         </Button>
         <Button
           onClick={onConfirm}

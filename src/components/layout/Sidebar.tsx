@@ -1,4 +1,5 @@
 import { NavLink } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { useUserStore } from "../../store/userStore";
 import type { UserRole } from "../../types/auth";
 
@@ -11,45 +12,46 @@ type ManagementRoles = Exclude<UserRole, "STUDENT" | "LECTURER">;
 
 const Sidebar = () => {
   const user = useUserStore((state) => state.user);
+  const { t } = useTranslation();
 
-  // Specific nav items for each role
   const NAV_ITEMS: Record<ManagementRoles, NavItem[]> = {
     MINISTRY_ADMIN: [
-      { label: "Dashboard", to: "/" },
-      { label: "Universities", to: "/universities" },
-      { label: "Letters", to: "/letters" },
-      { label: "Reports", to: "/reports" },
-      { label: "Settings", to: "/settings" },
+      { label: t("Dashboard"), to: "/" },
+      { label: t("Universities"), to: "/universities" },
+      { label: t("Letters"), to: "/letters" },
+      { label: t("Reports"), to: "/reports" },
+      { label: t("Settings"), to: "/settings" },
     ],
     MINISTRY_STAFF: [],
     UNIVERSITY_ADMIN: [
-      { label: "Dashboard", to: "/" },
-      { label: "Faculties", to: `/universities/${user?.scopeId}/faculties` },
-      { label: "Letters", to: "/letters" },
-      { label: "Reports", to: "/reports" },
-      { label: "Settings", to: "/settings" },
+      { label: t("Dashboard"), to: "/" },
+      {
+        label: t("Faculties"),
+        to: `/universities/${user?.scopeId}/faculties`,
+      },
+      { label: t("Letters"), to: "/letters" },
+      { label: t("Reports"), to: "/reports" },
+      { label: t("Settings"), to: "/settings" },
     ],
     UNIVERSITY_STAFF: [],
     DEAN: [],
     DEPARTMENT_HEAD: [],
   };
 
-  // Get nav items based on user role
-  const navItems = user?.role ? NAV_ITEMS[user?.role as ManagementRoles] : [];
+  const navItems = user?.role ? NAV_ITEMS[user.role as ManagementRoles] : [];
 
   return (
-    <aside className="w-64 h-full bg-white border-r border-slate-200 flex flex-col">
-      {/* Nav */}
-      <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
-        {navItems.map((item: NavItem) => (
+    <aside className="flex h-full w-64 flex-col border-e border-slate-200 bg-white">
+      <nav className="flex-1 space-y-1 overflow-y-auto px-3 py-4">
+        {navItems.map((item) => (
           <NavLink
             key={item.to}
             to={item.to}
             className={({ isActive }) =>
-              `flex items-center justify-between px-4 py-2.5 rounded-lg text-sm transition-colors ${
+              `flex items-center justify-between rounded-lg px-4 py-2.5 text-sm transition-colors ${
                 isActive
-                  ? "bg-[#e0f0f0] text-[#0f7576] font-semibold"
-                  : "text-slate-600 font-medium hover:bg-slate-50"
+                  ? "bg-[#e0f0f0] font-semibold text-[#0f7576]"
+                  : "font-medium text-slate-600 hover:bg-slate-50"
               }`
             }
           >
@@ -58,15 +60,15 @@ const Sidebar = () => {
         ))}
       </nav>
 
-      {/* Footer */}
-      <div className="px-3 py-4 border-t border-slate-100 space-y-3">
+      <div className="space-y-3 border-t border-slate-100 px-3 py-4">
         <div className="flex items-center gap-3 px-1">
-          <div className="min-w-0">
-            <p className="text-sm font-bold text-slate-900 truncate">
-              {user?.name || "Dr. A. Mahmoud"}
+          <div className="min-w-0 text-start">
+            <p className="truncate text-sm font-bold text-slate-900">
+              {user?.name || t("Dr. A. Mahmoud")}
             </p>
-            <p className="text-xs text-slate-500 truncate">
-              {user?.role || "System Administrator"}
+
+            <p className="truncate text-xs text-slate-500">
+              {user?.role ? t(user.role) : t("System Administrator")}
             </p>
           </div>
         </div>

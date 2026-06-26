@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import {
   Table,
   TableBody,
@@ -25,30 +26,39 @@ export function DataTable<T>({
   columns,
   data,
   getRowId,
-  emptyMessage = "No records found.",
+  emptyMessage,
 }: DataTableProps<T>) {
+  const { t } = useTranslation();
+
+  const resolvedEmptyMessage = emptyMessage ?? t("No records found.");
+
+  const getAlignmentClass = (align?: "left" | "right") => {
+    if (align === "right") return "text-end";
+    if (align === "left") return "text-start";
+
+    return undefined;
+  };
+
   return (
     <Table>
       <TableHeader>
         <TableRow>
           {columns.map((col) => (
-            <TableHead
-              key={col.key}
-              className={col.align === "right" ? "text-right" : undefined}
-            >
+            <TableHead key={col.key} className={getAlignmentClass(col.align)}>
               {col.header}
             </TableHead>
           ))}
         </TableRow>
       </TableHeader>
+
       <TableBody>
         {data.length === 0 ? (
           <TableRow>
             <TableCell
               colSpan={columns.length}
-              className="text-center text-gray-400 py-8"
+              className="py-8 text-center text-gray-400"
             >
-              {emptyMessage}
+              {resolvedEmptyMessage}
             </TableCell>
           </TableRow>
         ) : (
@@ -57,7 +67,7 @@ export function DataTable<T>({
               {columns.map((col) => (
                 <TableCell
                   key={col.key}
-                  className={col.align === "right" ? "text-right" : undefined}
+                  className={getAlignmentClass(col.align)}
                 >
                   {col.render(row)}
                 </TableCell>
