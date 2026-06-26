@@ -1,21 +1,25 @@
+import { useTranslation } from "react-i18next";
 import PageHeader from "../../../components/common/PageHeader";
 import { useUserStore } from "../../../store/userStore";
 
 const MinistrySettingsPage = () => {
+  const { t } = useTranslation();
   const { user } = useUserStore();
 
   return (
     <div className="p-8 bg-slate-50 min-h-screen space-y-8">
       <PageHeader
-        title="Ministry of higher education"
-        locationTitle="Settings"
+        title={t("Ministry of higher education")}
+        locationTitle={t("Settings")}
         role={user?.role ?? ""}
         year="2023-2024"
       />
 
       <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
         <div className="px-6 py-4 border-b border-slate-200">
-          <h2 className="text-lg font-semibold text-slate-900">Profile</h2>
+          <h2 className="text-lg font-semibold text-slate-900">
+            {t("Profile")}
+          </h2>
         </div>
 
         <div className="p-6 flex items-center justify-between">
@@ -26,13 +30,13 @@ const MinistrySettingsPage = () => {
 
             <div>
               <h3 className="text-xl font-bold text-slate-900">{user?.name}</h3>
-              <p className="text-slate-500">System Administrator</p>
+              <p className="text-slate-500">{t("System Administrator")}</p>
               <p className="text-slate-500">{user?.email}</p>
             </div>
           </div>
 
           <span className="bg-teal-100 text-[#0f7576] text-xs font-bold px-3 py-1 rounded-md">
-            MINISTRY
+            {t("MINISTRY")}
           </span>
         </div>
       </div>
@@ -40,29 +44,31 @@ const MinistrySettingsPage = () => {
       <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
         <div className="px-6 py-4 border-b border-slate-200">
           <h2 className="text-lg font-semibold text-slate-900">
-            System Preferences
+            {t("System Preferences")}
           </h2>
-          <p className="text-sm text-slate-500">Configure system options.</p>
+          <p className="text-sm text-slate-500">
+            {t("Configure system options.")}
+          </p>
         </div>
 
         <div className="p-6 grid grid-cols-[repeat(auto-fit,minmax(250px,1fr))] gap-6">
           <div>
             <label className="block text-sm font-semibold text-slate-900 mb-2">
-              Date format
+              {t("Date format")}
             </label>
             <select className="w-full rounded-lg border border-slate-300 px-3 py-2 bg-white">
-              <option>Gregorian</option>
-              <option>Kurdish / Local</option>
+              <option>{t("Gregorian")}</option>
+              <option>{t("Kurdish / Local")}</option>
             </select>
           </div>
 
           <div>
             <label className="block text-sm font-semibold text-slate-900 mb-2">
-              Theme
+              {t("Theme")}
             </label>
             <select className="w-full rounded-lg border border-slate-300 px-3 py-2 bg-white">
-              <option>Light</option>
-              <option>Dark</option>
+              <option>{t("Light")}</option>
+              <option>{t("Dark")}</option>
             </select>
           </div>
         </div>
@@ -70,9 +76,11 @@ const MinistrySettingsPage = () => {
 
       <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
         <div className="px-6 py-4 border-b border-slate-200">
-          <h2 className="text-lg font-semibold text-slate-900">Security</h2>
+          <h2 className="text-lg font-semibold text-slate-900">
+            {t("Security")}
+          </h2>
           <p className="text-sm text-slate-500">
-            Manage your account security options.
+            {t("Manage your account security options.")}
           </p>
         </div>
 
@@ -80,28 +88,30 @@ const MinistrySettingsPage = () => {
           <div className="py-4 flex items-center justify-between border-b border-slate-100">
             <div>
               <h3 className="text-sm font-semibold text-slate-900">
-                Two-step verification
+                {t("Two-step verification")}
               </h3>
               <p className="text-sm text-slate-500">
-                Add an extra layer of security to your account.
+                {t("Add an extra layer of security to your account.")}
               </p>
             </div>
 
             <button className="border border-[#0f7576] text-[#0f7576] px-5 py-2 rounded-lg text-sm font-medium">
-              Enable
+              {t("Enable")}
             </button>
           </div>
 
           <div className="py-4 flex items-center justify-between">
             <div>
-              <h3 className="text-sm font-semibold text-slate-900">Password</h3>
+              <h3 className="text-sm font-semibold text-slate-900">
+                {t("Password")}
+              </h3>
               <p className="text-sm text-slate-500">
-                Change your account password.
+                {t("Change your account password.")}
               </p>
             </div>
 
             <button className="border border-[#0f7576] text-[#0f7576] px-5 py-2 rounded-lg text-sm font-medium">
-              Change
+              {t("Change")}
             </button>
           </div>
         </div>

@@ -1,3 +1,5 @@
+import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   DataTable,
   type DataTableColumn,
@@ -9,7 +11,6 @@ import { Input } from "../../components/ui/input";
 import PageHeader from "../../components/common/PageHeader";
 import { useUserStore } from "../../store/userStore";
 import { Button } from "../../components/ui/button";
-import { useState } from "react";
 import Modal from "../../components/common/Modal";
 import { Label } from "../../components/ui/label";
 // import {
@@ -20,7 +21,7 @@ import { Label } from "../../components/ui/label";
 //   ComboboxItem,
 //   ComboboxList,
 // } from "../../components/ui/combobox";
-import { Navigate, useParams } from "react-router-dom";
+import { Navigate, useNavigate, useParams } from "react-router-dom";
 import { mockUniversities } from "./UniversitiesPage";
 import { mockFaculties } from "./FacultiesPage";
 import { mockDepartments } from "./DepartmentsPage";
@@ -106,10 +107,12 @@ const statusStyles: Record<CourseStatus, string> = {
 };
 
 function CoursesPage() {
+  const { t } = useTranslation();
   const user = useUserStore((state) => state.user);
   const [showPopup, setShowPopup] = useState(false);
   const [filter, setFilter] = useState("");
   const { universityId, facultyId, departmentId } = useParams();
+  const navigate = useNavigate();
 
   const university = mockUniversities.find(
     (u) => String(u.id) === universityId,
@@ -142,7 +145,7 @@ function CoursesPage() {
   const columns: DataTableColumn<Course>[] = [
     {
       key: "code",
-      header: "Code",
+      header: t("Code"),
       render: (u) => (
         <span className="font-medium text-teal-700 cursor-pointer">
           {u.code}
@@ -151,51 +154,51 @@ function CoursesPage() {
     },
     {
       key: "name",
-      header: "Name",
+      header: t("Name"),
       render: (u) => u.name,
     },
     {
       key: "department",
-      header: "Department",
+      header: t("Department"),
       render: (u) => u.department,
     },
     {
       key: "lecturer",
-      header: "Lecturer",
+      header: t("Lecturer"),
       render: (u) => u.lecturer,
     },
     {
       key: "yearLevel",
-      header: "Year Level",
-      render: (u) => `Year ${u.yearLevel}`,
+      header: t("Year Level"),
+      render: (u) => `${t("Year")} ${u.yearLevel}`,
     },
     {
       key: "isActive",
-      header: "Status",
+      header: t("Status"),
       render: (u) => (
         <Badge
           className={u.isActive ? statusStyles.ACTIVE : statusStyles.INACTIVE}
         >
-          {u.isActive ? "Active" : "Inactive"}
+          {u.isActive ? t("Active") : t("Inactive")}
         </Badge>
       ),
     },
     {
       key: "actions",
-      header: "Actions",
+      header: t("Actions"),
       align: "right",
       render: (u) => (
         <div className="flex justify-end gap-2">
           <button
             onClick={() => console.log("edit", u.id)}
-            aria-label={`Edit ${u.name}`}
+            aria-label={`${t("Edit")} ${u.name}`}
             className="rounded-md p-2 text-teal-600 hover:bg-teal-50"
           >
             <Pencil className="h-4 w-4 cursor-pointer" />
           </button>
           <button
             onClick={() => console.log("delete", u.id)}
-            aria-label={`Delete ${u.name}`}
+            aria-label={`${t("Delete")} ${u.name}`}
             className="rounded-md p-2 text-red-600 hover:bg-red-50"
           >
             <Trash2 className="h-4 w-4 cursor-pointer" />
@@ -220,14 +223,14 @@ function CoursesPage() {
           onClick={() => navigate("/universities")}
           className="cursor-pointer hover:text-teal-700"
         >
-          Universities
+          {t("Universities")}
         </span>
         <span>/</span>
         <span
           onClick={() => navigate(`/universities/${universityId}/faculties`)}
           className="cursor-pointer hover:text-teal-700"
         >
-          {university?.name ?? "University"}
+          {university?.name ?? t("University")}
         </span>
         <span>/</span>
         <span
@@ -238,17 +241,18 @@ function CoursesPage() {
           }
           className="cursor-pointer hover:text-teal-700"
         >
-          {faculty?.name ?? "Faculty"}
+          {faculty?.name ?? t("Faculty")}
         </span>
         <span>/</span>
         <span className="text-gray-900 font-medium">
-          {department?.name ?? "Department"}
+          {department?.name ?? t("Department")}
         </span>
       </nav>
+
       <div className="flex justify-between items-center">
         <PageHeader
-          title="Ministry of higher education"
-          locationTitle="Courses"
+          title={t("Ministry of higher education")}
+          locationTitle={t("Courses")}
           role={user?.role || ""}
           year="2023-2024"
         />
@@ -256,23 +260,28 @@ function CoursesPage() {
           onClick={handleModal}
           className="bg-white border-teal-700 text-teal-700 hover:bg-teal-50"
         >
-          + Add Course
+          + {t("Add Course")}
         </Button>
       </div>
+
       <div className="flex justify-between my-3">
         <div className="flex gap-5">
-          <h1 className="font-bold">Courses</h1>
-          <p className="text-gray-500">{filteredCourses.length} records</p>
+          <h1 className="font-bold">{t("Courses")}</h1>
+          <p className="text-gray-500">
+            {filteredCourses.length} {t("records")}
+          </p>
         </div>
         <div>
           <Input
             value={filter}
             onChange={(e) => setFilter(e.target.value)}
-            placeholder="Filter..."
+            placeholder={t("Filter...")}
           />
         </div>
       </div>
+
       <hr />
+
       <DataTable
         columns={columns}
         data={filteredCourses}
@@ -281,34 +290,34 @@ function CoursesPage() {
 
       {showPopup && (
         <Modal
-          title="Add Course"
-          confirmLabel="Add Course"
+          title={t("Add Course")}
+          confirmLabel={t("Add Course")}
           onClose={() => setShowPopup(false)}
           onConfirm={handleAddCourse}
         >
           <div className="flex flex-col gap-3">
             <div>
               <Label className="text-sm font-medium text-gray-700 mb-1">
-                Course Name
+                {t("Course Name")}
               </Label>
               <Input
-                placeholder="e.g. Introduction to Programming"
+                placeholder={t("e.g. Introduction to Programming")}
                 type="text"
               />
             </div>
 
             <div>
               <Label className="text-sm font-medium text-gray-700 mb-1">
-                Course Code
+                {t("Course Code")}
               </Label>
-              <Input placeholder="e.g. CS101" type="text" />
+              <Input placeholder={t("e.g. CS101")} type="text" />
             </div>
 
             <div>
               <Label className="text-sm font-medium text-gray-700 mb-1">
-                Credit hours
+                {t("Credit hours")}
               </Label>
-              <Input placeholder="e.g. 3" type="number" min={1} max={6} />
+              <Input placeholder={t("e.g. 3")} type="number" min={1} max={6} />
             </div>
 
             {/* <div>
@@ -332,16 +341,16 @@ function CoursesPage() {
 
             <div>
               <Label className="text-sm font-medium text-gray-700 mb-1">
-                Year Level
+                {t("Year Level")}
               </Label>
               <select className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-teal-500">
-                <option value="">Select year level</option>
-                <option value="1">Year 1</option>
-                <option value="2">Year 2</option>
-                <option value="3">Year 3</option>
-                <option value="4">Year 4</option>
-                <option value="5">Year 5</option>
-                <option value="6">Year 6</option>
+                <option value="">{t("Select year level")}</option>
+                <option value="1">{t("Year 1")}</option>
+                <option value="2">{t("Year 2")}</option>
+                <option value="3">{t("Year 3")}</option>
+                <option value="4">{t("Year 4")}</option>
+                <option value="5">{t("Year 5")}</option>
+                <option value="6">{t("Year 6")}</option>
               </select>
             </div>
           </div>
