@@ -1,15 +1,15 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { getMinistryDashboardAnalytics } from "../../../api/dashboard";
+import PageHeader from "../../../components/common/PageHeader";
+import StatCard from "../../../components/common/StatCard";
+import { useUserStore } from "../../../store/userStore";
+import BarChart from "../../../components/common/BarChart";
+import DonutChart from "../../../components/common/DonutChart";
 import RecentLetters from "../../../components/common/RecentLetters";
 import type { Letter } from "../../../types/letter";
-import { useUserStore } from "../../../store/userStore";
-import StatCard from "../../../components/common/StatCard";
-import PageHeader from "../../../components/common/PageHeader";
-import { getMinistryDashboardAnalytics } from "../../../api/dashboard";
-import BarChart from "../../../components/common/BarChart";
-import { useTranslation } from "react-i18next";
-import DonutChart from "../../../components/common/DonutChart";
 
-const DeanDashboard = () => {
+const DeanReportsPage = () => {
   const { t } = useTranslation();
   const [analytics, setAnalytics] = useState({
     totalUniversities: 0,
@@ -103,4 +103,4 @@ const DeanDashboard = () => {
   );
 };
 
-export default DeanDashboard;
+export default DeanReportsPage;
