@@ -34,23 +34,29 @@ const Sidebar = () => {
       { label: t("Settings"), to: "/settings" },
     ],
     UNIVERSITY_STAFF: [
-      { label: "Dashboard", to: "/" },
-      { label: "Letters", to: "/letters" },
-      { label: "Settings", to: "/settings" },
+      { label: t("Dashboard"), to: "/" },
+      { label: t("Letters"), to: "/letters" },
+      { label: t("Settings"), to: "/settings" },
     ],
     DEAN: [
-      { label: "Dashboard", to: "/" },
-      { label: "Departments", to: `/universities/${user?.scopeId}/faculties/${user?.scopeId}/departments` },
-      { label: "Letters", to: "/letters" },
-      { label: "Reports", to: "/reports" },
-      { label: "Settings", to: "/settings" },
+      { label: t("Dashboard"), to: "/" },
+      {
+        label: t("Departments"),
+        to: `/universities/${user?.scopeId}/faculties/${user?.scopeId}/departments`,
+      },
+      { label: t("Letters"), to: "/letters" },
+      { label: t("Reports"), to: "/reports" },
+      { label: t("Settings"), to: "/settings" },
     ],
     DEPARTMENT_HEAD: [
       { label: "Dashboard", to: "/" },
-      { label: "Courses", to: `/universities/${user?.scopeId}/faculties/1/departments/1/courses` },
-      { label: "Letters", to: "/letters" },
-      { label: "Reports", to: "/reports" },
-      { label: "Settings", to: "/settings" },
+      {
+        label: "Courses",
+        to: `/universities/${user?.scopeId}/faculties/1/departments/1/courses`,
+      },
+      { label: t("Letters"), to: "/letters" },
+      { label: t("Reports"), to: "/reports" },
+      { label: t("Settings"), to: "/settings" },
     ],
   };
 
