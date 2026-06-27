@@ -51,14 +51,6 @@ function App() {
               path="/universities/:universityId/faculties"
               element={<FacultiesPage />}
             />
-            <Route
-              path="/universities/:universityId/faculties/:facultyId/departments"
-              element={<DepartmentsPage />}
-            />
-            <Route
-              path="/universities/:universityId/faculties/:facultyId/departments/:departmentId/courses"
-              element={<CoursesPage />}
-            />
           </Route>
 
           {/* Dedicated Routes Level 3 (MINSITRY_ADMIN & UNIVERSITY_ADMIN & Dean) */}
@@ -72,10 +64,6 @@ function App() {
             <Route
               path="/universities/:universityId/faculties/:facultyId/departments"
               element={<DepartmentsPage />}
-            />
-            <Route
-              path="/universities/:universityId/faculties/:facultyId/departments/:departmentId/courses"
-              element={<CoursesPage />}
             />
           </Route>
 
