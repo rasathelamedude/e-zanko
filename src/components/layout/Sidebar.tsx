@@ -54,6 +54,8 @@ const Sidebar = () => {
         label: "Courses",
         to: `/universities/${user?.scopeId}/faculties/1/departments/1/courses`,
       },
+      { label: t("Students"), to: "/students" },
+      { label: t("Lecturers"), to: "/lecturers" },
       { label: t("Letters"), to: "/letters" },
       { label: t("Reports"), to: "/reports" },
       { label: t("Settings"), to: "/settings" },

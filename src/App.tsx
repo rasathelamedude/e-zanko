@@ -8,6 +8,7 @@ import CoursesPage from "./pages/universities/CoursesPage";
 import DepartmentsPage from "./pages/universities/DepartmentsPage";
 import FacultiesPage from "./pages/universities/FacultiesPage";
 import UniversitiesPage from "./pages/universities/UniversitiesPage";
+import StudentsPage from "./pages/universities/StudentsPage";
 import ReportsPage from "./pages/reports";
 import { Route, Routes } from "react-router-dom";
 import ProtectedRoutes from "./components/common/ProtectedRoute";
@@ -31,6 +32,12 @@ function App() {
           <Route path="/settings" element={<SettingsPage />} />
           <Route path="/letters" element={<LettersPage />} />
           <Route path="/reports" element={<ReportsPage />} />
+
+          <Route
+            element={<ProtectedRoutes allowedRoles={["DEPARTMENT_HEAD"]} />}
+          >
+            <Route path="/students" element={<StudentsPage />} />
+          </Route>
 
           {/* Dedicated Routes Level 1 (MINISTRY_ADMIN) */}
           <Route
