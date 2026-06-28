@@ -142,6 +142,9 @@ function CoursesPage() {
       .includes(filter.toLowerCase()),
   );
 
+  const shouldShowDepartmentColumn =
+    user?.role === "DEAN" && user?.scopeId === Number(facultyId);
+
   const columns: DataTableColumn<Course>[] = [
     {
       key: "code",
@@ -157,11 +160,15 @@ function CoursesPage() {
       header: t("Name"),
       render: (u) => u.name,
     },
-    {
-      key: "department",
-      header: t("Department"),
-      render: (u) => u.department,
-    },
+    ...(shouldShowDepartmentColumn
+      ? [
+          {
+            key: "department",
+            header: t("Department"),
+            render: (u) => u.department,
+          },
+        ]
+      : []),
     {
       key: "lecturer",
       header: t("Lecturer"),
