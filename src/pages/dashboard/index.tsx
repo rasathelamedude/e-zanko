@@ -1,6 +1,7 @@
 // import { useUserStore } from "../../store/userStore";
 import { useUserStore } from "../../store/userStore";
 import DepartmentHeadDashboard from "./components/DepartmentHeadDashboard";
+import DeanDashboard from "./components/DeanDashboard";
 import MinistryDashboard from "./components/MinistryDashboard";
 import UniversityDashboard from "./components/UniversityDashboard";
 import UniversityStaffDashboard from "./components/UniversityStaffDashboard";
@@ -12,6 +13,7 @@ const DashboardPage = () => {
   if (user?.role === "UNIVERSITY_ADMIN") return <UniversityDashboard />;
   if (user?.role === "UNIVERSITY_STAFF") return <UniversityStaffDashboard />;
   if (user?.role === "DEPARTMENT_HEAD") return <DepartmentHeadDashboard />;
+  if (user?.role === "DEAN") return <DeanDashboard />;
 };
 
 export default DashboardPage;
