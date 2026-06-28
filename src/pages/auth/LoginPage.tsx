@@ -11,8 +11,10 @@ import { useUserStore } from "../../store/userStore";
 import { ImSpinner } from "react-icons/im";
 import { LogInIcon } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { forgetPassword } from "../../api/auth";
 
 function LoginPage() {
+  const [validationError, setValidationError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loginPayload, setLoginPayload] = useState<LoginPayload>({
     email: "",
@@ -27,7 +29,7 @@ function LoginPage() {
     mutationFn: (payload: LoginPayload) => login(payload),
     onSuccess: (data) => {
       setUser(data);
-      navigate('/');
+      navigate("/");
     },
     onError: () => {
       setUser(null);
@@ -46,6 +48,15 @@ function LoginPage() {
       ...loginPayload,
       [e.target.name]: e.target.value,
     });
+  };
+
+  const handleForgotPassword = async () => {
+    if (!loginPayload.email) {
+      setValidationError(t("Please enter your email address first."));
+      return;
+    }
+    setValidationError("");
+    await forgetPassword(loginPayload.email);
   };
 
   return (
@@ -105,7 +116,16 @@ function LoginPage() {
             />
           </div>
 
-          <p className="mt-3 cursor-pointer text-end text-sm font-bold text-teal-600">
+          {validationError && (
+            <p className="mt-2 text-sm font-semibold text-red-500">
+              {validationError}
+            </p>
+          )}
+
+          <p
+            className="mt-3 cursor-pointer text-end text-sm font-bold text-teal-600"
+            onClick={handleForgotPassword}
+          >
             {t("Forgot password?")}
           </p>
 
