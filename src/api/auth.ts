@@ -43,8 +43,8 @@ export async function getProfile(token: string): Promise<User> {
     email: "test@institution.edu.krd",
     name: "Test User",
     phone: "1234567890",
-    role: "DEPARTMENT_HEAD",
-    scope: "DEPARTMENT",
+    role: "DEAN",
+    scope: "FACULTY",
     scopeId: 1,
     isActive: true,
   };
