@@ -25,6 +25,8 @@ import { Navigate, useNavigate, useParams } from "react-router-dom";
 import { mockUniversities } from "./UniversitiesPage";
 import { mockFaculties } from "./FacultiesPage";
 import { mockDepartments } from "./DepartmentsPage";
+import { useBreadcrumbAccess } from "../../hooks/useBreadcrumbAccess";
+import { BreadcrumbItem } from "../../components/common/BreadcrumbItem";
 
 const mockCourses: Course[] = [
   {
@@ -113,6 +115,7 @@ function CoursesPage() {
   const [filter, setFilter] = useState("");
   const { universityId, facultyId, departmentId } = useParams();
   const navigate = useNavigate();
+  const { canAccessUniversities, canAccessFaculties, canAccessDepartments} = useBreadcrumbAccess();
 
   const university = mockUniversities.find(
     (u) => String(u.id) === universityId,
@@ -226,34 +229,40 @@ function CoursesPage() {
   return (
     <div className="min-h-screen bg-[#F7F6F2] px-8 py-8">
       <nav className="flex items-center gap-2 text-sm text-gray-500 mb-6">
-        <span
-          onClick={() => navigate("/universities")}
-          className="cursor-pointer hover:text-teal-700"
-        >
-          {t("Universities")}
-        </span>
-        <span>/</span>
-        <span
-          onClick={() => navigate(`/universities/${universityId}/faculties`)}
-          className="cursor-pointer hover:text-teal-700"
-        >
-          {university?.name ?? t("University")}
-        </span>
-        <span>/</span>
-        <span
-          onClick={() =>
-            navigate(
-              `/universities/${universityId}/faculties/${facultyId}/departments`,
-            )
-          }
-          className="cursor-pointer hover:text-teal-700"
-        >
-          {faculty?.name ?? t("Faculty")}
-        </span>
-        <span>/</span>
-        <span className="text-gray-900 font-medium">
-          {department?.name ?? t("Department")}
-        </span>
+        {canAccessUniversities && (
+          <>
+            <BreadcrumbItem
+              label={t("Universities")}
+              onClick={() => navigate("/universities")}
+            />
+            <span>/</span>
+          </>
+        )}
+        {canAccessFaculties && (
+          <>
+            <BreadcrumbItem
+              label={university?.name ?? t("University")}
+              onClick={() =>
+                navigate(`/universities/${universityId}/faculties`)
+              }
+            />
+            <span>/</span>
+          </>
+        )}
+        {canAccessDepartments && (
+          <>
+            <BreadcrumbItem
+              label={faculty?.name ?? t("Faculty")}
+              onClick={() =>
+                navigate(
+                  `/universities/${universityId}/faculties/${facultyId}/departments`,
+                )
+              }
+            />
+            <span>/</span>
+          </>
+        )}
+        <BreadcrumbItem label={department?.name ?? t("Department")} isCurrent />
       </nav>
 
       {/* Page header + Add button row */}

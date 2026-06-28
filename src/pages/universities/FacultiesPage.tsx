@@ -14,6 +14,8 @@ import PageHeader from "../../components/common/PageHeader";
 import { Navigate, useNavigate, useParams } from "react-router-dom";
 import { mockUniversities } from "./UniversitiesPage";
 import { Label } from "../../components/ui/label";
+import { BreadcrumbItem } from "../../components/common/BreadcrumbItem";
+import { useBreadcrumbAccess } from "../../hooks/useBreadcrumbAccess";
 
 export const mockFaculties: Faculty[] = [
   {
@@ -97,6 +99,7 @@ function FacultiesPage() {
   const [filter, setFilter] = useState("");
   const { universityId } = useParams();
   const navigate = useNavigate();
+  const { canAccessUniversities } = useBreadcrumbAccess();
 
   const university = mockUniversities.find(
     (u) => String(u.id) === universityId,
@@ -159,16 +162,16 @@ function FacultiesPage() {
   return (
     <div className="min-h-screen bg-[#F7F6F2] px-8 py-8">
       <nav className="flex items-center gap-2 text-sm text-gray-500 mb-6">
-        <span
-          onClick={() => navigate("/universities")}
-          className="cursor-pointer hover:text-teal-700"
-        >
-          {t("Universities")}
-        </span>
-        <span>/</span>
-        <span className="text-gray-900 font-medium">
-          {university?.name ?? t("Faculties")}
-        </span>
+        {canAccessUniversities && (
+          <>
+            <BreadcrumbItem
+              label={t("Universities")}
+              onClick={() => navigate("/universities")}
+            />
+            <span>/</span>
+          </>
+        )}
+        <BreadcrumbItem label={university?.name ?? t("University")} isCurrent />
       </nav>
 
       {/* Page header + Add button row */}

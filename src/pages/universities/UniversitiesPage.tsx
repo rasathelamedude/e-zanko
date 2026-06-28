@@ -12,6 +12,8 @@ import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import Modal from "../../components/common/Modal";
 import { Label } from "../../components/ui/label";
+import PageHeader from "../../components/common/PageHeader";
+import { useUserStore } from "../../store/userStore";
 
 export const mockUniversities: University[] = [
   {
@@ -113,6 +115,7 @@ function UniversitiesPage() {
   const [showPopup, setShowPopup] = useState(false);
   const [filter, setFilter] = useState("");
   const navigate = useNavigate();
+  const user = useUserStore((state) => state.user);
 
   function handleModal() {
     setShowPopup((prev) => !prev);
@@ -186,16 +189,13 @@ function UniversitiesPage() {
     <div className="min-h-screen bg-[#F7F6F2] px-8 py-8">
       {/* Page header + Add button row */}
       <div className="flex items-start justify-between mb-6">
-        <div>
-          <p className="text-teal-600 font-bold text-sm py-1">
-            {t("Ministry of Higher Education")}
-          </p>
-          <h1 className="font-extrabold text-2xl py-1">{t("Universities")}</h1>
-          <p className="text-gray-500 py-1">
-            {t("System Administrator")} · {t("Academic Year")} 2025–2026
-          </p>
-        </div>
-        <button
+      <PageHeader 
+      title={t("Ministry of Higher Education")}
+      locationTitle={t("Universities")}
+      role={user?.role || ""}
+      year="2025-2026"
+      />
+      <button
           className="flex items-center gap-1.5 bg-teal-700 hover:bg-teal-800 active:bg-teal-900 text-white text-sm font-medium px-4 py-2.5 rounded-xl transition-colors mt-1 cursor-pointer"
           onClick={handleModal}
         >
