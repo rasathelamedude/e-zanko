@@ -1,11 +1,11 @@
 import { useTranslation } from "react-i18next";
+import { Search, Plus } from "lucide-react";
 import {
   DataTable,
   type DataTableColumn,
 } from "../../components/common/DataTable";
 import type { Faculty, FacultyStatus } from "../../types/hierarchy";
 import { Badge } from "../../components/ui/badge";
-import { Button } from "../../components/ui/button";
 import { useState } from "react";
 import { Input } from "../../components/ui/input";
 import Modal from "../../components/common/Modal";
@@ -94,11 +94,19 @@ function FacultiesPage() {
   const { t } = useTranslation();
   const user = useUserStore((state) => state.user);
   const [showPopup, setShowPopup] = useState(false);
+  const [filter, setFilter] = useState("");
   const { universityId } = useParams();
   const navigate = useNavigate();
 
   const university = mockUniversities.find(
     (u) => String(u.id) === universityId,
+  );
+
+  const filteredFaculties = mockFaculties.filter(
+    (f) =>
+      f.name.toLowerCase().includes(filter.toLowerCase()) ||
+      f.dean.toLowerCase().includes(filter.toLowerCase()) ||
+      f.status.toLowerCase().includes(filter.toLowerCase()),
   );
 
   function handleModal() {
@@ -149,8 +157,8 @@ function FacultiesPage() {
   }
 
   return (
-    <div className="px-5">
-      <nav className="flex items-center gap-2 text-sm text-gray-500 mb-4">
+    <div className="min-h-screen bg-[#F7F6F2] px-8 py-8">
+      <nav className="flex items-center gap-2 text-sm text-gray-500 mb-6">
         <span
           onClick={() => navigate("/universities")}
           className="cursor-pointer hover:text-teal-700"
@@ -163,37 +171,61 @@ function FacultiesPage() {
         </span>
       </nav>
 
-      <PageHeader
-        title={t("Ministry of Higher Education")}
-        locationTitle={t("Faculties")}
-        role={user?.role || ""}
-        year="2023-2024"
-      />
-
-      <div className="flex justify-between my-3">
-        <div className="flex gap-5">
-          <h1 className="font-bold">{t("Faculties")}</h1>
-          <p className="text-gray-500">
-            {mockFaculties.length} {t("records")}
-          </p>
-        </div>
-        <div>
-          <Button
-            onClick={handleModal}
-            className="bg-white border-teal-700 text-teal-700 hover:bg-teal-50"
-          >
-            + {t("Add Faculty")}
-          </Button>
-        </div>
+      {/* Page header + Add button row */}
+      <div className="flex items-start justify-between mb-6">
+        <PageHeader
+          title={t("Ministry of Higher Education")}
+          locationTitle={t("Faculties")}
+          role={user?.role || ""}
+          year="2025–2026"
+        />
+        <button
+          className="flex items-center gap-1.5 bg-teal-700 hover:bg-teal-800 active:bg-teal-900 text-white text-sm font-medium px-4 py-2.5 rounded-xl transition-colors mt-1 cursor-pointer"
+          onClick={handleModal}
+        >
+          <Plus size={16} strokeWidth={2.5} />
+          {t("Add Faculty")}
+        </button>
       </div>
 
-      <hr />
+      {/* Table card */}
+      <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden">
+        {/* Table toolbar */}
+        <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100">
+          <div className="flex items-center gap-2">
+            <span className="text-sm font-semibold text-slate-700">
+              {t("Faculties")}
+            </span>
+            <span className="text-xs font-medium text-slate-400 bg-slate-100 px-2 py-0.5 rounded-full">
+              {filteredFaculties.length} record
+              {filteredFaculties.length !== 1 ? "s" : ""}
+            </span>
+          </div>
 
-      <DataTable
-        columns={columns}
-        data={mockFaculties}
-        getRowId={(u) => String(u.id)}
-      />
+          {/* Filter input */}
+          <div className="relative">
+            <Search
+              size={14}
+              strokeWidth={2}
+              className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"
+            />
+            <input
+              type="text"
+              placeholder={t("Filter...")}
+              value={filter}
+              onChange={(e) => setFilter(e.target.value)}
+              className="pl-8 pr-4 py-2 text-sm border border-slate-200 rounded-xl w-52 bg-slate-50 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-500/30 focus:border-teal-400 transition-all"
+            />
+          </div>
+        </div>
+
+        {/* Table */}
+        <DataTable
+          columns={columns}
+          data={filteredFaculties}
+          getRowId={(u) => String(u.id)}
+        />
+      </div>
 
       {showPopup && (
         <Modal

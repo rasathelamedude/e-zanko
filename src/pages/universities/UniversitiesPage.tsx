@@ -1,4 +1,5 @@
 import { useTranslation } from "react-i18next";
+import { Search, Plus } from "lucide-react";
 import {
   DataTable,
   type DataTableColumn,
@@ -7,7 +8,6 @@ import type { University, UniversityStatus } from "../../types/hierarchy";
 import { Badge } from "../../components/ui/badge";
 import { Pencil, Trash2 } from "lucide-react";
 import { Input } from "../../components/ui/input";
-import { Button } from "../../components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import Modal from "../../components/common/Modal";
@@ -111,6 +111,7 @@ const statusLabels: Record<UniversityStatus, string> = {
 function UniversitiesPage() {
   const { t } = useTranslation();
   const [showPopup, setShowPopup] = useState(false);
+  const [filter, setFilter] = useState("");
   const navigate = useNavigate();
 
   function handleModal() {
@@ -174,9 +175,17 @@ function UniversitiesPage() {
     },
   ];
 
+  const filteredUniversities = mockUniversities.filter(
+    (u) =>
+      u.name.toLowerCase().includes(filter.toLowerCase()) ||
+      u.president?.toLowerCase().includes(filter.toLowerCase()) ||
+      u.location.toLowerCase().includes(filter.toLowerCase()),
+  );
+
   return (
-    <div className="px-5">
-      <div className="flex items-center justify-between">
+    <div className="min-h-screen bg-[#F7F6F2] px-8 py-8">
+      {/* Page header + Add button row */}
+      <div className="flex items-start justify-between mb-6">
         <div>
           <p className="text-teal-600 font-bold text-sm py-1">
             {t("Ministry of Higher Education")}
@@ -186,33 +195,53 @@ function UniversitiesPage() {
             {t("System Administrator")} · {t("Academic Year")} 2025–2026
           </p>
         </div>
-        <Button
+        <button
+          className="flex items-center gap-1.5 bg-teal-700 hover:bg-teal-800 active:bg-teal-900 text-white text-sm font-medium px-4 py-2.5 rounded-xl transition-colors mt-1 cursor-pointer"
           onClick={handleModal}
-          className="bg-white border-teal-700 text-teal-700 hover:bg-teal-50"
         >
-          + {t("Add University")}
-        </Button>
+          <Plus size={16} strokeWidth={2.5} />
+          {t("Add University")}
+        </button>
       </div>
 
-      <div className="flex justify-between my-3">
-        <div className="flex gap-5">
-          <h1 className="font-bold">{t("Universities")}</h1>
-          <p className="text-gray-500">
-            {mockUniversities.length} {t("records")}
-          </p>
+      {/* Table card */}
+      <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden">
+        {/* Table toolbar */}
+        <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100">
+          <div className="flex items-center gap-2">
+            <span className="text-sm font-semibold text-slate-700">
+              {t("Universities")}
+            </span>
+            <span className="text-xs font-medium text-slate-400 bg-slate-100 px-2 py-0.5 rounded-full">
+              {filteredUniversities.length} record
+              {filteredUniversities.length !== 1 ? "s" : ""}
+            </span>
+          </div>
+
+          {/* Filter input */}
+          <div className="relative">
+            <Search
+              size={14}
+              strokeWidth={2}
+              className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"
+            />
+            <input
+              type="text"
+              placeholder={t("Filter...")}
+              value={filter}
+              onChange={(e) => setFilter(e.target.value)}
+              className="pl-8 pr-4 py-2 text-sm border border-slate-200 rounded-xl w-52 bg-slate-50 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-500/30 focus:border-teal-400 transition-all"
+            />
+          </div>
         </div>
-        <div>
-          <Input placeholder={t("Filter...")} />
-        </div>
+
+        {/* Table */}
+        <DataTable
+          columns={columns}
+          data={filteredUniversities}
+          getRowId={(u) => String(u.id)}
+        />
       </div>
-
-      <hr />
-
-      <DataTable
-        columns={columns}
-        data={mockUniversities}
-        getRowId={(u) => String(u.id)}
-      />
 
       {showPopup && (
         <Modal
