@@ -1,38 +1,27 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { getMinistryDashboardAnalytics } from "../../../api/dashboard";
+import { getDepartmentHeadDashboardAnalytics } from "../../../api/dashboard";
 import PageHeader from "../../../components/common/PageHeader";
 import StatCard from "../../../components/common/StatCard";
 import { useUserStore } from "../../../store/userStore";
-import BarChart from "../../../components/common/BarChart";
-import DonutChart from "../../../components/common/DonutChart";
 import RecentLetters from "../../../components/common/RecentLetters";
 import type { Letter } from "../../../types/letter";
+import DepartmentInfoCard from "../../../components/common/DepartmentInfoCard";
 
 const DepartmentHeadDashboard = () => {
   const { t } = useTranslation();
   const [analytics, setAnalytics] = useState({
-    totalUniversities: 0,
-    totalPendingLetters: 0,
-    totalApprovedLettersThisMonth: 0,
+    pendingLetters: 0,
+    approvedLettersThisMonth: 0,
+    rejectedLettersThisMonth: 0,
+    departmentInfo: {
+      department: "Software Engineering",
+      faculty: "Faculty of Engineering",
+      students: 32,
+      lecturers: 14,
+    },
   });
   const user = useUserStore((state) => state.user);
-
-  // Static until the backend exposes analytics endpoints
-  const facultiesPerUniversity = [
-    { label: "Salahaddin", value: 18 },
-    { label: "Sulaimani", value: 15 },
-    { label: "Duhok", value: 12 },
-    { label: "Halabja", value: 11 },
-    { label: "Garmian", value: 9 },
-    { label: "Raparin", value: 8 },
-  ];
-
-  const lettersByStatus = [
-    { label: t("Pending"), value: 18, color: "#d97706" },
-    { label: t("Approved"), value: 46, color: "#228b22" },
-    { label: t("Rejected"), value: 8, color: "#dc2626" },
-  ];
 
   const recentLetters: Letter[] = [
     {
@@ -57,7 +46,7 @@ const DepartmentHeadDashboard = () => {
 
   useEffect(() => {
     const fetchAnalytics = async () => {
-      const analyticsData = await getMinistryDashboardAnalytics();
+      const analyticsData = await getDepartmentHeadDashboardAnalytics();
       setAnalytics(analyticsData);
     };
 
@@ -76,26 +65,26 @@ const DepartmentHeadDashboard = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
         <StatCard
           label={t("Total Universities")}
-          value={analytics.totalUniversities}
+          value={analytics.pendingLetters}
         />
         <StatCard
           label={t("Pending Letters")}
-          value={analytics.totalPendingLetters}
+          value={analytics.approvedLettersThisMonth}
           highlight
         />
         <StatCard
           label={t("Approved This Month")}
-          value={analytics.totalApprovedLettersThisMonth}
+          value={analytics.rejectedLettersThisMonth}
         />
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
-        <BarChart
-          title={t("Faculties per university")}
-          subtitle={t("top 6")}
-          data={facultiesPerUniversity}
+      <div className="my-6">
+        <DepartmentInfoCard
+          department={analytics.departmentInfo.department}
+          faculty={analytics.departmentInfo.faculty}
+          students={analytics.departmentInfo.students}
+          lecturers={analytics.departmentInfo.lecturers}
         />
-        <DonutChart title={t("Letters by status")} segments={lettersByStatus} />
       </div>
 
       <RecentLetters letters={recentLetters} />
