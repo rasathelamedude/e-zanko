@@ -14,6 +14,7 @@ import { Route, Routes } from "react-router-dom";
 import ProtectedRoutes from "./components/common/ProtectedRoute";
 import ForbiddenPage from "./pages/auth/ForbiddenPage";
 import LecturersPage from "./pages/universities/LecturersPage";
+import ResetPasswordPage from "./pages/auth/ResetPasswordPage";
 
 function App() {
   return (
@@ -21,6 +22,8 @@ function App() {
       <Route path="/login" element={<LoginPage />} />
       <Route path="/unauthorized" element={<UnauthorizedPage />} />
       <Route path="/forbidden" element={<ForbiddenPage />} />
+
+      <Route path="/reset-password" element={<ResetPasswordPage />} />
 
       {/* Routes under ProtectedRoutes require logged in users */}
       <Route element={<ProtectedRoutes />}>

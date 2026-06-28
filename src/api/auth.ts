@@ -1,4 +1,5 @@
 import type {
+  ForgotPasswordResponse,
   LoginPayload,
   LoginResponse,
   LogoutResponse,
@@ -48,4 +49,39 @@ export async function getProfile(token: string): Promise<User> {
     scopeId: 1,
     isActive: true,
   };
+}
+
+export async function forgetPassword(email: string): Promise<void> {
+  const response = await axios.post<ForgotPasswordResponse>(
+    "/api/auth/forget-password",
+    { email },
+  );
+
+  const { success, message } = response.data;
+
+  if (!success) {
+    throw new Error(message || "Password reset failed");
+  }
+}
+
+export async function resetPassword({
+  token,
+  code,
+  password,
+}: {
+  token: string;
+  code: string;
+  password: string;
+}): Promise<void> {
+  const response = await axios.post("/api/auth/reset-password", {
+    token,
+    code,
+    password,
+  });
+
+  const { success, message } = response.data;
+
+  if (!success) {
+    throw new Error(message || "Password reset failed");
+  }
 }
