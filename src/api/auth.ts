@@ -33,15 +33,26 @@ export async function logout(): Promise<string> {
 }
 
 export async function getProfile(): Promise<User> {
-  const response = await axios.get<GetProfileResponse>("/api/auth/me");
+  // const response = await axios.get<GetProfileResponse>("/api/auth/me");
 
-  const { data, success, message } = response.data;
+  // const { data, success, message } = response.data;
 
-  if (!success) {
-    throw new Error(message || "Profile fetch failed");
-  }
+  // if (!success) {
+  //   throw new Error(message || "Profile fetch failed");
+  // }
 
-  return data;
+  // return data;
+
+  return {
+    id: 1,
+    email: "test@institution.edu.krd",
+    name: "Test User",
+    role: "DEPARTMENT_HEAD",
+    scope: "DEPARTMENT",
+    scopeId: 1,
+    isActive: true,
+    phone: "1234567890",
+  };
 }
 
 export async function forgetPassword(email: string): Promise<void> {

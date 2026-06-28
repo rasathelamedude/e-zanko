@@ -12,9 +12,8 @@ export const useUserStore = create<UserStore>((set) => ({
   user: {
     id: 1,
     email: "test@institution.edu.krd",
-    username: "Test User",
-    role: "DEPARTMENT_HEAD",
     name: "Test User",
+    role: "DEPARTMENT_HEAD",
     scope: "DEPARTMENT",
     scopeId: 1,
     isActive: true,
