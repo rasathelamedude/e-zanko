@@ -42,6 +42,7 @@ export interface ApiResponse<T = null> {
 export type LoginResponse = ApiResponse<User>;
 export type LogoutResponse = ApiResponse<null>;
 export type ForgotPasswordResponse = ApiResponse<null>;
+export type ChangePasswordResponse = ApiResponse<null>;
 
 export interface LoginPayload {
   email: string;

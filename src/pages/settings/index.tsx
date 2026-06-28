@@ -1,10 +1,10 @@
 // import { useUserStore } from "../../store/userStore";
-import MinistrySettingsPage from "./components/MinistrySettingsPage";
+import SharedSettingsPage from "./components/SettingsPage";
 
 const SettingsPage = () => {
   // const { user } = useUserStore();
 
-  return MinistrySettingsPage();
+  return SharedSettingsPage();
 };
 
 export default SettingsPage;
