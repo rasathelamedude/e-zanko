@@ -13,6 +13,7 @@ import ReportsPage from "./pages/reports";
 import { Route, Routes } from "react-router-dom";
 import ProtectedRoutes from "./components/common/ProtectedRoute";
 import ForbiddenPage from "./pages/auth/ForbiddenPage";
+import LecturersPage from "./pages/universities/LecturersPage";
 
 function App() {
   return (
@@ -33,10 +34,12 @@ function App() {
           <Route path="/letters" element={<LettersPage />} />
           <Route path="/reports" element={<ReportsPage />} />
 
+          {/* Department Head only Routes */}
           <Route
             element={<ProtectedRoutes allowedRoles={["DEPARTMENT_HEAD"]} />}
           >
             <Route path="/students" element={<StudentsPage />} />
+            <Route path="/lecturers" element={<LecturersPage />} />
           </Route>
 
           {/* Dedicated Routes Level 1 (MINISTRY_ADMIN) */}
