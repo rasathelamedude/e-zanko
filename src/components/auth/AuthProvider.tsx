@@ -13,7 +13,7 @@ function AuthProvider({ children }: { readonly children: React.ReactNode }) {
       setIsAuthLoading(true);
 
       try {
-        const user: User = await getProfile("mock-jwt-token-abc123");
+        const user: User = await getProfile();
         setUser(user);
       } catch (error) {
         console.error(error);
