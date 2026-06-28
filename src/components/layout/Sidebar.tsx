@@ -1,7 +1,11 @@
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useUserStore } from "../../store/userStore";
 import type { UserRole } from "../../types/auth";
+import { Button } from "../ui/button";
+import { LogOut } from "lucide-react";
+import { useMutation } from "@tanstack/react-query";
+import { logout } from "../../api/auth";
 
 type NavItem = {
   label: string;
@@ -64,6 +68,25 @@ const Sidebar = () => {
 
   const navItems = user?.role ? NAV_ITEMS[user.role as ManagementRoles] : [];
 
+  const { setUser } = useUserStore();
+  const navigate = useNavigate();
+
+  const { mutate, isPending } = useMutation({
+    mutationFn: logout,
+    onSuccess: () => {
+      setUser(null);
+      navigate("/login", { replace: true });
+    },
+    onError: () => {
+      setUser(null);
+      navigate("/login", { replace: true });
+    },
+  });
+
+  const handleLogout = () => {
+    mutate();
+  };
+
   return (
     <aside className="flex h-full w-64 flex-col border-e border-slate-200 bg-white">
       <nav className="flex-1 space-y-1 overflow-y-auto px-3 py-4">
@@ -97,6 +120,15 @@ const Sidebar = () => {
           </div>
         </div>
       </div>
+
+      <Button
+        disabled={isPending}
+        onClick={handleLogout}
+        className="bg-white border-red-500 text-red-500 hover:bg-red-50 m-3"
+      >
+        <LogOut />
+        {isPending ? t("Logging out...") : t("Logout")}
+      </Button>
     </aside>
   );
 };

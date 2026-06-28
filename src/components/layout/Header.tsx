@@ -1,10 +1,7 @@
 import { type ChangeEvent, useState } from "react";
 import { Bell, Plus } from "lucide-react";
 import logo from "../../assets/images/logo.png";
-import { useMutation } from "@tanstack/react-query";
-import { logout } from "../../api/auth";
 import { useUserStore } from "../../store/userStore";
-import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import i18n from "../../i18n";
 import ComposeLetter from "../common/ComposeLetter";
@@ -21,18 +18,6 @@ const languages: { code: Language; label: string }[] = [
 const BRAND_TITLE = "e-Zanko";
 const NOTIFICATION_COUNT = 1;
 
-const getInitials = (name?: string) => {
-  if (!name) return "U";
-
-  return name
-    .split(" ")
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((part) => part[0])
-    .join("")
-    .toUpperCase();
-};
-
 const getSupportedLanguage = (currentLanguage: string): Language => {
   const language = currentLanguage.split("-")[0].toLowerCase();
 
@@ -42,23 +27,12 @@ const getSupportedLanguage = (currentLanguage: string): Language => {
 };
 
 export default function Header() {
-  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [language, setLanguage] = useState<Language>(() =>
     getSupportedLanguage(i18n.resolvedLanguage || i18n.language),
   );
 
   const { t } = useTranslation();
   const [composePopup, setComposePopup] = useState(false);
-  const { setUser } = useUserStore();
-  const navigate = useNavigate();
-
-  const { mutate } = useMutation({
-    mutationFn: logout,
-    onSuccess: () => {
-      setUser(null);
-      navigate("/login", { replace: true });
-    },
-  });
 
   const user = useUserStore((state) => state.user);
 
@@ -69,14 +43,7 @@ export default function Header() {
     void i18n.changeLanguage(selectedLanguage);
   };
 
-  const handleLogout = () => {
-    mutate();
-  };
-
   const ministryName = t("Ministry of Higher Education");
-  const userName = user?.name ?? t("User");
-  const userRole = user?.role ?? t("User");
-  const userInitials = getInitials(userName);
 
   const letterButtonText =
     user?.role === "MINISTRY_ADMIN"
@@ -145,65 +112,6 @@ export default function Header() {
             ))}
           </select>
 
-          <div className="relative flex h-12.5 cursor-pointer items-center gap-2.5 border-s border-[#e4e9ef] ps-3.5 max-sm:ps-2">
-            <button
-              type="button"
-              onClick={() => setIsUserMenuOpen((current) => !current)}
-              className="flex items-center gap-2.5 text-start"
-              aria-expanded={isUserMenuOpen}
-              aria-haspopup="menu"
-            >
-              <span className="grid h-9.5 w-9.5 place-items-center rounded-full bg-[#dceeee] text-[13px] font-[850] text-[#0f7576]">
-                {userInitials}
-              </span>
-
-              <span className="leading-tight max-sm:hidden">
-                <span className="block whitespace-nowrap text-[13px] font-[850] text-[#172033]">
-                  {userName}
-                </span>
-
-                <span className="mt-1 inline-block rounded-md bg-[#e0f0f0] px-2 py-0.5 text-[10.5px] font-[850] text-[#0f7576]">
-                  {userRole}
-                </span>
-              </span>
-            </button>
-
-            {isUserMenuOpen && (
-              <div
-                role="menu"
-                className="absolute end-0 top-14 z-100 w-52.5 rounded-[14px] border border-[#e4e9ef] bg-white p-2 shadow-[0_22px_45px_rgba(18,35,55,0.14)]"
-              >
-                <a
-                  href="#profile"
-                  className="flex rounded-[10px] px-2.5 py-2.5 text-[13px] font-bold text-[#46566a] hover:bg-[#f4f7f7] hover:text-[#0f7576]"
-                >
-                  {t("Profile")}
-                </a>
-
-                <a
-                  href="#account-settings"
-                  className="flex rounded-[10px] px-2.5 py-2.5 text-[13px] font-bold text-[#46566a] hover:bg-[#f4f7f7] hover:text-[#0f7576]"
-                >
-                  {t("Account Settings")}
-                </a>
-
-                <a
-                  href="#security"
-                  className="flex rounded-[10px] px-2.5 py-2.5 text-[13px] font-bold text-[#46566a] hover:bg-[#f4f7f7] hover:text-[#0f7576]"
-                >
-                  {t("Security")}
-                </a>
-
-                <button
-                  type="button"
-                  onClick={handleLogout}
-                  className="flex w-full rounded-[10px] px-2.5 py-2.5 text-start text-[13px] font-bold text-[#46566a] hover:bg-[#f4f7f7] hover:text-[#0f7576]"
-                >
-                  {t("Logout")}
-                </button>
-              </div>
-            )}
-          </div>
         </div>
 
         {composePopup &&
