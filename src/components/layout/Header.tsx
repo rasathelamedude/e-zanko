@@ -8,6 +8,7 @@ import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import i18n from "../../i18n";
 import ComposeLetter from "../common/ComposeLetter";
+import BroadcastLetter from "../common/BroadcastLetter";
 
 type Language = "en" | "ku" | "ar";
 
@@ -205,9 +206,12 @@ export default function Header() {
           </div>
         </div>
 
-        {composePopup && (
-          <ComposeLetter onClose={() => setComposePopup(false)} />
-        )}
+        {composePopup &&
+          (user?.role === "MINISTRY_ADMIN" ? (
+            <BroadcastLetter onClose={() => setComposePopup(false)} />
+          ) : (
+            <ComposeLetter onClose={() => setComposePopup(false)} />
+          ))}
       </div>
     </header>
   );
