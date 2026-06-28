@@ -3,7 +3,7 @@ import { QueryClient } from "@tanstack/react-query";
 export const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      throwOnError: true, // throw error to the boundary when fetching fails
+      throwOnError: false, // prevent throwing error when query fails, keep it in cache
       retry: 1,
       refetchOnWindowFocus: false, // swtiching tabs will not refetch
     },

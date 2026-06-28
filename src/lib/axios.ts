@@ -1,4 +1,5 @@
 import axios from "axios";
+import { useUserStore } from "../store/userStore";
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
@@ -25,11 +26,22 @@ api.interceptors.response.use(
   (response) => response,
   // if error found, throw it
   (error) => {
+    const status = error.response?.status;
     const backendMessage = error.response?.data?.message;
     const finalMessage = backendMessage || "Something went wrong";
 
-    console.error("[API Error]:", finalMessage);
+    if (status === 401) {
+      useUserStore.getState().setUser(null);
+      window.location.href = "/login";
+      return Promise.reject(new Error("Unauthorized"));
+    }
 
+    if (status === 403) {
+      window.location.href = "/forbidden";
+      return Promise.reject(new Error("Forbidden"));
+    }
+
+    console.error("[API Error]:", finalMessage);
     return Promise.reject(new Error(finalMessage));
   },
 );
