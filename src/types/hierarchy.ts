@@ -1,3 +1,5 @@
+import { type ApiResponse } from "./response";
+
 export type UniversityStatus = "ACTIVE" | "UNDER_REVIEW" | "INACTIVE";
 export type FacultyStatus = "ACTIVE" | "UNDER_REVIEW" | "INACTIVE";
 export type DepartmentStatus = "ACTIVE" | "UNDER_REVIEW" | "INACTIVE";
@@ -21,6 +23,8 @@ export interface University {
   status: "ACTIVE" | "INACTIVE";
   president?: string;
 }
+
+export type GetUniversitiesResponse = ApiResponse<University[]>;
 
 export interface Faculty {
   id: number;

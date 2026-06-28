@@ -14,6 +14,8 @@ import Modal from "../../components/common/Modal";
 import { Label } from "../../components/ui/label";
 import PageHeader from "../../components/common/PageHeader";
 import { useUserStore } from "../../store/userStore";
+import { useQuery } from "@tanstack/react-query";
+import { getUniversities } from "../../api/university";
 
 export const mockUniversities: University[] = [
   {
@@ -117,6 +119,11 @@ function UniversitiesPage() {
   const navigate = useNavigate();
   const user = useUserStore((state) => state.user);
 
+  const { data: universities } = useQuery<University[]>({
+    queryKey: ["universities"],
+    queryFn: getUniversities,
+  });
+
   function handleModal() {
     setShowPopup((prev) => !prev);
   }
@@ -178,7 +185,10 @@ function UniversitiesPage() {
     },
   ];
 
-  const filteredUniversities = mockUniversities.filter(
+  const universityData =
+    universities?.length === 0 ? universities : mockUniversities;
+
+  const filteredUniversities = universityData.filter(
     (u) =>
       u.name.toLowerCase().includes(filter.toLowerCase()) ||
       u.president?.toLowerCase().includes(filter.toLowerCase()) ||
@@ -189,13 +199,13 @@ function UniversitiesPage() {
     <div className="min-h-screen bg-[#F7F6F2] px-8 py-8">
       {/* Page header + Add button row */}
       <div className="flex items-start justify-between mb-6">
-      <PageHeader 
-      title={t("Ministry of Higher Education")}
-      locationTitle={t("Universities")}
-      role={user?.role || ""}
-      year="2025-2026"
-      />
-      <button
+        <PageHeader
+          title={t("Ministry of Higher Education")}
+          locationTitle={t("Universities")}
+          role={user?.role || ""}
+          year="2025-2026"
+        />
+        <button
           className="flex items-center gap-1.5 bg-teal-700 hover:bg-teal-800 active:bg-teal-900 text-white text-sm font-medium px-4 py-2.5 rounded-xl transition-colors mt-1 cursor-pointer"
           onClick={handleModal}
         >
