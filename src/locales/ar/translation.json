@@ -230,5 +230,11 @@
   "Send letter": "إرسال الرسالة",
   "University president": "رئيس الجامعة",
   "Write the full request...": "اكتب الطلب الكامل...",
-  "University Administration": "إدارة الجامعة"
+  "University Administration": "إدارة الجامعة",
+  "{{count}} records": "{{count}} سجل",
+  "Academic Level": "الدرجة الأكاديمية",
+  "Add Lecturer": "إضافة محاضر",
+  "Head of Dept.": "رئيس القسم",
+  "Software Engineering": "هندسة البرمجيات",
+  "University Email": "البريد الإلكتروني الجامعي"
 }
