@@ -2,6 +2,7 @@ import { X, Send, FileText, Paperclip } from "lucide-react";
 import { Label } from "../ui/label";
 import { Input } from "../ui/input";
 import { useEffect, useRef } from "react";
+import { useTranslation } from "react-i18next";
 import { Button } from "../ui/button";
 
 interface ComposeLetterProps {
@@ -9,6 +10,7 @@ interface ComposeLetterProps {
 }
 
 function ComposeLetter({ onClose }: ComposeLetterProps) {
+  const { t } = useTranslation();
   const popupRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -32,7 +34,7 @@ function ComposeLetter({ onClose }: ComposeLetterProps) {
           <div className="flex items-center gap-2">
             <FileText size={18} className="text-teal-700" />
             <h1 className="font-semibold text-gray-800 text-base">
-              Compose Letter
+              {t("Compose Letter")}
             </h1>
           </div>
           <button
@@ -45,9 +47,11 @@ function ComposeLetter({ onClose }: ComposeLetterProps) {
 
         <div className="px-6 py-5 flex flex-col gap-5">
           <div className="flex flex-col gap-1.5">
-            <Label className="text-sm font-medium text-gray-700">Subject</Label>
+            <Label className="text-sm font-medium text-gray-700">
+              {t("Subject")}
+            </Label>
             <Input
-              placeholder="Brief title of the letter"
+              placeholder={t("Brief title of the letter")}
               className="border-gray-200 focus:border-teal-600 focus:ring-teal-600 text-sm"
             />
           </div>
@@ -56,20 +60,20 @@ function ComposeLetter({ onClose }: ComposeLetterProps) {
           <div className="grid grid-cols-2 gap-4">
             <div className="flex flex-col gap-1.5">
               <Label className="text-sm font-medium text-gray-700">
-                Letter type
+                {t("Letter type")}
               </Label>
               <select className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-700 bg-white focus:outline-none focus:ring-2 focus:ring-teal-600 focus:border-teal-600">
-                <option>Hire a lecturer</option>
-                <option>Fire a lecturer</option>
+                <option>{t("Hire a lecturer")}</option>
+                <option>{t("Fire a lecturer")}</option>
               </select>
             </div>
             <div className="flex flex-col gap-1.5">
               <Label className="text-sm font-medium text-gray-700">
-                Recipient
+                {t("Recipient")}
               </Label>
               <select className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-700 bg-white focus:outline-none focus:ring-2 focus:ring-teal-600 focus:border-teal-600">
-                <option>University president</option>
-                <option>Dean of College of Engineering</option>
+                <option>{t("University president")}</option>
+                <option>{t("Dean of College of Engineering")}</option>
               </select>
             </div>
           </div>
@@ -77,10 +81,10 @@ function ComposeLetter({ onClose }: ComposeLetterProps) {
           {/* letter content */}
           <div className="flex flex-col gap-1.5">
             <Label className="text-sm font-medium text-gray-700">
-              Letter content
+              {t("Letter content")}
             </Label>
             <textarea
-              placeholder="Write the full request..."
+              placeholder={t("Write the full request...")}
               rows={4}
               className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-700 resize-none focus:outline-none focus:ring-2 focus:ring-teal-600 focus:border-teal-600 placeholder:text-gray-400"
             />
@@ -90,10 +94,10 @@ function ComposeLetter({ onClose }: ComposeLetterProps) {
         {/* attach file */}
         <div
           onClick={() => inputRef.current?.click()}
-          className="flex items-center gap-2 ml-6 mb-3 px-3 py-2 border border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-teal-600 hover:bg-teal-50 transition-colors w-fit"
+          className="flex items-center gap-2 ms-6 mb-3 px-3 py-2 border border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-teal-600 hover:bg-teal-50 transition-colors w-fit"
         >
           <Paperclip size={15} className="text-gray-400" />
-          <span className="text-sm text-gray-500">Attach file</span>
+          <span className="text-sm text-gray-500">{t("Attach file")}</span>
           <input ref={inputRef} type="file" className="hidden" />
         </div>
 
@@ -104,11 +108,11 @@ function ComposeLetter({ onClose }: ComposeLetterProps) {
             variant="outline"
             className="text-sm text-gray-600 border-gray-200 hover:bg-gray-100 hover:text-gray-800"
           >
-            Cancel
+            {t("Cancel")}
           </Button>
           <Button className="text-sm bg-teal-700 hover:bg-teal-800 text-white flex items-center gap-2">
             <Send size={14} />
-            Send letter
+            {t("Send letter")}
           </Button>
         </div>
       </div>
