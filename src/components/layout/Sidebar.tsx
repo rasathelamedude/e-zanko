@@ -68,17 +68,14 @@ const Sidebar = () => {
 
   const navItems = user?.role ? NAV_ITEMS[user.role as ManagementRoles] : [];
 
-  const { setUser } = useUserStore();
+  const { setUser, setToken } = useUserStore();
   const navigate = useNavigate();
 
   const { mutate, isPending } = useMutation({
     mutationFn: logout,
     onSuccess: () => {
       setUser(null);
-      navigate("/login", { replace: true });
-    },
-    onError: () => {
-      setUser(null);
+      setToken(null);
       navigate("/login", { replace: true });
     },
   });
