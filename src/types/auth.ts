@@ -42,6 +42,7 @@ export interface ApiResponse<T = null> {
 
 export type LoginResponse = ApiResponse<{
   user: User;
+  token?: string;
   challenge_token?: string;
 }>;
 export type LogoutResponse = ApiResponse<null>;
