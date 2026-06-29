@@ -78,10 +78,15 @@ export interface ApiResponse<T = null> {
 }
 
 export type GetAllUniversities = ApiResponse<University[]>;
+export type ListOfFaculties = ApiResponse<Faculty[]>;
 
 export interface UniversityPayload{
   name: string;
   location: string;
   establishedYear: string;
   isActive: boolean;
+}
+
+export interface FacultyPayload{
+  name: string;
 }

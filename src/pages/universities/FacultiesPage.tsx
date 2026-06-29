@@ -15,69 +15,9 @@ import { Navigate, useNavigate, useParams } from "react-router-dom";
 import { Label } from "../../components/ui/label";
 import { BreadcrumbItem } from "../../components/common/BreadcrumbItem";
 import { useBreadcrumbAccess } from "../../hooks/useBreadcrumbAccess";
-
-export const mockFaculties: Faculty[] = [
-  {
-    id: 1,
-    universityId: 1,
-    name: "College of Engineering",
-    dean: "Dr. Sara Ahmed",
-    status: "ACTIVE",
-    adminId: null,
-    isActive: true,
-    createdAt: "2024-01-01T00:00:00Z",
-    updatedAt: "2024-01-01T00:00:00Z",
-    deletedAt: null,
-  },
-  {
-    id: 2,
-    universityId: 1,
-    name: "College of Medicine",
-    dean: "Dr. Diyar Omar",
-    status: "ACTIVE",
-    adminId: null,
-    isActive: true,
-    createdAt: "2024-01-01T00:00:00Z",
-    updatedAt: "2024-01-01T00:00:00Z",
-    deletedAt: null,
-  },
-  {
-    id: 3,
-    universityId: 1,
-    name: "College of Law",
-    dean: "Dr. Lana Jabar",
-    status: "ACTIVE",
-    adminId: null,
-    isActive: true,
-    createdAt: "2024-01-01T00:00:00Z",
-    updatedAt: "2024-01-01T00:00:00Z",
-    deletedAt: null,
-  },
-  {
-    id: 4,
-    universityId: 1,
-    name: "College of Science",
-    dean: "Dr. Rebin Faraj",
-    status: "ACTIVE",
-    adminId: null,
-    isActive: true,
-    createdAt: "2024-01-01T00:00:00Z",
-    updatedAt: "2024-01-01T00:00:00Z",
-    deletedAt: null,
-  },
-  {
-    id: 5,
-    universityId: 1,
-    name: "College of Education",
-    dean: "Dr. Awat Hama",
-    status: "INACTIVE",
-    adminId: null,
-    isActive: false,
-    createdAt: "2024-01-01T00:00:00Z",
-    updatedAt: "2024-01-01T00:00:00Z",
-    deletedAt: null,
-  },
-];
+import { getAllFaculties } from "../../api/faculty";
+import { useQuery } from "@tanstack/react-query";
+import ErrorState from "../../components/common/ErrorState";
 
 const statusStyles: Record<FacultyStatus, string> = {
   ACTIVE: "bg-emerald-100 text-emerald-700 hover:bg-emerald-100",
@@ -100,11 +40,17 @@ function FacultiesPage() {
   const navigate = useNavigate();
   const { canAccessUniversities } = useBreadcrumbAccess();
 
+  const {data: faculties, isLoading, isError, refetch} = useQuery({
+    queryKey: ["faculties"],
+    queryFn: getAllFaculties
+  });
+
+
   const university = mockUniversities.find(
     (u) => String(u.id) === universityId,
   );
 
-  const filteredFaculties = mockFaculties.filter(
+  const filteredFaculties = faculties.filter(
     (f) =>
       f.name.toLowerCase().includes(filter.toLowerCase()) ||
       f.dean.toLowerCase().includes(filter.toLowerCase()) ||
@@ -119,6 +65,12 @@ function FacultiesPage() {
     // Submit logic here
     setShowPopup(false);
   }
+
+  // error state
+    if (isError)
+    return (
+      <ErrorState title=" Couldn't load faculties" onClick={() => refetch()} />
+    );
 
   const columns: DataTableColumn<Faculty>[] = [
     {
