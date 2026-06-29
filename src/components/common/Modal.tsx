@@ -7,6 +7,7 @@ interface ModalProps {
   onConfirm?: () => void;
   onClose: () => void;
   children: React.ReactNode;
+  isLoading?: boolean;
 }
 
 function Modal({
@@ -15,6 +16,7 @@ function Modal({
   onConfirm,
   onClose,
   children,
+  isLoading = false,
 }: ModalProps) {
   const { t } = useTranslation();
 
@@ -25,13 +27,18 @@ function Modal({
         <div className="my-2">{children}</div>
         <div className="flex justify-end gap-5 p-4">
           <Button
+            disabled={isLoading}
             onClick={onClose}
             className="bg-white border-teal-700 text-gray-800 hover:bg-white"
           >
             {t("Cancel")}
           </Button>
-          <Button onClick={onConfirm} className="bg-teal-700 text-white">
-            {confirmLabel ?? t("Confirm")}
+          <Button
+            disabled={isLoading}
+            onClick={onConfirm}
+            className="bg-teal-700 text-white"
+          >
+            {isLoading ? t("Saving...") : (confirmLabel ?? t("Confirm"))}
           </Button>
         </div>
       </div>

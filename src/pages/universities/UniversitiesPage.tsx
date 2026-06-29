@@ -1,10 +1,14 @@
 import { useTranslation } from "react-i18next";
-import { Search, Plus } from "lucide-react";
+import { Search, Plus, AlertTriangle } from "lucide-react";
 import {
   DataTable,
   type DataTableColumn,
 } from "../../components/common/DataTable";
-import type { University, UniversityStatus } from "../../types/hierarchy";
+import type {
+  University,
+  UniversityPayload,
+  UniversityStatus,
+} from "../../types/hierarchy";
 import { Badge } from "../../components/ui/badge";
 import { Pencil, Trash2 } from "lucide-react";
 import { Input } from "../../components/ui/input";
@@ -14,89 +18,8 @@ import Modal from "../../components/common/Modal";
 import { Label } from "../../components/ui/label";
 import PageHeader from "../../components/common/PageHeader";
 import { useUserStore } from "../../store/userStore";
-
-export const mockUniversities: University[] = [
-  {
-    id: 1,
-    name: "Salahaddin University",
-    president: "Dr. Aram Qadir",
-    status: "ACTIVE",
-    adminId: null,
-    academicYear: null,
-    location: "Erbil",
-    startDate: null,
-    endDate: null,
-    establishedYear: "1991-01-01",
-    isActive: true,
-    createdAt: "2024-01-01T00:00:00Z",
-    updatedAt: "2024-01-01T00:00:00Z",
-    deletedAt: null,
-  },
-  {
-    id: 2,
-    name: "University of Sulaimani",
-    president: "Dr. Shilan Rashid",
-    status: "ACTIVE",
-    adminId: null,
-    academicYear: null,
-    location: "Sulaimani",
-    startDate: null,
-    endDate: null,
-    establishedYear: "1970-01-01",
-    isActive: true,
-    createdAt: "2024-01-01T00:00:00Z",
-    updatedAt: "2024-01-01T00:00:00Z",
-    deletedAt: null,
-  },
-  {
-    id: 3,
-    name: "University of Duhok",
-    president: "Dr. Hemin Tahir",
-    status: "ACTIVE",
-    adminId: null,
-    academicYear: null,
-    location: "Duhok",
-    startDate: null,
-    endDate: null,
-    establishedYear: "1987-01-01",
-    isActive: true,
-    createdAt: "2024-01-01T00:00:00Z",
-    updatedAt: "2024-01-01T00:00:00Z",
-    deletedAt: null,
-  },
-  {
-    id: 4,
-    name: "University of Halabja",
-    president: "Dr. Nask Ali",
-    status: "INACTIVE",
-    adminId: null,
-    academicYear: null,
-    location: "Halabja",
-    startDate: null,
-    endDate: null,
-    establishedYear: "2010-01-01",
-    isActive: false,
-    createdAt: "2024-01-01T00:00:00Z",
-    updatedAt: "2024-01-01T00:00:00Z",
-    deletedAt: null,
-  },
-  {
-    id: 5,
-    name: "University of Garmian",
-    president: "Dr. Karwan Saeed",
-    status: "ACTIVE",
-    adminId: null,
-    academicYear: null,
-    location: "Kalar",
-    startDate: null,
-    endDate: null,
-    establishedYear: "2005-01-01",
-    isActive: true,
-    createdAt: "2024-01-01T00:00:00Z",
-    updatedAt: "2024-01-01T00:00:00Z",
-    deletedAt: null,
-  },
-];
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { addUniversity, getAllUniversities } from "../../api/university";
 
 const statusStyles: Record<UniversityStatus, string> = {
   ACTIVE: "bg-emerald-100 text-emerald-700 hover:bg-emerald-100",
@@ -116,15 +39,137 @@ function UniversitiesPage() {
   const [filter, setFilter] = useState("");
   const navigate = useNavigate();
   const user = useUserStore((state) => state.user);
+  const [form, setForm] = useState<UniversityPayload>({
+    name: "",
+    location: "",
+    establishedYear: new Date().toISOString().split("T")[0],
+    isActive: true,
+  });
+
+  const {
+    data: universities = [],
+    isLoading,
+    isError,
+    refetch,
+  } = useQuery({
+    queryKey: ["universities"],
+    queryFn: getAllUniversities,
+  });
+
+  const { mutate: createUniversity, isPending } = useMutation({
+    mutationFn: addUniversity,
+    onSuccess: () => {
+      setShowPopup(false);
+      setForm({
+        name: "",
+        location: "",
+        establishedYear: "",
+        isActive: true,
+      });
+      refetch();
+    },
+    onError: (error: Error) => {
+      console.error(error.message);
+      // swap console.error for a toast if you have one
+    },
+  });
 
   function handleModal() {
     setShowPopup((prev) => !prev);
   }
 
   function handleAddUniversity() {
-    // Submit logic here
-    setShowPopup(false);
+    if (!form.name.trim() || !form.location.trim()) return;
+    createUniversity(form);
   }
+
+  // loading state
+  if (isLoading)
+    return (
+      <div className="min-h-screen bg-[#F7F6F2] px-8 py-8">
+        <div className="rounded-xl border border-border bg-white overflow-hidden">
+          <div className="flex items-center justify-between px-5 py-3.5">
+            <div className="flex items-center gap-2">
+              <div className="h-4 w-24 rounded bg-muted animate-pulse" />
+              <div className="h-3 w-14 rounded bg-muted/50 animate-pulse" />
+            </div>
+            <div className="h-8 w-40 rounded-full bg-muted/50 animate-pulse" />
+          </div>
+
+          <div className="grid grid-cols-[2fr_1.5fr_1fr_80px] px-5 py-2.5 border-y border-border">
+            {["NAME", "PRESIDENT", "STATUS", "ACTIONS"].map((col) => (
+              <span
+                key={col}
+                className={`text-[11px] font-medium tracking-widest text-muted-foreground uppercase ${col === "ACTIONS" ? "text-right" : ""}`}
+              >
+                {col}
+              </span>
+            ))}
+          </div>
+
+          {[...Array(5)].map((_, i) => (
+            <div
+              key={i}
+              className="grid grid-cols-[2fr_1.5fr_1fr_80px] items-center px-5 py-[18px] border-b border-border last:border-0"
+            >
+              <div
+                className="h-3.5 rounded bg-muted animate-pulse"
+                style={{
+                  width: `${[62, 55, 70, 50, 65][i]}%`,
+                  animationDelay: `${i * 80}ms`,
+                }}
+              />
+              <div
+                className="h-3 rounded bg-muted/60 animate-pulse"
+                style={{
+                  width: `${[55, 48, 60, 52, 45][i]}%`,
+                  animationDelay: `${i * 80 + 50}ms`,
+                }}
+              />
+              <div
+                className="h-6 w-16 rounded-full bg-muted/60 animate-pulse"
+                style={{ animationDelay: `${i * 80 + 100}ms` }}
+              />
+              <div className="flex justify-end gap-2">
+                <div
+                  className="w-7 h-7 rounded-full bg-muted/60 animate-pulse"
+                  style={{ animationDelay: `${i * 80 + 140}ms` }}
+                />
+                <div
+                  className="w-7 h-7 rounded-full bg-muted/60 animate-pulse"
+                  style={{ animationDelay: `${i * 80 + 170}ms` }}
+                />
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+
+  // error state
+  if (isError)
+    return (
+      <div className="min-h-screen bg-[#F7F6F2] px-8 py-8">
+        <div className="flex flex-col items-center justify-center gap-3 py-12 text-center">
+          <div className="w-12 h-12 rounded-full bg-red-50 flex items-center justify-center text-red-500">
+            <AlertTriangle className="w-5 h-5" />
+          </div>
+          <p className="text-base font-medium text-foreground">
+            Couldn't load universities
+          </p>
+          <p className="text-sm text-muted-foreground max-w-xs">
+            Something went wrong on our end. Check your connection and try
+            again.
+          </p>
+          <button
+            onClick={() => refetch()}
+            className="mt-1 px-4 py-2 text-sm border border-border rounded-md hover:bg-muted transition-colors"
+          >
+            Try again
+          </button>
+        </div>
+      </div>
+    );
 
   const columns: DataTableColumn<University>[] = [
     {
@@ -154,6 +199,7 @@ function UniversitiesPage() {
       ),
     },
     {
+      // ********* TODO: integrate with backend *************
       key: "actions",
       header: t("Actions"),
       align: "right",
@@ -178,7 +224,7 @@ function UniversitiesPage() {
     },
   ];
 
-  const filteredUniversities = mockUniversities.filter(
+  const filteredUniversities = universities.filter(
     (u) =>
       u.name.toLowerCase().includes(filter.toLowerCase()) ||
       u.president?.toLowerCase().includes(filter.toLowerCase()) ||
@@ -189,13 +235,13 @@ function UniversitiesPage() {
     <div className="min-h-screen bg-[#F7F6F2] px-8 py-8">
       {/* Page header + Add button row */}
       <div className="flex items-start justify-between mb-6">
-      <PageHeader 
-      title={t("Ministry of Higher Education")}
-      locationTitle={t("Universities")}
-      role={user?.role || ""}
-      year="2025-2026"
-      />
-      <button
+        <PageHeader
+          title={t("Ministry of Higher Education")}
+          locationTitle={t("Universities")}
+          role={user?.role || ""}
+          year="2025-2026"
+        />
+        <button
           className="flex items-center gap-1.5 bg-teal-700 hover:bg-teal-800 active:bg-teal-900 text-white text-sm font-medium px-4 py-2.5 rounded-xl transition-colors mt-1 cursor-pointer"
           onClick={handleModal}
         >
@@ -249,6 +295,7 @@ function UniversitiesPage() {
           confirmLabel={t("Add University")}
           onClose={() => setShowPopup(false)}
           onConfirm={handleAddUniversity}
+          isLoading={isPending}
         >
           <div className="flex flex-col gap-3">
             <div>
@@ -257,6 +304,10 @@ function UniversitiesPage() {
               </Label>
               <Input
                 placeholder={t("e.g. University of Sulaimani")}
+                value={form.name}
+                onChange={(e) =>
+                  setForm((f) => ({ ...f, name: e.target.value }))
+                }
                 type="text"
               />
             </div>
@@ -265,14 +316,30 @@ function UniversitiesPage() {
               <Label className="text-sm font-medium text-gray-700 mb-1">
                 {t("Location")}
               </Label>
-              <Input placeholder={t("e.g. Sulaimani")} type="text" />
+              <Input
+                placeholder={t("e.g. Sulaimani")}
+                value={form.location}
+                onChange={(e) =>
+                  setForm((f) => ({ ...f, location: e.target.value }))
+                }
+                type="text"
+              />
             </div>
 
             <div>
               <Label className="text-sm font-medium text-gray-700 mb-1">
                 {t("Established Year")}
               </Label>
-              <Input type="date" />
+              <Input
+                value={form.establishedYear}
+                onChange={(e) =>
+                  setForm((f) => ({
+                    ...f,
+                    establishedYear: e.target.value,
+                  }))
+                }
+                type="date"
+              />
             </div>
 
             <div className="flex items-center justify-between py-1">
@@ -281,6 +348,10 @@ function UniversitiesPage() {
               </Label>
               <input
                 type="checkbox"
+                checked={form.isActive}
+                onChange={(e) =>
+                  setForm((f) => ({ ...f, isActive: e.target.checked }))
+                }
                 defaultChecked={true}
                 className="w-4 h-4 accent-teal-700"
               />
