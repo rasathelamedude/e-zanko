@@ -70,3 +70,18 @@ export interface Course {
   department?: string;
   lecturer?: string;
 }
+
+export interface ApiResponse<T = null> {
+  success: boolean;
+  message: string;
+  data: T;
+}
+
+export type GetAllUniversities = ApiResponse<University[]>;
+
+export interface UniversityPayload{
+  name: string;
+  location: string;
+  establishedYear: string;
+  isActive: boolean;
+}
