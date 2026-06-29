@@ -4,14 +4,14 @@ import { Button } from "../../components/ui/button";
 import { Label } from "../../components/ui/label";
 import { Input } from "../../components/ui/input";
 import logo from "../../assets/images/kurdistan-region-goverment-logo.png";
-import { login } from "../../api/auth";
+import { login, forgetPassword } from "../../api/auth";
 import type { LoginPayload } from "../../types/auth";
 import { useMutation } from "@tanstack/react-query";
 import { useUserStore } from "../../store/userStore";
 import { ImSpinner } from "react-icons/im";
 import { LogInIcon } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { forgetPassword } from "../../api/auth";
+import OTPPopUp from "../../components/common/OTPPopUp";
 
 function LoginPage() {
   const [validationError, setValidationError] = useState("");
@@ -20,30 +20,37 @@ function LoginPage() {
     email: "",
     password: "",
   });
-  const navigate = useNavigate();
+  const [show2FA, setShow2FA] = useState(false);
+  const [challengeToken, setChallengeToken] = useState("");
 
+  const navigate = useNavigate();
   const { t } = useTranslation();
   const { setUser } = useUserStore();
 
   const { mutate, isPending, error } = useMutation({
     mutationFn: (payload: LoginPayload) => login(payload),
-    onSuccess: (data) => {
-      setUser(data);
-      navigate("/");
+    onSuccess: (result) => {
+      if (result.requires2FA) {
+        // 202 — store the challenge token and show the OTP modal
+        setChallengeToken(result.challenge_token);
+        setShow2FA(true);
+      } else {
+        // 200 — logged in, set user and go home
+        setUser(result.user);
+        navigate("/");
+      }
     },
     onError: () => {
       setUser(null);
     },
   });
 
-  const handleLogin = async (e: React.MouseEvent<HTMLButtonElement>) => {
+  const handleLogin = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     mutate(loginPayload);
   };
 
-  const handlePayloadChange = async (
-    e: React.ChangeEvent<HTMLInputElement>,
-  ) => {
+  const handlePayloadChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setLoginPayload({
       ...loginPayload,
       [e.target.name]: e.target.value,
@@ -155,6 +162,15 @@ function LoginPage() {
           </Button>
         </div>
       </div>
+
+      {show2FA && (
+        <OTPPopUp
+          mode="login"
+          email={loginPayload.email}
+          challengeToken={challengeToken}
+          onClose={() => setShow2FA(false)}
+        />
+      )}
     </div>
   );
 }

@@ -1,10 +1,27 @@
 import { useTranslation } from "react-i18next";
 import PageHeader from "../../../components/common/PageHeader";
 import { useUserStore } from "../../../store/userStore";
+import { useState } from "react";
+import { useMutation } from "@tanstack/react-query";
+import { prepare2FA } from "../../../api/auth";
+import OTPPopUp from "../../../components/common/OTPPopUp";
 
 const MinistrySettingsPage = () => {
+  const [showOTP, setShowOTP] = useState(false);
+
   const { t } = useTranslation();
   const { user } = useUserStore();
+
+  const {
+    mutate: prepare,
+    isPending,
+    error,
+  } = useMutation({
+    mutationFn: prepare2FA,
+    onSuccess: () => {
+      setShowOTP(true);
+    },
+  });
 
   return (
     <div className="p-8 bg-slate-50 min-h-screen space-y-8">
@@ -88,15 +105,25 @@ const MinistrySettingsPage = () => {
           <div className="py-4 flex items-center justify-between border-b border-slate-100">
             <div>
               <h3 className="text-sm font-semibold text-slate-900">
-                {t("Two-step verification")}
+                {t("Two-factor authentication")}
               </h3>
               <p className="text-sm text-slate-500">
                 {t("Add an extra layer of security to your account.")}
               </p>
+              {error && (
+                <p className="text-xs text-red-500 mt-1">{error.message}</p>
+              )}
             </div>
 
-            <button className="border border-[#0f7576] text-[#0f7576] px-5 py-2 rounded-lg text-sm font-medium">
-              {t("Enable")}
+            <button
+              className={`border border-[#0f7576] text-[#0f7576] px-5 py-2 rounded-lg text-sm font-medium ${isPending ? "pointer-events-none opacity-40" : "cursor-pointer"}`}
+              onClick={() => prepare()}
+            >
+              {isPending
+                ? t("Sending code…")
+                : user?.is2FAEnabled
+                  ? t("Disable")
+                  : t("Enable")}
             </button>
           </div>
 
@@ -116,6 +143,14 @@ const MinistrySettingsPage = () => {
           </div>
         </div>
       </div>
+
+      {showOTP && (
+        <OTPPopUp
+          mode={user?.is2FAEnabled ? "disable" : "enable"}
+          email={user?.email ?? ""}
+          onClose={() => setShowOTP(false)}
+        />
+      )}
     </div>
   );
 };
