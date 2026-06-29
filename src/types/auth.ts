@@ -8,7 +8,7 @@ export type UserRole =
   | "LECTURER"
   | "STUDENT";
 
-export type EZankoRoles = Omit<UserRole, "STUDENT" | "LECTURER">; 
+export type EZankoRoles = Omit<UserRole, "STUDENT" | "LECTURER">;
 
 // The heierarchy
 export type UserScope = "MINISTRY" | "UNIVERSITY" | "FACULTY" | "DEPARTMENT";
@@ -22,6 +22,7 @@ export interface User {
   scope: UserScope;
   scopeId: number;
   isActive: boolean;
+  is2FAEnabled: boolean;
 }
 
 /**
@@ -39,7 +40,10 @@ export interface ApiResponse<T = null> {
   data: T;
 }
 
-export type LoginResponse = ApiResponse<User>;
+export type LoginResponse = ApiResponse<{
+  user: User;
+  challenge_token?: string;
+}>;
 export type LogoutResponse = ApiResponse<null>;
 export type ForgotPasswordResponse = ApiResponse<null>;
 export type GetProfileResponse = ApiResponse<User>;
