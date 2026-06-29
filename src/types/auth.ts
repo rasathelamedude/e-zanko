@@ -42,7 +42,9 @@ export interface ApiResponse<T = null> {
 export type LoginResponse = ApiResponse<User>;
 export type LogoutResponse = ApiResponse<null>;
 export type ForgotPasswordResponse = ApiResponse<null>;
+export type ChangePasswordResponse = ApiResponse<null>;
 export type GetProfileResponse = ApiResponse<User>;
+
 
 export interface LoginPayload {
   email: string;

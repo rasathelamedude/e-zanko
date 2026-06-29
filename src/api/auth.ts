@@ -1,10 +1,10 @@
-import type {
-  GetProfileResponse,
-  ForgotPasswordResponse,
-  LoginPayload,
-  LoginResponse,
-  LogoutResponse,
-  User,
+import {
+  type ChangePasswordResponse,
+  type ForgotPasswordResponse,
+  type LoginPayload,
+  type LoginResponse,
+  type LogoutResponse,
+  type User,
 } from "../types/auth";
 import axios from "../lib/axios";
 
@@ -76,5 +76,22 @@ export async function resetPassword({
 
   if (!success) {
     throw new Error(message || "Password reset failed");
+  }
+}
+
+export async function changePassword(payload: {
+  currentPassword: string;
+  newPassword: string;
+  confirmPassword: string;
+}): Promise<void> {
+  const response = await axios.post<ChangePasswordResponse>(
+    "/api/auth/change-password",
+    payload,
+  );
+
+  const { success, message } = response.data;
+
+  if (!success) {
+    throw new Error(message || "Password change failed");
   }
 }
