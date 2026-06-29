@@ -30,8 +30,7 @@ api.interceptors.response.use(
     const finalMessage = backendMessage || "Something went wrong";
 
     if (status === 401) {
-      useUserStore.getState().setUser(null);
-      useUserStore.getState().setToken(null);
+      useUserStore.getState().clearAuth();
 
       if (window.location.pathname !== "/login") {
         window.location.href = "/login";
