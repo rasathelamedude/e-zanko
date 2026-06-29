@@ -12,7 +12,6 @@ import Modal from "../../components/common/Modal";
 import { useUserStore } from "../../store/userStore";
 import PageHeader from "../../components/common/PageHeader";
 import { Navigate, useNavigate, useParams } from "react-router-dom";
-import { mockUniversities } from "./UniversitiesPage";
 import { Label } from "../../components/ui/label";
 import { BreadcrumbItem } from "../../components/common/BreadcrumbItem";
 import { useBreadcrumbAccess } from "../../hooks/useBreadcrumbAccess";

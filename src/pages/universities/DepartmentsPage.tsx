@@ -13,7 +13,6 @@ import PageHeader from "../../components/common/PageHeader";
 import { useUserStore } from "../../store/userStore";
 import { Navigate, useNavigate, useParams } from "react-router-dom";
 import { mockFaculties } from "./FacultiesPage";
-import { mockUniversities } from "./UniversitiesPage";
 import { Label } from "../../components/ui/label";
 import { useBreadcrumbAccess } from "../../hooks/useBreadcrumbAccess";
 import { BreadcrumbItem } from "../../components/common/BreadcrumbItem";

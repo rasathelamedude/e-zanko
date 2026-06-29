@@ -22,7 +22,6 @@ import { Label } from "../../components/ui/label";
 //   ComboboxList,
 // } from "../../components/ui/combobox";
 import { Navigate, useNavigate, useParams } from "react-router-dom";
-import { mockUniversities } from "./UniversitiesPage";
 import { mockFaculties } from "./FacultiesPage";
 import { mockDepartments } from "./DepartmentsPage";
 import { useBreadcrumbAccess } from "../../hooks/useBreadcrumbAccess";
@@ -115,7 +114,8 @@ function CoursesPage() {
   const [filter, setFilter] = useState("");
   const { universityId, facultyId, departmentId } = useParams();
   const navigate = useNavigate();
-  const { canAccessUniversities, canAccessFaculties, canAccessDepartments} = useBreadcrumbAccess();
+  const { canAccessUniversities, canAccessFaculties, canAccessDepartments } =
+    useBreadcrumbAccess();
 
   const university = mockUniversities.find(
     (u) => String(u.id) === universityId,
