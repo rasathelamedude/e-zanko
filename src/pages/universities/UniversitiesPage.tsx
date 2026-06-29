@@ -19,7 +19,13 @@ import { Label } from "../../components/ui/label";
 import PageHeader from "../../components/common/PageHeader";
 import { useUserStore } from "../../store/userStore";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { addUniversity, getAllUniversities } from "../../api/university";
+import {
+  addUniversity,
+  deleteUniversity,
+  getAllUniversities,
+  updateUniversity,
+} from "../../api/university";
+import ConfirmDialog from "../../components/common/ConfirmDialog";
 
 const statusStyles: Record<UniversityStatus, string> = {
   ACTIVE: "bg-emerald-100 text-emerald-700 hover:bg-emerald-100",
@@ -33,9 +39,15 @@ const statusLabels: Record<UniversityStatus, string> = {
   INACTIVE: "Inactive",
 };
 
+type ModalState =
+  | { type: "add" }
+  | { type: "edit"; university: University }
+  | { type: "delete"; university: University }
+  | null;
+
 function UniversitiesPage() {
   const { t } = useTranslation();
-  const [showPopup, setShowPopup] = useState(false);
+  const [modal, setModal] = useState<ModalState>(null);
   const [filter, setFilter] = useState("");
   const navigate = useNavigate();
   const user = useUserStore((state) => state.user);
@@ -46,6 +58,7 @@ function UniversitiesPage() {
     isActive: true,
   });
 
+  // get all universities
   const {
     data: universities = [],
     isLoading,
@@ -56,10 +69,11 @@ function UniversitiesPage() {
     queryFn: getAllUniversities,
   });
 
+  // add university
   const { mutate: createUniversity, isPending } = useMutation({
     mutationFn: addUniversity,
     onSuccess: () => {
-      setShowPopup(false);
+      setModal(null);
       setForm({
         name: "",
         location: "",
@@ -70,17 +84,42 @@ function UniversitiesPage() {
     },
     onError: (error: Error) => {
       console.error(error.message);
-      // swap console.error for a toast if you have one
     },
   });
 
-  function handleModal() {
-    setShowPopup((prev) => !prev);
-  }
+  // edit university
+  const { mutate: editUniversity, isPending: isUpdating } = useMutation({
+    mutationFn: ({ id, payload }: { id: number; payload: UniversityPayload }) =>
+      updateUniversity(id, payload),
+    onSuccess: () => {
+      setModal(null);
+      setForm({ name: "", location: "", establishedYear: "", isActive: true });
+      refetch();
+    },
+    onError: (error: Error) => console.error(error.message),
+  });
+
+  // delete university
+  const { mutate: removeUniversity, isPending: isDeleting } = useMutation({
+    mutationFn: (id: number) => deleteUniversity(id),
+    onSuccess: () => {
+      setModal(null);
+      refetch();
+    },
+    onError: (error: Error) => {
+      console.error(error.message);
+    },
+  });
 
   function handleAddUniversity() {
     if (!form.name.trim() || !form.location.trim()) return;
     createUniversity(form);
+  }
+
+  function handleUpdateUniversity() {
+    if (!form.name.trim() || !form.location.trim()) return;
+    if (modal?.type !== "edit") return;
+    editUniversity({ id: modal.university.id, payload: form });
   }
 
   // loading state
@@ -199,21 +238,28 @@ function UniversitiesPage() {
       ),
     },
     {
-      // ********* TODO: integrate with backend *************
       key: "actions",
       header: t("Actions"),
       align: "right",
       render: (u) => (
         <div className="flex justify-end gap-2">
           <button
-            onClick={() => console.log("edit", u.id)}
+            onClick={() => {
+              setForm({
+                name: u.name,
+                location: u.location,
+                establishedYear: u.establishedYear,
+                isActive: u.isActive,
+              });
+              setModal({ type: "edit", university: u });
+            }}
             aria-label={`${t("Edit")} ${u.name}`}
             className="rounded-md p-2 text-teal-600 hover:bg-teal-50"
           >
             <Pencil className="h-4 w-4 cursor-pointer" />
           </button>
           <button
-            onClick={() => console.log("delete", u.id)}
+            onClick={() => setModal({ type: "delete", university: u })}
             aria-label={`${t("Delete")} ${u.name}`}
             className="rounded-md p-2 text-red-600 hover:bg-red-50"
           >
@@ -243,7 +289,7 @@ function UniversitiesPage() {
         />
         <button
           className="flex items-center gap-1.5 bg-teal-700 hover:bg-teal-800 active:bg-teal-900 text-white text-sm font-medium px-4 py-2.5 rounded-xl transition-colors mt-1 cursor-pointer"
-          onClick={handleModal}
+          onClick={() => setModal({ type: "add" })}
         >
           <Plus size={16} strokeWidth={2.5} />
           {t("Add University")}
@@ -289,11 +335,12 @@ function UniversitiesPage() {
         />
       </div>
 
-      {showPopup && (
+      {/* add university popup */}
+      {modal?.type === "add" && (
         <Modal
           title={t("Add University")}
           confirmLabel={t("Add University")}
-          onClose={() => setShowPopup(false)}
+          onClose={() => setModal(null)}
           onConfirm={handleAddUniversity}
           isLoading={isPending}
         >
@@ -358,6 +405,89 @@ function UniversitiesPage() {
             </div>
           </div>
         </Modal>
+      )}
+
+      {/* edit university popup */}
+      {modal?.type === "edit" && (
+        <Modal
+          title={t("Update University")}
+          confirmLabel={t("Update University")}
+          onClose={() => setModal(null)}
+          onConfirm={handleUpdateUniversity}
+          isLoading={isUpdating}
+        >
+          <div className="flex flex-col gap-3">
+            <div>
+              <Label className="text-sm font-medium text-gray-700 mb-1">
+                {t("Name")}
+              </Label>
+              <Input
+                placeholder={t("e.g. University of Sulaimani")}
+                value={form.name}
+                onChange={(e) =>
+                  setForm((f) => ({ ...f, name: e.target.value }))
+                }
+                type="text"
+              />
+            </div>
+
+            <div>
+              <Label className="text-sm font-medium text-gray-700 mb-1">
+                {t("Location")}
+              </Label>
+              <Input
+                placeholder={t("e.g. Sulaimani")}
+                value={form.location}
+                onChange={(e) =>
+                  setForm((f) => ({ ...f, location: e.target.value }))
+                }
+                type="text"
+              />
+            </div>
+
+            <div>
+              <Label className="text-sm font-medium text-gray-700 mb-1">
+                {t("Established Year")}
+              </Label>
+              <Input
+                value={form.establishedYear}
+                onChange={(e) =>
+                  setForm((f) => ({
+                    ...f,
+                    establishedYear: e.target.value,
+                  }))
+                }
+                type="date"
+              />
+            </div>
+
+            <div className="flex items-center justify-between py-1">
+              <Label className="text-sm font-medium text-gray-700">
+                {t("Active")}
+              </Label>
+              <input
+                type="checkbox"
+                checked={form.isActive}
+                onChange={(e) =>
+                  setForm((f) => ({ ...f, isActive: e.target.checked }))
+                }
+                defaultChecked={true}
+                className="w-4 h-4 accent-teal-700"
+              />
+            </div>
+          </div>
+        </Modal>
+      )}
+
+      {/* delete university confirmation popup */}
+      {modal?.type === "delete" && (
+        <ConfirmDialog
+          title={t("Delete University")}
+          description={`Are you sure you want to delete ${modal.university.name}? This action cannot be undone.`}
+          onClose={() => setModal(null)}
+          onConfirm={() => removeUniversity(modal.university.id)}
+          isLoading={isDeleting}
+        />
       )}
     </div>
   );
