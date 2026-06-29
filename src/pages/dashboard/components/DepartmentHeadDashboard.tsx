@@ -58,7 +58,7 @@ const DepartmentHeadDashboard = () => {
       <PageHeader
         title={t("Ministry of Higher Education")}
         locationTitle={t("Dashboard")}
-        role={user?.role || ""}
+        role={user?.roles[0]?.name || ""}
         year="2023-2024"
       />
 

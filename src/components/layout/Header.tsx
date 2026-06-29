@@ -46,7 +46,7 @@ export default function Header() {
   const ministryName = t("Ministry of Higher Education");
 
   const letterButtonText =
-    user?.role === "MINISTRY_ADMIN"
+    user?.roles[0]?.name === "MINISTRY_ADMIN"
       ? t("Broadcast Letter")
       : t("Compose Letter");
 
@@ -111,11 +111,10 @@ export default function Header() {
               </option>
             ))}
           </select>
-
         </div>
 
         {composePopup &&
-          (user?.role === "MINISTRY_ADMIN" ? (
+          (user?.roles[0]?.name === "MINISTRY_ADMIN" ? (
             <BroadcastLetter onClose={() => setComposePopup(false)} />
           ) : (
             <ComposeLetter onClose={() => setComposePopup(false)} />

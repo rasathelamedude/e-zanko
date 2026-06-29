@@ -16,6 +16,7 @@ import { mockFaculties } from "./FacultiesPage";
 import { Label } from "../../components/ui/label";
 import { useBreadcrumbAccess } from "../../hooks/useBreadcrumbAccess";
 import { BreadcrumbItem } from "../../components/common/BreadcrumbItem";
+import type { UserScope } from "../../types/auth";
 
 export const mockDepartments: Department[] = [
   {
@@ -101,6 +102,13 @@ function DepartmentsPage() {
   const navigate = useNavigate();
   const { canAccessUniversities, canAccessFaculties } = useBreadcrumbAccess();
 
+  const getScopeId = (scopeType: UserScope) => {
+    return user?.scopes?.find((s) => s.scope_type === scopeType)?.scope_id || 0;
+  };
+
+  const userUniversityId = getScopeId("UNIVERSITY");
+  const userFacultyId = getScopeId("FACULTY");
+
   const university = mockUniversities.find(
     (u) => String(u.id) === universityId,
   );
@@ -157,8 +165,10 @@ function DepartmentsPage() {
   ];
 
   if (
-    (user?.scope === "UNIVERSITY" && user?.scopeId !== Number(universityId)) ||
-    (user?.scope === "FACULTY" && user?.scopeId !== Number(facultyId))
+    (user?.scopes.some((s) => s.scope_type === "UNIVERSITY") &&
+      userUniversityId !== Number(universityId)) ||
+    (user?.scopes.some((s) => s.scope_type === "FACULTY") &&
+      userFacultyId !== Number(facultyId))
   ) {
     return <Navigate to="/forbidden" replace />;
   }
@@ -194,7 +204,7 @@ function DepartmentsPage() {
         <PageHeader
           title={t("Ministry of Higher Education")}
           locationTitle={t("Departments")}
-          role={user?.role || ""}
+          role={user?.roles[0]?.name || ""}
           year="2025–2026"
         />
         <button

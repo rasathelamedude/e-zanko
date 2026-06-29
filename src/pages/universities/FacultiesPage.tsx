@@ -15,6 +15,7 @@ import { Navigate, useNavigate, useParams } from "react-router-dom";
 import { Label } from "../../components/ui/label";
 import { BreadcrumbItem } from "../../components/common/BreadcrumbItem";
 import { useBreadcrumbAccess } from "../../hooks/useBreadcrumbAccess";
+import type { UserScope } from "../../types/auth";
 
 export const mockFaculties: Faculty[] = [
   {
@@ -100,6 +101,12 @@ function FacultiesPage() {
   const navigate = useNavigate();
   const { canAccessUniversities } = useBreadcrumbAccess();
 
+  const getScopeId = (scopeType: UserScope) => {
+    return user?.scopes?.find((s) => s.scope_type === scopeType)?.scope_id || 0;
+  };
+
+  const userUniversityId = getScopeId("UNIVERSITY");
+
   const university = mockUniversities.find(
     (u) => String(u.id) === universityId,
   );
@@ -154,7 +161,10 @@ function FacultiesPage() {
     },
   ];
 
-  if (user?.scope === "UNIVERSITY" && user?.scopeId !== Number(universityId)) {
+  if (
+    user?.scopes.some((s) => s.scope_type === "UNIVERSITY") &&
+    userUniversityId !== Number(universityId)
+  ) {
     return <Navigate to="/forbidden" replace />;
   }
 
@@ -178,7 +188,7 @@ function FacultiesPage() {
         <PageHeader
           title={t("Ministry of Higher Education")}
           locationTitle={t("Faculties")}
-          role={user?.role || ""}
+          role={user?.roles[0]?.name || ""}
           year="2025–2026"
         />
         <button

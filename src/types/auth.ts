@@ -33,8 +33,6 @@ export interface User {
   phone: string;
   roles: UserRoleEntry[];
   scopes: UserScopeEntry[];
-  role?: UserRole;
-  scope?: UserScope;
   isActive?: boolean;
   is2FAEnabled?: boolean;
   created_at: string;
@@ -61,10 +59,10 @@ export type LoginResponse = ApiResponse<{
   token?: string;
   challenge_token?: string;
 }>;
+export type GetProfileResponse = ApiResponse<{ user: User }>;
 export type LogoutResponse = ApiResponse<null>;
 export type ForgotPasswordResponse = ApiResponse<null>;
 export type ChangePasswordResponse = ApiResponse<null>;
-export type GetProfileResponse = ApiResponse<User>;
 
 export interface LoginPayload {
   email: string;

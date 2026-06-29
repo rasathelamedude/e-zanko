@@ -7,10 +7,12 @@ import DeanReportsPage from "./components/DeanReportsPage";
 const ReportsPage = () => {
   const { user } = useUserStore();
 
-  if (user?.role === "MINISTRY_ADMIN") return <MinistryReportsPage />;
-  if (user?.role === "UNIVERSITY_ADMIN") return <UniversityReportPage />;
-  if (user?.role === "DEPARTMENT_HEAD") return <DepartmentHeadReportsPage />;
-  if (user?.role === "DEAN") return <DeanReportsPage />;
+  if (user?.roles[0]?.name === "MINISTRY_ADMIN") return <MinistryReportsPage />;
+  if (user?.roles[0]?.name === "UNIVERSITY_ADMIN")
+    return <UniversityReportPage />;
+  if (user?.roles[0]?.name === "DEPARTMENT_HEAD")
+    return <DepartmentHeadReportsPage />;
+  if (user?.roles[0]?.name === "DEAN") return <DeanReportsPage />;
 };
 
 export default ReportsPage;

@@ -16,7 +16,7 @@ const ProtectedRoutes = ({ allowedRoles }: ProtectedRoutesProps) => {
   }
 
   // Check if the user has the required level to access the route
-  if (allowedRoles && !allowedRoles.includes(user.role)) {
+  if (allowedRoles && !allowedRoles.includes(user?.roles[0]?.name)) {
     return <Navigate to={"/unauthorized"} replace />;
   }
 
