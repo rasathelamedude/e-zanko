@@ -4,7 +4,11 @@ import {
   DataTable,
   type DataTableColumn,
 } from "../../components/common/DataTable";
-import type { Faculty, FacultyStatus } from "../../types/hierarchy";
+import type {
+  FacultyPayload,
+  Faculty,
+  FacultyStatus,
+} from "../../types/hierarchy";
 import { Badge } from "../../components/ui/badge";
 import { useState } from "react";
 import { Input } from "../../components/ui/input";
@@ -15,70 +19,14 @@ import { Navigate, useNavigate, useParams } from "react-router-dom";
 import { Label } from "../../components/ui/label";
 import { BreadcrumbItem } from "../../components/common/BreadcrumbItem";
 import { useBreadcrumbAccess } from "../../hooks/useBreadcrumbAccess";
+import {
+  addFaculty,
+  getFacultiesByUniversity,
+} from "../../api/faculty";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import ErrorState from "../../components/common/ErrorState";
+import { getUniversityById } from "../../api/university";
 import type { UserScope } from "../../types/auth";
-
-export const mockFaculties: Faculty[] = [
-  {
-    id: 1,
-    universityId: 1,
-    name: "College of Engineering",
-    dean: "Dr. Sara Ahmed",
-    status: "ACTIVE",
-    adminId: null,
-    isActive: true,
-    createdAt: "2024-01-01T00:00:00Z",
-    updatedAt: "2024-01-01T00:00:00Z",
-    deletedAt: null,
-  },
-  {
-    id: 2,
-    universityId: 1,
-    name: "College of Medicine",
-    dean: "Dr. Diyar Omar",
-    status: "ACTIVE",
-    adminId: null,
-    isActive: true,
-    createdAt: "2024-01-01T00:00:00Z",
-    updatedAt: "2024-01-01T00:00:00Z",
-    deletedAt: null,
-  },
-  {
-    id: 3,
-    universityId: 1,
-    name: "College of Law",
-    dean: "Dr. Lana Jabar",
-    status: "ACTIVE",
-    adminId: null,
-    isActive: true,
-    createdAt: "2024-01-01T00:00:00Z",
-    updatedAt: "2024-01-01T00:00:00Z",
-    deletedAt: null,
-  },
-  {
-    id: 4,
-    universityId: 1,
-    name: "College of Science",
-    dean: "Dr. Rebin Faraj",
-    status: "ACTIVE",
-    adminId: null,
-    isActive: true,
-    createdAt: "2024-01-01T00:00:00Z",
-    updatedAt: "2024-01-01T00:00:00Z",
-    deletedAt: null,
-  },
-  {
-    id: 5,
-    universityId: 1,
-    name: "College of Education",
-    dean: "Dr. Awat Hama",
-    status: "INACTIVE",
-    adminId: null,
-    isActive: false,
-    createdAt: "2024-01-01T00:00:00Z",
-    updatedAt: "2024-01-01T00:00:00Z",
-    deletedAt: null,
-  },
-];
 
 const statusStyles: Record<FacultyStatus, string> = {
   ACTIVE: "bg-emerald-100 text-emerald-700 hover:bg-emerald-100",
@@ -100,22 +48,64 @@ function FacultiesPage() {
   const { universityId } = useParams();
   const navigate = useNavigate();
   const { canAccessUniversities } = useBreadcrumbAccess();
+  const [form, setForm] = useState<FacultyPayload>({
+    name: "",
+    admin_id: null,
+    is_active: false,
+  });
 
+  // get all faculties for a specific university
+  const {
+    data: faculties = [],
+    isLoading,
+    isError,
+    refetch,
+  } = useQuery({
+    queryKey: ["faculties", universityId],
+    queryFn: () => getFacultiesByUniversity(Number(universityId)),
+    enabled: !!universityId,
+  });
   const getScopeId = (scopeType: UserScope) => {
     return user?.scopes?.find((s) => s.scope_type === scopeType)?.scope_id || 0;
   };
 
   const userUniversityId = getScopeId("UNIVERSITY");
 
-  const university = mockUniversities.find(
-    (u) => String(u.id) === universityId,
-  );
+  // add faculty
+  const { mutate: createFaculty, isPending } = useMutation({
+    mutationFn: ({
+      universityId,
+      payload,
+    }: {
+      universityId: number;
+      payload: FacultyPayload;
+    }) => addFaculty(universityId, payload),
+    onSuccess: () => {
+      setForm({
+        name: "",
+        admin_id: null,
+        is_active: false,
+      });
+      setShowPopup(false);
+      refetch();
+    },
+    onError: (error: Error) => {
+      console.error(error.message);
+    },
+  });
 
-  const filteredFaculties = mockFaculties.filter(
+  // get university by id
+  const { data: university } = useQuery({
+    queryKey: ["university", universityId],
+    queryFn: () => getUniversityById(Number(universityId)),
+    enabled: !!universityId,
+  });
+
+  const filteredFaculties = faculties.filter(
     (f) =>
-      f.name.toLowerCase().includes(filter.toLowerCase()) ||
-      f.dean.toLowerCase().includes(filter.toLowerCase()) ||
-      f.status.toLowerCase().includes(filter.toLowerCase()),
+      f.name.toLowerCase().includes(filter.toLowerCase()) 
+      // f.dean.toLowerCase().includes(filter.toLowerCase()) ||
+      // f.status.toLowerCase().includes(filter.toLowerCase()),
   );
 
   function handleModal() {
@@ -123,9 +113,78 @@ function FacultiesPage() {
   }
 
   function handleAddFaculty() {
-    // Submit logic here
-    setShowPopup(false);
+    if (!form.name.trim()) return;
+    createFaculty({ universityId: Number(universityId), payload: form });
   }
+
+  // loading state
+  if (isLoading)
+    return (
+      <div className="min-h-screen bg-[#F7F6F2] px-8 py-8">
+        <div className="rounded-xl border border-border bg-white overflow-hidden">
+          <div className="flex items-center justify-between px-5 py-3.5">
+            <div className="flex items-center gap-2">
+              <div className="h-4 w-20 rounded bg-muted animate-pulse" />
+              <div className="h-3 w-14 rounded bg-muted/50 animate-pulse" />
+            </div>
+            <div className="h-8 w-32 rounded-full bg-muted/50 animate-pulse" />
+          </div>
+
+          <div className="grid grid-cols-[2fr_1fr_40px] px-5 py-2.5 border-y border-border">
+            {["NAME", "STATUS", ""].map((col, i) => (
+              <span
+                key={i}
+                className={`text-[11px] font-medium tracking-widest text-muted-foreground uppercase ${col === "STATUS" ? "text-right" : ""}`}
+              >
+                {col}
+              </span>
+            ))}
+          </div>
+
+          {[...Array(5)].map((_, i) => (
+            <div
+              key={i}
+              className="grid grid-cols-[2fr_1fr_40px] items-center px-5 py-[18px] border-b border-border last:border-0"
+            >
+              <div className="flex flex-col gap-1.5">
+                <div
+                  className="h-3.5 rounded bg-muted animate-pulse"
+                  style={{
+                    width: `${[60, 52, 48, 56, 50][i]}%`,
+                    animationDelay: `${i * 80}ms`,
+                  }}
+                />
+                <div
+                  className="h-3 rounded bg-muted/60 animate-pulse"
+                  style={{
+                    width: `${[40, 36, 38, 34, 42][i]}%`,
+                    animationDelay: `${i * 80 + 40}ms`,
+                  }}
+                />
+              </div>
+              <div className="flex justify-end">
+                <div
+                  className="h-6 w-16 rounded-full bg-muted/60 animate-pulse"
+                  style={{ animationDelay: `${i * 80 + 100}ms` }}
+                />
+              </div>
+              <div className="flex justify-end">
+                <div
+                  className="h-3 w-3 rounded bg-muted/50 animate-pulse"
+                  style={{ animationDelay: `${i * 80 + 140}ms` }}
+                />
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+
+  // error state
+  if (isError)
+    return (
+      <ErrorState title=" Couldn't load faculties" onClick={() => refetch()} />
+    );
 
   const columns: DataTableColumn<Faculty>[] = [
     {
@@ -144,21 +203,21 @@ function FacultiesPage() {
         </span>
       ),
     },
-    {
-      key: "dean",
-      header: t("Dean"),
-      render: (u) => u.dean,
-    },
-    {
-      key: "status",
-      header: t("Status"),
-      align: "right",
-      render: (u) => (
-        <Badge className={statusStyles[u.status]}>
-          {t(statusLabels[u.status])}
-        </Badge>
-      ),
-    },
+    // {
+    //   key: "dean",
+    //   header: t("Dean"),
+    //   render: (u) => u.dean,
+    // },
+    // {
+    //   key: "status",
+    //   header: t("Status"),
+    //   align: "right",
+    //   render: (u) => (
+    //     <Badge className={statusStyles[u.status]}>
+    //       {t(statusLabels[u.status])}
+    //     </Badge>
+    //   ),
+    // },
   ];
 
   if (
@@ -245,6 +304,7 @@ function FacultiesPage() {
           confirmLabel={t("Add Faculty")}
           onClose={() => setShowPopup(false)}
           onConfirm={handleAddFaculty}
+          isLoading={isPending}
         >
           <div className="flex flex-col gap-3">
             <div>
@@ -254,6 +314,8 @@ function FacultiesPage() {
               <Input
                 placeholder={t("e.g. Faculty of Engineering")}
                 type="text"
+                value={form.name}
+                onChange={(e) => setForm({ ...form, name: e.target.value })}
               />
             </div>
           </div>
