@@ -5,6 +5,22 @@ import type {
   ListOfFaculties,
 } from "../types/hierarchy";
 
+export async function getFacultiesByUniversity(
+  universityId: number,
+): Promise<Faculty[]> {
+  const response = await api.get<ListOfFaculties>("/api/faculties", {
+    params: { universityId },
+  });
+
+  const { success, message, data } = response.data;
+
+  if (!success) {
+    throw new Error(message || "No faculty is returned!");
+  }
+
+  return data;
+}
+
 export async function getAllFaculties() {
   const response = await api.get<ListOfFaculties>("/api/faculties");
 
