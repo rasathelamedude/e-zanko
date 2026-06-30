@@ -76,7 +76,7 @@ function LetterDetails({ letter }: LetterDetailsProps) {
 
             {/* dropdown buttons */}
             {dropdownOpen && (
-              <div className="absolute end-0 mt-1 w-48 bg-white border border-gray-200 rounded-lg shadow-md z-10 overflow-hidden">
+              <div className="absolute inset-e-0 mt-1 w-48 bg-white border border-gray-200 rounded-lg shadow-md z-10 overflow-hidden">
                 <button
                   onClick={() => {
                     setActiveAction("approve");

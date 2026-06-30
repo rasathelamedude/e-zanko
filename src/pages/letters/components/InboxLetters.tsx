@@ -9,7 +9,7 @@ function InboxLetters() {
 
   return (
     <div className="flex gap-4 h-full">
-      <div className="w-80 flex-shrink-0">
+      <div className="w-80 shrink-0">
         <LetterCard
           selectedLetterId={selectedLetter.id}
           onSelect={setSelectedLetter}

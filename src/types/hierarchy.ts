@@ -77,9 +77,9 @@ export interface ApiResponse<T = null> {
   data: T;
 }
 
-export type GetAllUniversities = ApiResponse<University[]>;
+export type GetAllUniversities = ApiResponse<{ data: University[] }>;
 
-export interface UniversityPayload{
+export interface UniversityPayload {
   name: string;
   location: string;
   establishedYear: string;

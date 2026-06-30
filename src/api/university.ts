@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios from "../lib/axios";
 import type {
   GetAllUniversities,
   University,
@@ -14,7 +14,9 @@ export async function getAllUniversities() {
     throw new Error(message || "No university is returned!");
   }
 
-  return data;
+  const universities: University[] = data.data;
+
+  return universities;
 }
 
 export async function addUniversity(

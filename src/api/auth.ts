@@ -55,7 +55,9 @@ export async function getProfile(): Promise<User> {
 
   if (!success) throw new Error(message || "Profile fetch failed");
 
-  return data;
+  const user: User = data.user!;
+
+  return user;
 }
 
 export async function forgetPassword(email: string): Promise<void> {
