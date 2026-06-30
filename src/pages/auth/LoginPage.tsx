@@ -25,7 +25,7 @@ function LoginPage() {
 
   const navigate = useNavigate();
   const { t } = useTranslation();
-  const { setUser } = useUserStore();
+  const { setUser, setToken } = useUserStore();
 
   const { mutate, isPending, error } = useMutation({
     mutationFn: (payload: LoginPayload) => login(payload),
@@ -35,13 +35,15 @@ function LoginPage() {
         setChallengeToken(result.challenge_token);
         setShow2FA(true);
       } else {
-        // 200 — logged in, set user and go home
+        // 200 — logged in, set user, store token, and go home
         setUser(result.user);
+        setToken(result.token);
         navigate("/");
       }
     },
     onError: () => {
       setUser(null);
+      setToken(null);
     },
   });
 

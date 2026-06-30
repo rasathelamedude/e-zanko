@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { X, ShieldCheck } from "lucide-react";
 import { enable2FA, disable2FA, login2FA } from "../../api/auth";
 import { useUserStore } from "../../store/userStore";
-import type { User } from "../../types/auth";
+import type { OTPVerificationResult } from "../../api/auth";
 
 export type OTPMode = "enable" | "disable" | "login";
 
@@ -40,7 +40,7 @@ const config: Record<OTPMode, { title: string; description: string }> = {
 const OTPPopUp = ({ mode, email, onClose, challengeToken }: OTPPopUpProps) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { setUser } = useUserStore();
+  const { setUser, setToken } = useUserStore();
 
   const [code, setCode] = useState(["", "", "", "", "", ""]);
   const [attemptsLeft, setAttemptsLeft] = useState(MAX_ATTEMPTS);
@@ -66,21 +66,24 @@ const OTPPopUp = ({ mode, email, onClose, challengeToken }: OTPPopUpProps) => {
   const isExpired = secondsLeft <= 0;
   const isLocked = attemptsLeft <= 0;
 
-  const { mutate, isPending, error } = useMutation({
-    mutationFn: (otp: string): Promise<User> => {
+  const { mutate, isPending, error } = useMutation<
+    OTPVerificationResult,
+    Error,
+    string
+  >({
+    mutationFn: (otp: string): Promise<OTPVerificationResult> => {
       if (mode === "enable") return enable2FA(otp);
       if (mode === "disable") return disable2FA(otp);
       // login mode — challengeToken is guaranteed present when mode === "login"
       return login2FA(otp, challengeToken!);
     },
-    onSuccess: (user: User) => {
+    onSuccess: (result: OTPVerificationResult) => {
       if (mode === "enable" || mode === "disable") {
-        // Backend returns the updated user — use it directly
-        setUser(user);
+        setUser(result.user);
         onClose();
       } else {
-        // login — set user and navigate home
-        setUser(user);
+        setUser(result.user);
+        setToken(result.token);
         navigate("/", { replace: true });
       }
     },

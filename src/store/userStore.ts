@@ -3,25 +3,19 @@ import type { User } from "../types/auth";
 
 interface UserStore {
   user: User | null;
+  token: string | null;
   isAuthLoading: boolean;
   setUser: (user: User | null) => void;
+  setToken: (token: string | null) => void;
   setIsAuthLoading: (isAuthLoading: boolean) => void;
 }
 
 export const useUserStore = create<UserStore>((set) => ({
-  user: {
-    id: 1,
-    email: "test@institution.edu.krd",
-    name: "Test User",
-    role: "DEPARTMENT_HEAD",
-    scope: "DEPARTMENT",
-    scopeId: 1,
-    isActive: true,
-    phone: "1234567890",
-    is2FAEnabled: false,
-  },
+  user: null,
+  token: null,
   isAuthLoading: false,
 
   setUser: (user: User | null) => set({ user }),
+  setToken: (token: string | null) => set({ token }),
   setIsAuthLoading: (isAuthLoading: boolean) => set({ isAuthLoading }),
 }));

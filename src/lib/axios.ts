@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios, { AxiosHeaders } from "axios";
 import { useUserStore } from "../store/userStore";
 
 const api = axios.create({
@@ -6,7 +6,6 @@ const api = axios.create({
   headers: {
     "Content-Type": "application/json",
   },
-  withCredentials: true,
 });
 
 /**
@@ -32,7 +31,12 @@ api.interceptors.response.use(
 
     if (status === 401) {
       useUserStore.getState().setUser(null);
-      window.location.href = "/login";
+      useUserStore.getState().setToken(null);
+
+      if (window.location.pathname !== "/login") {
+        window.location.href = "/login";
+      }
+
       return Promise.reject(new Error("Unauthorized"));
     }
 
@@ -44,6 +48,23 @@ api.interceptors.response.use(
     console.error("[API Error]:", finalMessage);
     return Promise.reject(new Error(finalMessage));
   },
+);
+
+api.interceptors.request.use(
+  (config) => {
+    const token = useUserStore.getState().token;
+    const headers = config.headers ?? new AxiosHeaders();
+
+    if (token) {
+      headers.set("Authorization", `Bearer ${token}`);
+    } else {
+      headers.delete("Authorization");
+    }
+
+    config.headers = headers;
+    return config;
+  },
+  (error) => Promise.reject(error),
 );
 
 export default api;
