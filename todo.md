@@ -5,4 +5,6 @@
 5. Update the roles (CHECK)
 6. Integrate the endpoints (PENDING)
 7. Add stamping option 
-8.
+
+- Update get profile response to return the user object only
+- 
