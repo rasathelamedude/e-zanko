@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useSearchParams, useNavigate, Link } from "react-router-dom";
+import { useSearchParams, Link } from "react-router-dom";
 import { resetPassword } from "../../api/auth";
 import { useMutation } from "@tanstack/react-query";
 import { Eye, EyeOff } from "lucide-react";
@@ -8,21 +8,24 @@ import { Eye, EyeOff } from "lucide-react";
 const ResetPassword = () => {
   const { t } = useTranslation();
   const [searchParams] = useSearchParams();
-  const navigate = useNavigate();
 
   const token = searchParams.get("token") ?? "";
-  const code = searchParams.get("code") ?? "";
+  const email = searchParams.get("email") ?? "";
 
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
   const [validationError, setValidationError] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
 
   const { mutate, isPending, error } = useMutation({
-    mutationFn: (newPassword: string) =>
-      resetPassword({ token, code, password: newPassword }),
-    onSuccess: () => navigate("/login"),
+    mutationFn: () =>
+      resetPassword({ token, email, password, confirmPassword: confirm }),
+    onSuccess: (message) =>
+      setSuccessMessage(
+        message || t("Your password has been reset. You can now sign in."),
+      ),
   });
 
   const handleSubmit = () => {
@@ -35,12 +38,12 @@ const ResetPassword = () => {
       return;
     }
     setValidationError("");
-    mutate(password);
+    mutate();
   };
 
   const displayError = validationError || (error as Error)?.message;
 
-  if (!token || !code) {
+  if (!token || !email) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
         <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-8 w-full max-w-sm text-center">
@@ -53,10 +56,29 @@ const ResetPassword = () => {
             )}
           </p>
           <Link
-            to="/forgot-password"
+            to="/login"
             className="text-sm text-teal-600 hover:text-teal-700 font-medium"
           >
             {t("Request a new link")}
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  if (successMessage) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
+        <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-8 w-full max-w-sm text-center">
+          <h1 className="text-lg font-semibold text-gray-900 mb-2">
+            {t("Password reset successful")}
+          </h1>
+          <p className="text-sm text-gray-500 mb-6">{successMessage}</p>
+          <Link
+            to="/login"
+            className="text-sm text-teal-600 hover:text-teal-700 font-medium"
+          >
+            {t("Back to login")}
           </Link>
         </div>
       </div>

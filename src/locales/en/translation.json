@@ -238,5 +238,10 @@
   "Software Engineering": "Software Engineering",
   "University Email": "University Email",
   "Add Student": "Add Student",
-  "Stage": "Stage"
+  "Stage": "Stage",
+  "Sending…": "Sending…",
+  "Check your email for a link to reset your password.": "Check your email for a link to reset your password.",
+  "Password reset successful": "Password reset successful",
+  "Back to login": "Back to login",
+  "Your password has been reset. You can now sign in.": "Your password has been reset. You can now sign in."
 }
