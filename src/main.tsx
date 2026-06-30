@@ -4,6 +4,8 @@ import "./index.css";
 import "./i18n";
 import App from "./App.tsx";
 import AuthProvider from "./components/auth/AuthProvider.tsx";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 import {
   QueryClientProvider,
@@ -24,6 +26,7 @@ createRoot(document.getElementById("root")!).render(
             <BrowserRouter>
               <GlobalErrorBoundary onReset={reset}>
                 <App />
+                <ToastContainer />
                 <ReactQueryDevtools initialIsOpen={false} />
               </GlobalErrorBoundary>
             </BrowserRouter>
