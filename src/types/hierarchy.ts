@@ -24,17 +24,25 @@ export interface University {
 
 export interface Faculty {
   id: number;
-  universityId: number;
   name: string;
-  adminId: number | null;
-  isActive: boolean;
-  createdAt: string;
-  updatedAt: string;
-  deletedAt: string | null;
-
-  // Derived / UI Fields (Populated server-side)
-  dean: string;
-  status: "ACTIVE" | "INACTIVE";
+  admin_id: number | null;
+  is_active: boolean;
+  university_id: number;
+  university: {
+    id: number;
+    name: string;
+    admin_id: number | null;
+    academic_year: string | null;
+    location: string | null;
+    start_date: string | null;
+    end_date: string | null;
+    established_year: string | null;
+    is_active: boolean | null;
+    created_at: string | null;
+    updated_at: string | null;
+  };
+  created_at: string;
+  updated_at: string;
 }
 
 export interface Department {
@@ -77,8 +85,7 @@ export interface ApiResponse<T = null> {
   data: T;
 }
 
-export type GetAllUniversities = ApiResponse<University[]>;
-export type ListOfFaculties = ApiResponse<Faculty[]>;
+export type ListOfFaculties = ApiResponse<{ data: Faculty[] }>;
 export type GetAllUniversities = ApiResponse<{ data: University[] }>;
 
 export interface UniversityPayload {
@@ -88,6 +95,8 @@ export interface UniversityPayload {
   isActive: boolean;
 }
 
-export interface FacultyPayload{
+export interface FacultyPayload {
   name: string;
+  admin_id: number | null;
+  is_active: boolean;
 }

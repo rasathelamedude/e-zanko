@@ -50,6 +50,8 @@ function FacultiesPage() {
   const { canAccessUniversities } = useBreadcrumbAccess();
   const [form, setForm] = useState<FacultyPayload>({
     name: "",
+    admin_id: null,
+    is_active: false,
   });
 
   // get all faculties for a specific university
@@ -69,10 +71,6 @@ function FacultiesPage() {
 
   const userUniversityId = getScopeId("UNIVERSITY");
 
-  const university = mockUniversities.find(
-    (u) => String(u.id) === universityId,
-  );
-
   // add faculty
   const { mutate: createFaculty, isPending } = useMutation({
     mutationFn: ({
@@ -85,6 +83,8 @@ function FacultiesPage() {
     onSuccess: () => {
       setForm({
         name: "",
+        admin_id: null,
+        is_active: false,
       });
       setShowPopup(false);
       refetch();
@@ -103,9 +103,9 @@ function FacultiesPage() {
 
   const filteredFaculties = faculties.filter(
     (f) =>
-      f.name.toLowerCase().includes(filter.toLowerCase()) ||
-      f.dean.toLowerCase().includes(filter.toLowerCase()) ||
-      f.status.toLowerCase().includes(filter.toLowerCase()),
+      f.name.toLowerCase().includes(filter.toLowerCase()) 
+      // f.dean.toLowerCase().includes(filter.toLowerCase()) ||
+      // f.status.toLowerCase().includes(filter.toLowerCase()),
   );
 
   function handleModal() {
@@ -203,21 +203,21 @@ function FacultiesPage() {
         </span>
       ),
     },
-    {
-      key: "dean",
-      header: t("Dean"),
-      render: (u) => u.dean,
-    },
-    {
-      key: "status",
-      header: t("Status"),
-      align: "right",
-      render: (u) => (
-        <Badge className={statusStyles[u.status]}>
-          {t(statusLabels[u.status])}
-        </Badge>
-      ),
-    },
+    // {
+    //   key: "dean",
+    //   header: t("Dean"),
+    //   render: (u) => u.dean,
+    // },
+    // {
+    //   key: "status",
+    //   header: t("Status"),
+    //   align: "right",
+    //   render: (u) => (
+    //     <Badge className={statusStyles[u.status]}>
+    //       {t(statusLabels[u.status])}
+    //     </Badge>
+    //   ),
+    // },
   ];
 
   if (

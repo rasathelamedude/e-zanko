@@ -9,7 +9,7 @@ export async function getFacultiesByUniversity(
   universityId: number,
 ): Promise<Faculty[]> {
   const response = await api.get<ListOfFaculties>("/api/faculties", {
-    params: { universityId },
+    params: { "filter[university_id]": universityId },
   });
 
   const { success, message, data } = response.data;
@@ -18,7 +18,7 @@ export async function getFacultiesByUniversity(
     throw new Error(message || "No faculty is returned!");
   }
 
-  return data;
+  return data.data;
 }
 
 export async function getAllFaculties() {
@@ -30,7 +30,7 @@ export async function getAllFaculties() {
     throw new Error(message || "No faculty is returned!");
   }
 
-  return data;
+  return data.data;
 }
 
 export async function addFaculty(
