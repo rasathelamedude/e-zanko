@@ -4,7 +4,7 @@ This document defines how we work together on this repository. Read it before op
 
 ## Branching Strategy — GitHub Flow
 
-We use **GitHub Flow**. There is no `dev` branch. `main` is always deployable.
+We use **GitHub Flow** (no we don't). There is no `dev` branch. `main` is always deployable.
 
 ```
 main                              → always stable, protected, no direct pushes
