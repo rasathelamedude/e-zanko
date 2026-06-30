@@ -22,8 +22,6 @@ import { Label } from "../../components/ui/label";
 //   ComboboxList,
 // } from "../../components/ui/combobox";
 import { Navigate, useNavigate, useParams } from "react-router-dom";
-import { mockFaculties } from "./FacultiesPage";
-import { mockDepartments } from "./DepartmentsPage";
 import { useBreadcrumbAccess } from "../../hooks/useBreadcrumbAccess";
 import { BreadcrumbItem } from "../../components/common/BreadcrumbItem";
 import type { UserScope } from "../../types/auth";
@@ -155,7 +153,8 @@ function CoursesPage() {
   );
 
   const shouldShowDepartmentColumn =
-    user?.roles.some((role) => role.name === "DEAN") && userFacultyId === Number(facultyId);
+    user?.roles.some((role) => role.name === "DEAN") &&
+    userFacultyId === Number(facultyId);
 
   const columns: DataTableColumn<Course>[] = [
     {
