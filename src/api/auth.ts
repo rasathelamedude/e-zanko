@@ -127,7 +127,7 @@ export async function changePassword(payload: {
 
 // Tell backend to send the OTP code to the user's email
 export async function prepare2FA(): Promise<void> {
-  const response = await axios.post("/api/auth/prepare");
+  const response = await axios.post("/api/auth/two-factor/prepare");
 
   const { success, message } = response.data;
 
@@ -136,30 +136,30 @@ export async function prepare2FA(): Promise<void> {
   }
 }
 
-// Enable 2FA — returns updated user after successful verification
-export async function enable2FA(code: string): Promise<OTPVerificationResult> {
-  const response = await axios.post("/api/auth/two-factor/enable", { code });
+// Enable 2FA — backend only returns { success, message }; returns the message.
+export async function enable2FA(otp: string): Promise<string> {
+  const response = await axios.post("/api/auth/two-factor/enable", { otp });
 
-  const { data, success, message } = response.data;
+  const { success, message } = response.data;
 
   if (!success) {
     throw new Error(message || "Failed to enable two-factor authentication");
   }
 
-  return { user: data, token: null };
+  return message;
 }
 
-// Disable 2FA — returns updated user after successful verification
-export async function disable2FA(code: string): Promise<OTPVerificationResult> {
-  const response = await axios.post("/api/auth/two-factor/disable", { code });
+// Disable 2FA — backend only returns { success, message }; returns the message.
+export async function disable2FA(otp: string): Promise<string> {
+  const response = await axios.post("/api/auth/two-factor/disable", { otp });
 
-  const { data, success, message } = response.data;
+  const { success, message } = response.data;
 
   if (!success) {
     throw new Error(message || "Failed to disable two-factor authentication");
   }
 
-  return { user: data, token: null };
+  return message;
 }
 
 // Complete 2FA login — returns user and optional auth token
