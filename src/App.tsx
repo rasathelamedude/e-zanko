@@ -15,6 +15,7 @@ import ProtectedRoutes from "./components/common/ProtectedRoute";
 import ForbiddenPage from "./pages/auth/ForbiddenPage";
 import LecturersPage from "./pages/universities/LecturersPage";
 import ResetPasswordPage from "./pages/auth/ResetPasswordPage";
+import VerificationPage from "./pages/auth/VerificationPage";
 
 function App() {
   return (
@@ -22,6 +23,10 @@ function App() {
       <Route path="/login" element={<LoginPage />} />
       <Route path="/unauthorized" element={<UnauthorizedPage />} />
       <Route path="/forbidden" element={<ForbiddenPage />} />
+      <Route
+        path="/verify/:documentUUID"
+        element={<VerificationPage />}
+      />
 
       <Route path="/reset-password" element={<ResetPasswordPage />} />
 
