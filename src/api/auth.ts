@@ -98,11 +98,13 @@ export async function resetPassword({
 export async function changePassword(payload: {
   currentPassword: string;
   newPassword: string;
-  confirmPassword: string;
 }): Promise<void> {
   const response = await axios.post<ChangePasswordResponse>(
     "/api/auth/change-password",
-    payload,
+    {
+      current_password: payload.currentPassword,
+      password: payload.newPassword,
+    },
   );
 
   const { success, message } = response.data;
