@@ -62,6 +62,7 @@ export type LoginResponse = ApiResponse<{
 export type GetProfileResponse = ApiResponse<{ user: User }>;
 export type LogoutResponse = ApiResponse<null>;
 export type ForgotPasswordResponse = ApiResponse<null>;
+export type ResetPasswordResponse = ApiResponse<null>;
 export type ChangePasswordResponse = ApiResponse<null>;
 
 export interface LoginPayload {
