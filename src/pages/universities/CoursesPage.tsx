@@ -26,6 +26,7 @@ import { mockFaculties } from "./FacultiesPage";
 import { mockDepartments } from "./DepartmentsPage";
 import { useBreadcrumbAccess } from "../../hooks/useBreadcrumbAccess";
 import { BreadcrumbItem } from "../../components/common/BreadcrumbItem";
+import type { UserScope } from "../../types/auth";
 
 const mockCourses: Course[] = [
   {
@@ -117,6 +118,14 @@ function CoursesPage() {
   const { canAccessUniversities, canAccessFaculties, canAccessDepartments } =
     useBreadcrumbAccess();
 
+  const getScopeId = (scopeType: UserScope) => {
+    return user?.scopes?.find((s) => s.scope_type === scopeType)?.scope_id || 0;
+  };
+
+  const userUniversityId = getScopeId("UNIVERSITY");
+  const userFacultyId = getScopeId("FACULTY");
+  const userDepartmentId = getScopeId("DEPARTMENT");
+
   const university = mockUniversities.find(
     (u) => String(u.id) === universityId,
   );
@@ -146,7 +155,7 @@ function CoursesPage() {
   );
 
   const shouldShowDepartmentColumn =
-    user?.role === "DEAN" && user?.scopeId === Number(facultyId);
+    user?.roles.some((role) => role.name === "DEAN") && userFacultyId === Number(facultyId);
 
   const columns: DataTableColumn<Course>[] = [
     {
@@ -219,9 +228,12 @@ function CoursesPage() {
   ];
 
   if (
-    (user?.scope === "UNIVERSITY" && user?.scopeId !== Number(universityId)) ||
-    (user?.scope === "FACULTY" && user?.scopeId !== Number(facultyId)) ||
-    (user?.scope === "DEPARTMENT" && user?.scopeId !== Number(departmentId))
+    (user?.scopes?.some((scope) => scope.scope_type === "UNIVERSITY") &&
+      userUniversityId !== Number(universityId)) ||
+    (user?.scopes?.some((scope) => scope.scope_type === "FACULTY") &&
+      userFacultyId !== Number(facultyId)) ||
+    (user?.scopes?.some((scope) => scope.scope_type === "DEPARTMENT") &&
+      userDepartmentId !== Number(departmentId))
   ) {
     return <Navigate to="/forbidden" replace />;
   }
@@ -270,7 +282,7 @@ function CoursesPage() {
         <PageHeader
           title={t("Ministry of higher education")}
           locationTitle={t("Courses")}
-          role={user?.role || ""}
+          role={user?.roles[0]?.name || ""}
           year="2025–2026"
         />
         <button

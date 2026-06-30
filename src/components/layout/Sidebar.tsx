@@ -1,7 +1,7 @@
 import { NavLink, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useUserStore } from "../../store/userStore";
-import type { UserRole } from "../../types/auth";
+import type { UserRole, UserScope } from "../../types/auth";
 import { Button } from "../ui/button";
 import { LogOut } from "lucide-react";
 import { useMutation } from "@tanstack/react-query";
@@ -15,8 +15,17 @@ type NavItem = {
 type ManagementRoles = Exclude<UserRole, "STUDENT" | "LECTURER">;
 
 const Sidebar = () => {
-  const user = useUserStore((state) => state.user);
+  const navigate = useNavigate();
+  const { user, clearAuth } = useUserStore();
   const { t } = useTranslation();
+
+  const getScopeId = (scopeType: UserScope) => {
+    return user?.scopes?.find((s) => s.scope_type === scopeType)?.scope_id || 0;
+  };
+
+  const universityId = getScopeId("UNIVERSITY");
+  const facultyId = getScopeId("FACULTY");
+  const departmentId = getScopeId("DEPARTMENT");
 
   const NAV_ITEMS: Record<ManagementRoles, NavItem[]> = {
     MINISTRY_ADMIN: [
@@ -31,7 +40,7 @@ const Sidebar = () => {
       { label: t("Dashboard"), to: "/" },
       {
         label: t("Faculties"),
-        to: `/universities/${user?.scopeId}/faculties`,
+        to: `/universities/${universityId}/faculties`,
       },
       { label: t("Letters"), to: "/letters" },
       { label: t("Reports"), to: "/reports" },
@@ -46,7 +55,7 @@ const Sidebar = () => {
       { label: t("Dashboard"), to: "/" },
       {
         label: t("Departments"),
-        to: `/universities/${user?.scopeId}/faculties/${user?.scopeId}/departments`,
+        to: `/universities/${universityId}/faculties/${facultyId}/departments`,
       },
       { label: t("Letters"), to: "/letters" },
       { label: t("Reports"), to: "/reports" },
@@ -56,7 +65,7 @@ const Sidebar = () => {
       { label: t("Dashboard"), to: "/" },
       {
         label: t("Courses"),
-        to: `/universities/${user?.scopeId}/faculties/1/departments/1/courses`,
+        to: `/universities/${universityId}/faculties/${facultyId}/departments/${departmentId}/courses`,
       },
       { label: t("Students"), to: "/students" },
       { label: t("Lecturers"), to: "/lecturers" },
@@ -66,16 +75,17 @@ const Sidebar = () => {
     ],
   };
 
-  const navItems = user?.role ? NAV_ITEMS[user.role as ManagementRoles] : [];
-
-  const { setUser, setToken } = useUserStore();
-  const navigate = useNavigate();
+  const roleName = user?.roles[0]?.name || user?.scopes?.[0]?.role_name;
+  const navItems = roleName ? NAV_ITEMS[roleName as ManagementRoles] || [] : [];
 
   const { mutate, isPending } = useMutation({
     mutationFn: logout,
     onSuccess: () => {
-      setUser(null);
-      setToken(null);
+      clearAuth();
+      navigate("/login", { replace: true });
+    },
+    onError: () => {
+      clearAuth();
       navigate("/login", { replace: true });
     },
   });
@@ -112,7 +122,7 @@ const Sidebar = () => {
             </p>
 
             <p className="truncate text-xs text-slate-500">
-              {user?.role ? t(user.role) : t("System Administrator")}
+              {roleName ? t(roleName) : t("System Administrator")}
             </p>
           </div>
         </div>

@@ -9,11 +9,14 @@ import UniversityStaffDashboard from "./components/UniversityStaffDashboard";
 const DashboardPage = () => {
   const { user } = useUserStore();
 
-  if (user?.role === "MINISTRY_ADMIN") return <MinistryDashboard />;
-  if (user?.role === "UNIVERSITY_ADMIN") return <UniversityDashboard />;
-  if (user?.role === "UNIVERSITY_STAFF") return <UniversityStaffDashboard />;
-  if (user?.role === "DEPARTMENT_HEAD") return <DepartmentHeadDashboard />;
-  if (user?.role === "DEAN") return <DeanDashboard />;
+  if (user?.roles[0]?.name === "MINISTRY_ADMIN") return <MinistryDashboard />;
+  if (user?.roles[0]?.name === "UNIVERSITY_ADMIN")
+    return <UniversityDashboard />;
+  if (user?.roles[0]?.name === "UNIVERSITY_STAFF")
+    return <UniversityStaffDashboard />;
+  if (user?.roles[0]?.name === "DEPARTMENT_HEAD")
+    return <DepartmentHeadDashboard />;
+  if (user?.roles[0]?.name === "DEAN") return <DeanDashboard />;
 };
 
 export default DashboardPage;

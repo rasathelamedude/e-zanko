@@ -23,7 +23,7 @@ const MinistryReportsPage = () => {
       <PageHeader
         title={t("Ministry of higher education")}
         locationTitle={t("Reports")}
-        role={user?.role || ""}
+        role={user?.roles[0]?.name || ""}
         year="2023-2024"
       />
 

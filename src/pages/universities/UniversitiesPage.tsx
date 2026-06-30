@@ -150,7 +150,7 @@ function UniversitiesPage() {
           {[...Array(5)].map((_, i) => (
             <div
               key={i}
-              className="grid grid-cols-[2fr_1.5fr_1fr_80px] items-center px-5 py-[18px] border-b border-border last:border-0"
+              className="grid grid-cols-[2fr_1.5fr_1fr_80px] items-center px-5 py-4.5 border-b border-border last:border-0"
             >
               <div
                 className="h-3.5 rounded bg-muted animate-pulse"
@@ -266,7 +266,7 @@ function UniversitiesPage() {
         <PageHeader
           title={t("Ministry of Higher Education")}
           locationTitle={t("Universities")}
-          role={user?.role || ""}
+          role={user?.roles[0]?.name || ""}
           year="2025-2026"
         />
         <button

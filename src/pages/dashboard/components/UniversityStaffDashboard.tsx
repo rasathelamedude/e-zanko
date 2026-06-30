@@ -68,7 +68,7 @@ function UniversityStaffDashboard() {
       <PageHeader
         title="Ministry of Higher Education"
         locationTitle="Dashboard"
-        role={user?.role || ""}
+        role={user?.roles[0]?.name || ""}
         year="2023-2024"
       />
 

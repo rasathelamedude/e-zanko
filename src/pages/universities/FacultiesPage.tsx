@@ -26,6 +26,7 @@ import {
 import { useMutation, useQuery } from "@tanstack/react-query";
 import ErrorState from "../../components/common/ErrorState";
 import { getUniversityById } from "../../api/university";
+import type { UserScope } from "../../types/auth";
 
 const statusStyles: Record<FacultyStatus, string> = {
   ACTIVE: "bg-emerald-100 text-emerald-700 hover:bg-emerald-100",
@@ -62,6 +63,15 @@ function FacultiesPage() {
     queryFn: () => getFacultiesByUniversity(Number(universityId)),
     enabled: !!universityId,
   });
+  const getScopeId = (scopeType: UserScope) => {
+    return user?.scopes?.find((s) => s.scope_type === scopeType)?.scope_id || 0;
+  };
+
+  const userUniversityId = getScopeId("UNIVERSITY");
+
+  const university = mockUniversities.find(
+    (u) => String(u.id) === universityId,
+  );
 
   // add faculty
   const { mutate: createFaculty, isPending } = useMutation({
@@ -210,7 +220,10 @@ function FacultiesPage() {
     },
   ];
 
-  if (user?.scope === "UNIVERSITY" && user?.scopeId !== Number(universityId)) {
+  if (
+    user?.scopes.some((s) => s.scope_type === "UNIVERSITY") &&
+    userUniversityId !== Number(universityId)
+  ) {
     return <Navigate to="/forbidden" replace />;
   }
 
@@ -234,7 +247,7 @@ function FacultiesPage() {
         <PageHeader
           title={t("Ministry of Higher Education")}
           locationTitle={t("Faculties")}
-          role={user?.role || ""}
+          role={user?.roles[0]?.name || ""}
           year="2025–2026"
         />
         <button
