@@ -4,7 +4,11 @@ import {
   DataTable,
   type DataTableColumn,
 } from "../../components/common/DataTable";
-import type { Department, DepartmentStatus } from "../../types/hierarchy";
+import type {
+  departmentPayload,
+  Department,
+  DepartmentStatus,
+} from "../../types/hierarchy";
 import { Badge } from "../../components/ui/badge";
 import { useState } from "react";
 import { Input } from "../../components/ui/input";
@@ -12,74 +16,13 @@ import Modal from "../../components/common/Modal";
 import PageHeader from "../../components/common/PageHeader";
 import { useUserStore } from "../../store/userStore";
 import { Navigate, useNavigate, useParams } from "react-router-dom";
-import { mockFaculties } from "./FacultiesPage";
 import { Label } from "../../components/ui/label";
 import { useBreadcrumbAccess } from "../../hooks/useBreadcrumbAccess";
 import { BreadcrumbItem } from "../../components/common/BreadcrumbItem";
 import type { UserScope } from "../../types/auth";
-
-export const mockDepartments: Department[] = [
-  {
-    id: 1,
-    facultyId: 1,
-    name: "Software Engineering",
-    headOfDepartment: "Dr. Karim Yusuf",
-    status: "ACTIVE",
-    adminId: null,
-    isActive: true,
-    createdAt: "2024-01-01T00:00:00Z",
-    updatedAt: "2024-01-01T00:00:00Z",
-    deletedAt: null,
-  },
-  {
-    id: 2,
-    facultyId: 1,
-    name: "Civil Engineering",
-    headOfDepartment: "Dr. Shko Rauf",
-    status: "ACTIVE",
-    adminId: null,
-    isActive: true,
-    createdAt: "2024-01-01T00:00:00Z",
-    updatedAt: "2024-01-01T00:00:00Z",
-    deletedAt: null,
-  },
-  {
-    id: 3,
-    facultyId: 1,
-    name: "Electrical Engineering",
-    headOfDepartment: "Dr. Dinya Salam",
-    status: "ACTIVE",
-    adminId: null,
-    isActive: true,
-    createdAt: "2024-01-01T00:00:00Z",
-    updatedAt: "2024-01-01T00:00:00Z",
-    deletedAt: null,
-  },
-  {
-    id: 4,
-    facultyId: 1,
-    name: "Computer Science",
-    headOfDepartment: "Dr. Hawre Aziz",
-    status: "ACTIVE",
-    adminId: null,
-    isActive: true,
-    createdAt: "2024-01-01T00:00:00Z",
-    updatedAt: "2024-01-01T00:00:00Z",
-    deletedAt: null,
-  },
-  {
-    id: 5,
-    facultyId: 1,
-    name: "Architecture",
-    headOfDepartment: "Dr. Niga Star",
-    status: "UNDER_REVIEW",
-    adminId: null,
-    isActive: false,
-    createdAt: "2024-01-01T00:00:00Z",
-    updatedAt: "2024-01-01T00:00:00Z",
-    deletedAt: null,
-  },
-];
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { addDepartment, getDepartmentByFaculty } from "../../api/department";
+import { getUniversityById } from "../../api/university";
 
 const statusStyles: Record<DepartmentStatus, string> = {
   ACTIVE: "bg-emerald-100 text-emerald-700 hover:bg-emerald-100",
@@ -101,6 +44,11 @@ function DepartmentsPage() {
   const { universityId, facultyId } = useParams();
   const navigate = useNavigate();
   const { canAccessUniversities, canAccessFaculties } = useBreadcrumbAccess();
+  const [form, setForm] = useState<departmentPayload>({
+    name: "",
+    faculty_id: 0,
+    is_active: false,
+  });
 
   const getScopeId = (scopeType: UserScope) => {
     return user?.scopes?.find((s) => s.scope_type === scopeType)?.scope_id || 0;
@@ -109,16 +57,45 @@ function DepartmentsPage() {
   const userUniversityId = getScopeId("UNIVERSITY");
   const userFacultyId = getScopeId("FACULTY");
 
-  const university = mockUniversities.find(
-    (u) => String(u.id) === universityId,
-  );
-  const faculty = mockFaculties.find((u) => String(u.id) === facultyId);
+  const {
+    data: departments = [],
+    isLoading,
+    isError,
+    refetch,
+  } = useQuery({
+    queryKey: ["departments", facultyId],
+    queryFn: () => getDepartmentByFaculty(Number(facultyId)),
+    enabled: !!facultyId,
+  });
 
-  const filteredDepartments = mockDepartments.filter(
-    (d) =>
-      d.name.toLowerCase().includes(filter.toLowerCase()) ||
-      d.headOfDepartment?.toLowerCase().includes(filter.toLowerCase()) ||
-      d.status.toLowerCase().includes(filter.toLowerCase()),
+  const { mutate: createDepartment, isPending } = useMutation({
+    mutationFn: (payload: departmentPayload) => addDepartment(payload),
+    onSuccess: () => {
+      setForm({ name: "", faculty_id: Number(facultyId), is_active: true });
+      setShowPopup(false);
+      refetch();
+    },
+    onError: (error: Error) => {
+      console.error(error.message);
+    },
+  });
+
+  const { data: university } = useQuery({
+    queryKey: ["university", universityId],
+    queryFn: () => getUniversityById(Number(universityId)),
+    enabled: !!universityId,
+  });
+
+  // const { data: faculty } = useQuery({
+  //   queryKey: ["faculty", facultyId],
+  //   queryFn: () => getFacultyById(Number(facultyId)),
+  //   enabled: !!facultyId,
+  // });
+
+  const filteredDepartments = departments.filter(
+    (d) => d.name.toLowerCase().includes(filter.toLowerCase()),
+    // d.headOfDepartment?.toLowerCase().includes(filter.toLowerCase()) ||
+    // d.status.toLowerCase().includes(filter.toLowerCase()),
   );
 
   function handleModal() {
@@ -126,8 +103,8 @@ function DepartmentsPage() {
   }
 
   function handleAddDepartment() {
-    // Submit logic here
-    setShowPopup(false);
+    if (!form.name.trim()) return;
+    createDepartment({ ...form, faculty_id: Number(facultyId) });
   }
 
   const columns: DataTableColumn<Department>[] = [
@@ -147,21 +124,21 @@ function DepartmentsPage() {
         </span>
       ),
     },
-    {
-      key: "headOfDepartment",
-      header: t("Head Of Department"),
-      render: (u) => u.headOfDepartment,
-    },
-    {
-      key: "status",
-      header: t("Status"),
-      align: "right",
-      render: (u) => (
-        <Badge className={statusStyles[u.status]}>
-          {t(statusLabels[u.status])}
-        </Badge>
-      ),
-    },
+    // {
+    //   key: "headOfDepartment",
+    //   header: t("Head Of Department"),
+    //   render: (u) => u.headOfDepartment,
+    // },
+    // {
+    //   key: "status",
+    //   header: t("Status"),
+    //   align: "right",
+    //   render: (u) => (
+    //     <Badge className={statusStyles[u.status]}>
+    //       {t(statusLabels[u.status])}
+    //     </Badge>
+    //   ),
+    // },
   ];
 
   if (
@@ -196,7 +173,8 @@ function DepartmentsPage() {
             <span>/</span>
           </>
         )}
-        <BreadcrumbItem label={faculty?.name ?? t("Faculty")} isCurrent />
+        {/* faculty?.name ?? ---> to be merged */}
+        <BreadcrumbItem label={t("Faculty")} isCurrent />
       </nav>
 
       {/* Page header + Add button row */}
@@ -261,6 +239,7 @@ function DepartmentsPage() {
           confirmLabel={t("Add Department")}
           onClose={() => setShowPopup(false)}
           onConfirm={handleAddDepartment}
+          isLoading={isPending}
         >
           <div className="flex flex-col gap-3">
             <div>
@@ -270,6 +249,10 @@ function DepartmentsPage() {
               <Input
                 placeholder={t("e.g. Department of electrical engineering")}
                 type="text"
+                value={form.name}
+                onChange={(e) =>
+                  setForm((f) => ({ ...f, name: e.target.value }))
+                }
               />
             </div>
           </div>
