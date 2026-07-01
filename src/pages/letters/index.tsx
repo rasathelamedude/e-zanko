@@ -4,7 +4,7 @@ import PageHeader from "../../components/common/PageHeader";
 import { useUserStore } from "../../store/userStore";
 import InboxLetters from "./components/InboxLetters";
 import OutboxLetters from "./components/OutboxLetters";
-import ArchivedLetters from "./components/ArchivedLetters";
+import CompletedLetters from "./components/CompletedLetters";
 
 type Tab = "inbox" | "outbox" | "archived";
 
@@ -48,7 +48,7 @@ const LettersPage = () => {
 
       {activeTab === "inbox" && <InboxLetters />}
       {activeTab === "outbox" && <OutboxLetters />}
-      {activeTab === "archived" && <ArchivedLetters />}
+      {activeTab === "archived" && <CompletedLetters />}
     </div>
   );
 };
