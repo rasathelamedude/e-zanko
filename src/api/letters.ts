@@ -92,7 +92,30 @@ export const getInboxLettersForUser = async (): Promise<Letter[]> => {
     throw new Error(message || "Failed to fetch inbox letters");
   }
 
-  return data.data;
+  const inboxLetters: Letter[] = data.data;
+
+  return inboxLetters;
+};
+
+export const getOutboxLettersForUser = async (): Promise<Letter[]> => {
+  const response = await axios.get<GetUserLettersResponse>(
+    "/api/letters/outbox",
+    {
+      params: {
+        "filter[status]": "pending",
+      },
+    },
+  );
+
+  const { data, success, message } = response.data;
+
+  if (!success) {
+    throw new Error(message || "Failed to fetch outbox letters");
+  }
+
+  const outboxLetters: Letter[] = data.data;
+
+  return outboxLetters;
 };
 
 export const getLetterById = async (
