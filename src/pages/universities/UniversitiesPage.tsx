@@ -187,12 +187,9 @@ function UniversitiesPage() {
     );
 
   // error state
-  if (isError)
+    if (isError)
     return (
-      <ErrorState
-        title=" Couldn't load universities"
-        onClick={() => refetch()}
-      />
+      <ErrorState title=" Couldn't load universities" onClick={() => refetch()} />
     );
 
   const columns: DataTableColumn<University>[] = [
@@ -263,7 +260,7 @@ function UniversitiesPage() {
   );
 
   return (
-    <div className="min-h-screen bg-slate-50 px-8 py-8">
+    <div className="min-h-screen bg-[#F7F6F2] px-8 py-8">
       {/* Page header + Add button row */}
       <div className="flex items-start justify-between mb-6">
         <PageHeader

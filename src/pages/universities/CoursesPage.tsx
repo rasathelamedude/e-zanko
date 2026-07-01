@@ -5,7 +5,11 @@ import {
   DataTable,
   type DataTableColumn,
 } from "../../components/common/DataTable";
-import type { Course, CourseStatus } from "../../types/hierarchy";
+import type {
+  Course,
+  CoursePayload,
+  CourseStatus,
+} from "../../types/hierarchy";
 import { Badge } from "../../components/ui/badge";
 import { Pencil, Trash2 } from "lucide-react";
 import { Input } from "../../components/ui/input";
@@ -13,108 +17,54 @@ import PageHeader from "../../components/common/PageHeader";
 import { useUserStore } from "../../store/userStore";
 import Modal from "../../components/common/Modal";
 import { Label } from "../../components/ui/label";
-// import {
-//   Combobox,
-//   ComboboxContent,
-//   ComboboxEmpty,
-//   ComboboxInput,
-//   ComboboxItem,
-//   ComboboxList,
-// } from "../../components/ui/combobox";
 import { Navigate, useNavigate, useParams } from "react-router-dom";
 import { useBreadcrumbAccess } from "../../hooks/useBreadcrumbAccess";
 import { BreadcrumbItem } from "../../components/common/BreadcrumbItem";
 import type { UserScope } from "../../types/auth";
-
-const mockCourses: Course[] = [
-  {
-    id: 1,
-    departmentId: 4,
-    code: "CS101",
-    name: "Introduction to Programming",
-    creditHours: 3,
-    yearLevel: 1,
-    isActive: true,
-    lecturer: "Dr. Hawre Aziz",
-    department: "Computer Science",
-    createdAt: "2024-01-01T00:00:00Z",
-    updatedAt: "2024-01-01T00:00:00Z",
-    deletedAt: null,
-  },
-  {
-    id: 2,
-    departmentId: 1,
-    code: "SE201",
-    name: "Data Structures",
-    creditHours: 3,
-    yearLevel: 2,
-    isActive: true,
-    lecturer: "Dr. Karim Yusuf",
-    department: "Software Engineering",
-    createdAt: "2024-01-01T00:00:00Z",
-    updatedAt: "2024-01-01T00:00:00Z",
-    deletedAt: null,
-  },
-  {
-    id: 3,
-    departmentId: 2,
-    code: "CE301",
-    name: "Structural Analysis",
-    creditHours: 3,
-    yearLevel: 3,
-    isActive: true,
-    lecturer: "Dr. Shko Rauf",
-    department: "Civil Engineering",
-    createdAt: "2024-01-01T00:00:00Z",
-    updatedAt: "2024-01-01T00:00:00Z",
-    deletedAt: null,
-  },
-  {
-    id: 4,
-    departmentId: 3,
-    code: "EE201",
-    name: "Circuit Theory",
-    creditHours: 3,
-    yearLevel: 2,
-    isActive: true,
-    lecturer: "Dr. Dinya Salam",
-    department: "Electrical Engineering",
-    createdAt: "2024-01-01T00:00:00Z",
-    updatedAt: "2024-01-01T00:00:00Z",
-    deletedAt: null,
-  },
-  {
-    id: 5,
-    departmentId: 5,
-    code: "AR401",
-    name: "Architectural Design",
-    creditHours: 4,
-    yearLevel: 4,
-    isActive: false,
-    lecturer: "Dr. Niga Star",
-    department: "Architecture",
-    createdAt: "2024-01-01T00:00:00Z",
-    updatedAt: "2024-01-01T00:00:00Z",
-    deletedAt: null,
-  },
-];
-
-// const lecturers = mockCourses.map((course) => course.lecturer);
+import { useMutation, useQuery } from "@tanstack/react-query";
+import {
+  addCourse,
+  deleteCourse,
+  getCourseByDepartment,
+  updateCourse,
+} from "../../api/course";
+import { getUniversityById } from "../../api/university";
+import { getFacultyById } from "../../api/faculty";
+import {
+  getDepartmentByFaculty,
+  getDepartmentById,
+} from "../../api/department";
+import ErrorState from "../../components/common/ErrorState";
+import ConfirmDialog from "../../components/common/ConfirmDialog";
 
 const statusStyles: Record<CourseStatus, string> = {
   ACTIVE: "bg-emerald-100 text-emerald-700 hover:bg-emerald-100",
   INACTIVE: "bg-gray-100 text-gray-700 hover:bg-gray-100",
 };
 
+type ModalState =
+  | { type: "add" }
+  | { type: "edit"; course: Course }
+  | { type: "delete"; course: Course }
+  | null;
+
 function CoursesPage() {
   const { t } = useTranslation();
   const user = useUserStore((state) => state.user);
-  const [showPopup, setShowPopup] = useState(false);
+  const [modal, setModal] = useState<ModalState>(null);
   const [filter, setFilter] = useState("");
   const { universityId, facultyId, departmentId } = useParams();
   const navigate = useNavigate();
   const { canAccessUniversities, canAccessFaculties, canAccessDepartments } =
     useBreadcrumbAccess();
+  const [form, setForm] = useState<CoursePayload>({
+    department_id: 0,
+    name: "",
+    code: "",
+    credit_hours: 0,
+    year_level: 0,
+    is_active: false,
+  });
 
   const getScopeId = (scopeType: UserScope) => {
     return user?.scopes?.find((s) => s.scope_type === scopeType)?.scope_id || 0;
@@ -124,28 +74,125 @@ function CoursesPage() {
   const userFacultyId = getScopeId("FACULTY");
   const userDepartmentId = getScopeId("DEPARTMENT");
 
-  const university = mockUniversities.find(
-    (u) => String(u.id) === universityId,
-  );
-  const faculty = mockFaculties.find((u) => String(u.id) === facultyId);
-  const department = mockDepartments.find((u) => String(u.id) === departmentId);
+  // get courses of specific department
+  const {
+    data: courses = [],
+    isLoading,
+    isError,
+    refetch,
+  } = useQuery({
+    queryKey: ["courses", departmentId],
+    queryFn: () => getCourseByDepartment(Number(departmentId)),
+    enabled: !!departmentId,
+  });
 
-  function handleModal() {
-    setShowPopup((prev) => !prev);
-  }
+  // add course
+  const { mutate: createCourse, isPending } = useMutation({
+    mutationFn: (payload: CoursePayload) => addCourse(payload),
+    onSuccess: () => {
+      setModal(null);
+      setForm({
+        department_id: 0,
+        name: "",
+        code: "",
+        credit_hours: 0,
+        year_level: 0,
+        is_active: false,
+      });
+      refetch();
+    },
+    onError: (error: Error) => {
+      console.error(error.message);
+    },
+  });
+
+  // edit course
+  const { mutate: editCourrse, isPending: isUpdating } = useMutation({
+    mutationFn: ({ id, payload }: { id: number; payload: CoursePayload }) =>
+      updateCourse(id, payload),
+    onSuccess: () => {
+      setModal(null);
+      setForm({
+        department_id: 0,
+        name: "",
+        code: "",
+        credit_hours: 0,
+        year_level: 0,
+        is_active: false,
+      });
+      refetch();
+    },
+    onError: (error: Error) => console.error(error.message),
+  });
+
+  // delete course
+  const { mutate: removeCourse, isPending: isDeleting } = useMutation({
+    mutationFn: (id: number) => deleteCourse(id),
+    onSuccess: () => {
+      setModal(null);
+      refetch();
+    },
+    onError: (error: Error) => {
+      console.error(error.message);
+    },
+  });
+
+  const { data: university } = useQuery({
+    queryKey: ["university", universityId],
+    queryFn: () => getUniversityById(Number(universityId)),
+    enabled: !!universityId,
+  });
+
+  const { data: faculty } = useQuery({
+    queryKey: ["faculty", facultyId],
+    queryFn: () => getFacultyById(Number(facultyId)),
+    enabled: !!facultyId,
+  });
+
+  const { data: department } = useQuery({
+    queryKey: ["department", departmentId],
+    queryFn: () => getDepartmentById(Number(departmentId)),
+    enabled: !!departmentId,
+  });
+
+  const { data: departments = [] } = useQuery({
+    queryKey: ["departments", facultyId],
+    queryFn: () => getDepartmentByFaculty(Number(facultyId)), // adjust to your actual API fn
+    enabled: !!facultyId,
+  });
 
   function handleAddCourse() {
-    // Submit logic here
-    setShowPopup(false);
+    if (
+      !form.name.trim() ||
+      !form.code.trim() ||
+      !form.credit_hours ||
+      !form.year_level ||
+      !form.department_id
+    )
+      return;
+    createCourse({ ...form, department_id: Number(departmentId) });
   }
 
-  const filteredCourses = mockCourses.filter((course) =>
+  function handleUpdateCourse() {
+    if (
+      !form.name.trim() ||
+      !form.code.trim() ||
+      !form.credit_hours ||
+      !form.year_level ||
+      !form.department_id
+    )
+      return;
+    if (modal?.type !== "edit") return;
+    editCourrse({ id: modal.course.id, payload: form });
+  }
+
+  const filteredCourses = courses.filter((course) =>
     [
       course.code,
       course.name,
       course.department,
-      course.lecturer,
-      course.yearLevel,
+      // course.lecturer,
+      course.year_level,
     ]
       .join("")
       .toLowerCase()
@@ -156,6 +203,10 @@ function CoursesPage() {
     user?.roles.some((role) => role.name === "DEAN") &&
     userFacultyId === Number(facultyId);
 
+  if (isError)
+    return (
+      <ErrorState title="Couldn't load courses" onClick={() => refetch()} />
+    );
   const columns: DataTableColumn<Course>[] = [
     {
       key: "code",
@@ -172,32 +223,32 @@ function CoursesPage() {
       render: (u) => u.name,
     },
     ...(shouldShowDepartmentColumn
-      ? [
+      ? ([
           {
             key: "department",
             header: t("Department"),
             render: (u) => u.department,
           },
-        ]
+        ] as DataTableColumn<Course>[])
       : []),
-    {
-      key: "lecturer",
-      header: t("Lecturer"),
-      render: (u) => u.lecturer,
-    },
+    // {
+    //   key: "lecturer",
+    //   header: t("Lecturer"),
+    //   render: (u) => u.lecturer,
+    // },
     {
       key: "yearLevel",
       header: t("Year Level"),
-      render: (u) => `${t("Year")} ${u.yearLevel}`,
+      render: (u) => `${t("Year")} ${u.year_level}`,
     },
     {
       key: "isActive",
       header: t("Status"),
       render: (u) => (
         <Badge
-          className={u.isActive ? statusStyles.ACTIVE : statusStyles.INACTIVE}
+          className={u.is_active ? statusStyles.ACTIVE : statusStyles.INACTIVE}
         >
-          {u.isActive ? t("Active") : t("Inactive")}
+          {u.is_active ? t("Active") : t("Inactive")}
         </Badge>
       ),
     },
@@ -208,14 +259,24 @@ function CoursesPage() {
       render: (u) => (
         <div className="flex justify-end gap-2">
           <button
-            onClick={() => console.log("edit", u.id)}
+            onClick={() => {
+              setForm({
+                name: u.name,
+                department_id: u.department_id,
+                code: u.code,
+                credit_hours: u.credit_hours,
+                year_level: u.year_level,
+                is_active: Boolean(u.is_active),
+              });
+              setModal({ type: "edit", course: u });
+            }}
             aria-label={`${t("Edit")} ${u.name}`}
             className="rounded-md p-2 text-teal-600 hover:bg-teal-50"
           >
             <Pencil className="h-4 w-4 cursor-pointer" />
           </button>
           <button
-            onClick={() => console.log("delete", u.id)}
+            onClick={() => setModal({ type: "delete", course: u })}
             aria-label={`${t("Delete")} ${u.name}`}
             className="rounded-md p-2 text-red-600 hover:bg-red-50"
           >
@@ -238,7 +299,7 @@ function CoursesPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#F7F6F2] px-8 py-8">
+    <div className="min-h-screen bg-stale-50 px-8 py-8">
       <nav className="flex items-center gap-2 text-sm text-gray-500 mb-6">
         {canAccessUniversities && (
           <>
@@ -286,7 +347,7 @@ function CoursesPage() {
         />
         <button
           className="flex items-center gap-1.5 bg-teal-700 hover:bg-teal-800 active:bg-teal-900 text-white text-sm font-medium px-4 py-2.5 rounded-xl transition-colors mt-1 cursor-pointer"
-          onClick={handleModal}
+          onClick={() => setModal({ type: "add" })}
         >
           <Plus size={16} strokeWidth={2.5} />
           {t("Add Course")}
@@ -332,12 +393,13 @@ function CoursesPage() {
         />
       </div>
 
-      {showPopup && (
+      {modal?.type == "add" && (
         <Modal
           title={t("Add Course")}
           confirmLabel={t("Add Course")}
-          onClose={() => setShowPopup(false)}
+          onClose={() => setModal(null)}
           onConfirm={handleAddCourse}
+          isLoading={isPending}
         >
           <div className="flex flex-col gap-3">
             <div>
@@ -347,6 +409,10 @@ function CoursesPage() {
               <Input
                 placeholder={t("e.g. Introduction to Programming")}
                 type="text"
+                value={form.name}
+                onChange={(e) =>
+                  setForm((f) => ({ ...f, name: e.target.value }))
+                }
               />
             </div>
 
@@ -354,40 +420,51 @@ function CoursesPage() {
               <Label className="text-sm font-medium text-gray-700 mb-1">
                 {t("Course Code")}
               </Label>
-              <Input placeholder={t("e.g. CS101")} type="text" />
+              <Input
+                placeholder={t("e.g. CS101")}
+                type="text"
+                value={form.code}
+                onChange={(e) =>
+                  setForm((f) => ({ ...f, code: e.target.value }))
+                }
+              />
             </div>
 
             <div>
               <Label className="text-sm font-medium text-gray-700 mb-1">
                 {t("Credit hours")}
               </Label>
-              <Input placeholder={t("e.g. 3")} type="number" min={1} max={6} />
+              <Input
+                placeholder={t("e.g. 3")}
+                type="number"
+                min={1}
+                max={6}
+                value={form.credit_hours ?? ""}
+                onChange={(e) =>
+                  setForm((f) => ({
+                    ...f,
+                    credit_hours:
+                      e.target.value === "" ? null : Number(e.target.value),
+                  }))
+                }
+              />
             </div>
-
-            {/* <div>
-              <Label className="text-sm font-medium text-gray-700 mb-1">
-                Assign Lecturer
-              </Label>
-              <Combobox items={lecturers}>
-                <ComboboxInput placeholder="Select a lecturer" />
-                <ComboboxContent>
-                  <ComboboxEmpty>No items found.</ComboboxEmpty>
-                  <ComboboxList>
-                    {(item) => (
-                      <ComboboxItem key={item} value={item}>
-                        {item}
-                      </ComboboxItem>
-                    )}
-                  </ComboboxList>
-                </ComboboxContent>
-              </Combobox>
-            </div> */}
 
             <div>
               <Label className="text-sm font-medium text-gray-700 mb-1">
                 {t("Year Level")}
               </Label>
-              <select className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-teal-500">
+              <select
+                value={form.year_level ?? ""}
+                onChange={(e) =>
+                  setForm((f) => ({
+                    ...f,
+                    year_level:
+                      e.target.value === "" ? null : Number(e.target.value),
+                  }))
+                }
+                className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-teal-500"
+              >
                 <option value="">{t("Select year level")}</option>
                 <option value="1">{t("Year 1")}</option>
                 <option value="2">{t("Year 2")}</option>
@@ -399,6 +476,135 @@ function CoursesPage() {
             </div>
           </div>
         </Modal>
+      )}
+
+      {/* edit course popup */}
+      {modal?.type === "edit" && (
+        <Modal
+          title={t("Update Course")}
+          confirmLabel={t("Update Course")}
+          onClose={() => setModal(null)}
+          onConfirm={handleUpdateCourse}
+          isLoading={isUpdating}
+        >
+          <div className="flex flex-col gap-3">
+            <div>
+              <Label className="text-sm font-medium text-gray-700 mb-1">
+                {t("Name")}
+              </Label>
+              <Input
+                placeholder={t("e.g. Database Systems")}
+                value={form.name}
+                onChange={(e) =>
+                  setForm((f) => ({ ...f, name: e.target.value }))
+                }
+                type="text"
+              />
+            </div>
+
+            <div>
+              <Label className="text-sm font-medium text-gray-700 mb-1">
+                {t("Code")}
+              </Label>
+              <Input
+                placeholder={t("e.g. CS321")}
+                value={form.code}
+                onChange={(e) =>
+                  setForm((f) => ({ ...f, code: e.target.value }))
+                }
+                type="text"
+              />
+            </div>
+
+            <div>
+              <Label className="text-sm font-medium text-gray-700 mb-1">
+                {t("Credit Hours")}
+              </Label>
+              <Input
+                placeholder={t("e.g. 3")}
+                value={form.credit_hours ?? ""}
+                onChange={(e) =>
+                  setForm((f) => ({
+                    ...f,
+                    credit_hours:
+                      e.target.value === "" ? null : Number(e.target.value),
+                  }))
+                }
+                type="number"
+                min={1}
+              />
+            </div>
+
+            <div>
+              <Label className="text-sm font-medium text-gray-700 mb-1">
+                {t("Year Level")}
+              </Label>
+              <Input
+                placeholder={t("e.g. 3")}
+                value={form.year_level ?? ""}
+                onChange={(e) =>
+                  setForm((f) => ({
+                    ...f,
+                    year_level:
+                      e.target.value === "" ? null : Number(e.target.value),
+                  }))
+                }
+                type="number"
+                min={1}
+              />
+            </div>
+
+            <div>
+              <Label className="text-sm font-medium text-gray-700 mb-1">
+                {t("Department")}
+              </Label>
+              <select
+                value={form.department_id}
+                onChange={(e) =>
+                  setForm((f) => ({
+                    ...f,
+                    department_id: Number(e.target.value),
+                  }))
+                }
+                className="border rounded-md px-2 py-1.5 text-sm w-full"
+              >
+                <option value="" disabled>
+                  {t("Select a department")}
+                </option>
+                {departments.map((d) => (
+                  <option key={d.id} value={d.id}>
+                    {d.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className="flex items-center justify-between py-1">
+              <Label className="text-sm font-medium text-gray-700">
+                {t("Active")}
+              </Label>
+              <input
+                type="checkbox"
+                checked={form.is_active}
+                onChange={(e) =>
+                  setForm((f) => ({ ...f, is_active: e.target.checked }))
+                }
+                className="w-4 h-4 accent-teal-700"
+              />
+            </div>
+          </div>
+        </Modal>
+      )}
+
+      {/* delete course confirmation popup */}
+      {modal?.type === "delete" && (
+        <ConfirmDialog
+          title={t("Delete Course")}
+          description={`Are you sure you want to delete ${modal.course.name}? This action cannot be undone.`}
+          onClose={() => setModal(null)}
+          onConfirm={() => removeCourse(modal.course.id)}
+          isLoading={isDeleting}
+        />
       )}
     </div>
   );
