@@ -29,6 +29,8 @@ function LoginPage() {
   const { setUser, setToken } = useUserStore();
 
   const { mutate, isPending, error } = useMutation({
+    // Errors are shown inline below the form, so skip the global toast.
+    meta: { suppressErrorToast: true },
     mutationFn: (payload: LoginPayload) => login(payload),
     onSuccess: (result) => {
       if (result.requires2FA) {
@@ -55,6 +57,8 @@ function LoginPage() {
 
   const { mutate: requestPasswordReset, isPending: isRequestingReset } =
     useMutation({
+      // Shown inline as validationError, so skip the global toast.
+      meta: { suppressErrorToast: true },
       mutationFn: (email: string) => forgetPassword(email),
       onSuccess: (message) => {
         setValidationError("");

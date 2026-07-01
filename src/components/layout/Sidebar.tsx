@@ -81,6 +81,8 @@ const Sidebar = () => {
 
   const { mutate, isPending } = useMutation({
     mutationFn: logout,
+    // The user is logged out locally either way, so a failure isn't actionable.
+    meta: { suppressErrorToast: true },
     onSuccess: () => {
       clearAuth();
       navigate("/login", { replace: true });

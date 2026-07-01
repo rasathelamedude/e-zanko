@@ -27,6 +27,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import ErrorState from "../../components/common/ErrorState";
 import { getUniversityById } from "../../api/university";
 import type { UserScope } from "../../types/auth";
+import { notifySuccess } from "../../lib/notify";
 
 const statusStyles: Record<FacultyStatus, string> = {
   ACTIVE: "bg-emerald-100 text-emerald-700 hover:bg-emerald-100",
@@ -88,9 +89,7 @@ function FacultiesPage() {
       });
       setShowPopup(false);
       refetch();
-    },
-    onError: (error: Error) => {
-      console.error(error.message);
+      notifySuccess(t("Faculty added."));
     },
   });
 

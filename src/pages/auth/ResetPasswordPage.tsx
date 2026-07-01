@@ -20,6 +20,8 @@ const ResetPassword = () => {
   const [successMessage, setSuccessMessage] = useState("");
 
   const { mutate, isPending, error } = useMutation({
+    // Error is shown inline below the fields, so skip the global toast.
+    meta: { suppressErrorToast: true },
     mutationFn: () =>
       resetPassword({ token, email, password, confirmPassword: confirm }),
     onSuccess: (message) =>

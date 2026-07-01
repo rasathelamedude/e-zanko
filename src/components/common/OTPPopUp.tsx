@@ -71,6 +71,8 @@ const OTPPopUp = ({ mode, email, onClose, challengeToken }: OTPPopUpProps) => {
     Error,
     string
   >({
+    // Error is shown inline (and drives the attempts counter), so skip the toast.
+    meta: { suppressErrorToast: true },
     mutationFn: (otp: string): Promise<string | OTPVerificationResult> => {
       if (mode === "enable") return enable2FA(otp);
       if (mode === "disable") return disable2FA(otp);
