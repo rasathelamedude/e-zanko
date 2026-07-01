@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import {
   CheckCircle2,
@@ -11,111 +10,18 @@ import {
   ShieldAlert,
 } from "lucide-react";
 import logo from "../../assets/images/logo.png";
+import { useQuery } from "@tanstack/react-query";
+import { fetchVerificationData } from "../../api/auth";
+import VerificationDocumentNotFound from "../../components/common/VerificationDocumentNotFound";
 
 type TrailAction =
   | "sent"
   | "forwarded"
-  | "signed_escalated"
+  | "signed_raised"
   | "approved"
   | "rejected"
   | "stamped_isdar"
   | "stamped_istirad";
-
-interface TrailEvent {
-  id: string;
-  action: TrailAction;
-  actorName: string;
-  actorRole: string;
-  actorInstitution: string;
-  createdAt: string;
-  note?: string | null;
-}
-
-interface SignatureBlock {
-  id: string;
-  name: string;
-  role: string;
-  institution: string;
-  signedAt: string;
-}
-
-interface VerificationData {
-  documentUUID: string;
-  referenceNumber: string;
-  title: string;
-  submittedAt: string;
-  integrityVerified: boolean;
-  trail: TrailEvent[];
-  signatures: SignatureBlock[];
-}
-
-/*
-  TODO: Replace with real API call.
-
-  Example:
-  const { documentUUID } = useParams();
-  const { data, isLoading, isError } = useQuery({
-    queryKey: ["verify", documentUUID],
-    queryFn: () => verifyLetter(documentUUID),
-  });
-*/
-const MOCK_DATA: VerificationData = {
-  documentUUID: "a8f3c2e1-9b4d-4f6a-8c1e-2d3f4b5a6c7d",
-  referenceNumber: "MHE-2026-00142",
-  title: "Open College of Data Science",
-  submittedAt: "14 Jun 2026, 09:00",
-  integrityVerified: true,
-  trail: [
-    {
-      id: "1",
-      action: "sent",
-      actorName: "Dr. Karim Yusuf",
-      actorRole: "Head of Department",
-      actorInstitution: "Software Engineering Dept.",
-      createdAt: "14 Jun 2026, 09:00",
-    },
-    {
-      id: "2",
-      action: "stamped_isdar",
-      actorName: "Dr. Aram Qadir",
-      actorRole: "University President",
-      actorInstitution: "University of Sulaimani",
-      createdAt: "14 Jun 2026, 10:30",
-    },
-    {
-      id: "3",
-      action: "stamped_istirad",
-      actorName: "Hawre Saeed",
-      actorRole: "Import / Export Staff",
-      actorInstitution: "Ministry Import / Export Office",
-      createdAt: "14 Jun 2026, 14:15",
-    },
-    {
-      id: "4",
-      action: "approved",
-      actorName: "Dr. A. Mahmoud",
-      actorRole: "Ministry Administration Head",
-      actorInstitution: "Ministry of Higher Education",
-      createdAt: "15 Jun 2026, 09:00",
-    },
-  ],
-  signatures: [
-    {
-      id: "s1",
-      name: "Dr. Aram Qadir",
-      role: "University President",
-      institution: "University of Sulaimani",
-      signedAt: "14 Jun 2026",
-    },
-    {
-      id: "s2",
-      name: "Dr. A. Mahmoud",
-      role: "Ministry Administration Head",
-      institution: "Ministry of Higher Education",
-      signedAt: "15 Jun 2026",
-    },
-  ],
-};
 
 const ACTION_CONFIG: Record<
   TrailAction,
@@ -131,8 +37,8 @@ const ACTION_CONFIG: Record<
     icon: <Inbox className="h-4 w-4" strokeWidth={2} />,
     tone: "bg-[#eef1f5] text-[#46566a]",
   },
-  signed_escalated: {
-    label: "Signed & Escalated",
+  signed_raised: {
+    label: "Signed & Raised",
     icon: <PenLine className="h-4 w-4" strokeWidth={2} />,
     tone: "bg-[#e0f0f0] text-[#0f7576]",
   },
@@ -160,20 +66,17 @@ const ACTION_CONFIG: Record<
 
 const VerificationPage = () => {
   const { documentUUID } = useParams();
-  const [isLoading, setIsLoading] = useState(true);
-  const [isError, setIsError] = useState(false);
-  const [data, setData] = useState<VerificationData | null>(null);
 
-  useEffect(() => {
-    // TODO: replace with real fetch using `documentUUID`
-    const timer = setTimeout(() => {
-      setData(MOCK_DATA);
-      setIsLoading(false);
-    }, 600);
-    return () => clearTimeout(timer);
-  }, [documentUUID]);
+  const {
+    data: verificationData,
+    isPending,
+    isError,
+  } = useQuery({
+    queryKey: ["document", documentUUID],
+    queryFn: () => fetchVerificationData(documentUUID!),
+  });
 
-  if (isLoading) {
+  if (isPending) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-[#f5f7fa]">
         <Loader2
@@ -184,23 +87,8 @@ const VerificationPage = () => {
     );
   }
 
-  if (isError || !data) {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-[#f5f7fa] px-4">
-        <div className="w-full max-w-md rounded-2xl border border-[#e4e9ef] bg-white p-10 text-center shadow-[0_8px_28px_rgba(18,35,55,0.06)]">
-          <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-full bg-red-50">
-            <ShieldAlert className="h-7 w-7 text-red-500" strokeWidth={1.8} />
-          </div>
-          <h1 className="mb-2 text-lg font-[850] text-[#172033]">
-            Document not found
-          </h1>
-          <p className="text-sm text-[#758498]">
-            This verification link is invalid or the document could not be
-            located.
-          </p>
-        </div>
-      </div>
-    );
+  if (isError || !verificationData) {
+    return <VerificationDocumentNotFound />;
   }
 
   return (
@@ -228,10 +116,12 @@ const VerificationPage = () => {
           {/* Integrity banner */}
           <div
             className={`flex items-center gap-3 rounded-t-2xl px-7 py-5 ${
-              data.integrityVerified ? "bg-[#e6f4ea]" : "bg-[#fbe9e9]"
+              verificationData?.content_verified
+                ? "bg-[#e6f4ea]"
+                : "bg-[#fbe9e9]"
             }`}
           >
-            {data.integrityVerified ? (
+            {verificationData?.content_verified ? (
               <CheckCircle2
                 className="h-6 w-6 shrink-0 text-[#1a7d3a]"
                 strokeWidth={2}
@@ -245,19 +135,23 @@ const VerificationPage = () => {
             <div>
               <p
                 className={`text-[14.5px] font-[850] ${
-                  data.integrityVerified ? "text-[#1a7d3a]" : "text-[#c0392b]"
+                  verificationData?.content_verified
+                    ? "text-[#1a7d3a]"
+                    : "text-[#c0392b]"
                 }`}
               >
-                {data.integrityVerified
+                {verificationData?.content_verified
                   ? "Document integrity verified"
                   : "Document integrity could not be verified"}
               </p>
               <p
                 className={`text-[12.5px] ${
-                  data.integrityVerified ? "text-[#3f9b5c]" : "text-[#d16b60]"
+                  verificationData?.content_verified
+                    ? "text-[#3f9b5c]"
+                    : "text-[#d16b60]"
                 }`}
               >
-                {data.integrityVerified
+                {verificationData?.content_verified
                   ? "Content matches the original — unaltered since creation"
                   : "Content may have been altered after the original was created"}
               </p>
@@ -267,13 +161,13 @@ const VerificationPage = () => {
           {/* Letter meta */}
           <div className="border-b border-[#e4e9ef] px-7 py-6">
             <p className="mb-1 text-[12px] font-semibold uppercase tracking-wide text-[#9aa6b6]">
-              {data.referenceNumber}
+              {verificationData?.letter_number}
             </p>
             <h1 className="mb-2 text-[19px] font-[850] tracking-[-0.01em] text-[#172033]">
-              {data.title}
+              {verificationData?.title}
             </h1>
             <p className="text-[13px] text-[#758498]">
-              Submitted {data.submittedAt}
+              Created {verificationData?.created_at}
             </p>
           </div>
 
@@ -284,9 +178,9 @@ const VerificationPage = () => {
             </p>
 
             <div className="space-y-0">
-              {data.trail.map((event, index) => {
-                const config = ACTION_CONFIG[event.action];
-                const isLast = index === data.trail.length - 1;
+              {verificationData?.flows.map((event, index) => {
+                const config = ACTION_CONFIG[event.action as TrailAction];
+                const isLast = index === verificationData?.flows.length - 1;
 
                 return (
                   <div
@@ -312,14 +206,15 @@ const VerificationPage = () => {
                           {config.label}
                         </p>
                         <p className="text-[12px] text-[#9aa6b6]">
-                          {event.createdAt}
+                          {event.created_at}
                         </p>
                       </div>
                       <p className="text-[13px] text-[#46566a]">
-                        {event.actorName} &middot; {event.actorRole}
+                        Actor ID {event.actor_id}
                       </p>
                       <p className="text-[12.5px] text-[#9aa6b6]">
-                        {event.actorInstitution}
+                        From {event.from_recipient_id} to{" "}
+                        {event.to_recipient_id ?? "N/A"}
                       </p>
                       {event.note && (
                         <p className="mt-1.5 rounded-lg bg-[#f5f7fa] px-3 py-2 text-[12.5px] text-[#46566a]">
@@ -334,23 +229,23 @@ const VerificationPage = () => {
           </div>
 
           {/* Signature blocks */}
-          {data.signatures.length > 0 && (
+          {verificationData?.signatures.length > 0 && (
             <div className="border-t border-[#e4e9ef] px-7 py-6">
               <p className="mb-4 text-[12px] font-[850] uppercase tracking-wide text-[#46566a]">
                 Audit Signatures
               </p>
               <div className="flex flex-wrap gap-6">
-                {data.signatures.map((sig) => (
+                {verificationData?.signatures.map((sig) => (
                   <div key={sig.id} className="min-w-45 flex-1">
                     <p className="font-serif text-[16px] italic text-[#172033]">
-                      {sig.name}
+                      {sig.user.name}
                     </p>
                     <div className="mt-1.5 h-px w-full bg-[#e4e9ef]" />
                     <p className="mt-1.5 text-[12px] font-semibold text-[#46566a]">
-                      {sig.role}
+                      {sig.role_at_time}
                     </p>
                     <p className="text-[11.5px] text-[#9aa6b6]">
-                      {sig.institution} &middot; {sig.signedAt}
+                      Signed at {sig.created_at}
                     </p>
                   </div>
                 ))}
@@ -363,7 +258,7 @@ const VerificationPage = () => {
             <p className="text-center text-[11px] text-[#9aa6b6]">
               Document ID
               <span className="ml-1.5 font-mono text-[#46566a]">
-                {data.documentUUID}
+                {verificationData?.letter_uuid}
               </span>
             </p>
           </div>

@@ -7,6 +7,8 @@ import type {
   LogoutResponse,
   ResetPasswordResponse,
   User,
+  VerificationResponse,
+  VerificationData,
 } from "../types/auth";
 import axios from "../lib/axios";
 
@@ -182,4 +184,20 @@ export async function login2FA(
     user: data.user,
     token: data.token ?? null,
   };
+}
+
+export async function fetchVerificationData(
+  documentUUID: string,
+): Promise<VerificationData> {
+  const response = await axios.get<VerificationResponse>(
+    `/api/verify/${documentUUID}`,
+  );
+
+  const { data, success, message } = response.data;
+
+  if (!success) {
+    throw new Error(message || "Failed to fetch verification data");
+  }
+
+  return data;
 }
