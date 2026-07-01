@@ -23,6 +23,7 @@ import type { UserScope } from "../../types/auth";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { addDepartment, getDepartmentByFaculty } from "../../api/department";
 import { getUniversityById } from "../../api/university";
+import { notifySuccess } from "../../lib/notify";
 
 const statusStyles: Record<DepartmentStatus, string> = {
   ACTIVE: "bg-emerald-100 text-emerald-700 hover:bg-emerald-100",
@@ -74,9 +75,7 @@ function DepartmentsPage() {
       setForm({ name: "", faculty_id: Number(facultyId), is_active: true });
       setShowPopup(false);
       refetch();
-    },
-    onError: (error: Error) => {
-      console.error(error.message);
+      notifySuccess(t("Department added."));
     },
   });
 
