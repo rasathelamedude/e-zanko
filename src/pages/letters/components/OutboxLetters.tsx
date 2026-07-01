@@ -1,11 +1,16 @@
 import { useTranslation } from "react-i18next";
-import { mockLetters } from "../../../api/letters";
+import { getOutboxLettersForUser } from "../../../api/letters";
 import LetterListItem from "./LetterListItem";
-
-const outboxLetters = mockLetters.filter((l) => l.letterType === "outbox");
+import { useQuery } from "@tanstack/react-query";
 
 function OutboxLetters() {
   const { t } = useTranslation();
+
+  const { data: outboxLetters = [] } = useQuery({
+    queryKey: ["outboxLetters"],
+    queryFn: getOutboxLettersForUser,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
 
   return (
     <div className="border border-gray-200 rounded-xl overflow-hidden bg-white">

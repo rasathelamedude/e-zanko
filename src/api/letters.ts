@@ -1,42 +1,69 @@
 import type { Letter } from "../types/letter";
+import axios from "../lib/axios";
+import type { GetUserLettersResponse } from "../types/letter";
 
-export const mockLetters: Letter[] = [
-  {
-    id: 1,
-    status: "pending",
-    title: "Open College of Data Science",
-    university: "University of Sulaimani",
-    letterType: "inbox",
-    date: "16 Jun 2026",
-    message:
-      "We request approval to establish a new College of Data Science for the 2026–2027 intake, with three founding departments and an initial cohort of 240 students.",
-  },
-  {
-    id: 2,
-    status: "pending",
-    title: "Close College of Fine Arts",
-    university: "Salahaddin University",
-    letterType: "outbox",
-    date: "15 Jun 2026",
-    message:
-      "We request approval to close the College of Fine Arts due to low enrollment.",
-  },
-  {
-    id: 3,
-    status: "approved",
-    title: "Open College of Nursing",
-    university: "University of Duhok",
-    letterType: "archived",
-    date: "14 Jun 2026",
-    message: "We request approval to open a new College of Nursing.",
-  },
-];
+export const getInboxLettersForUser = async (): Promise<Letter[]> => {
+  const response = await axios.get<GetUserLettersResponse>(
+    "/api/letters/inbox",
+    {
+      params: {
+        filter: {
+          status: "pending",
+        },
+      },
+    },
+  );
 
+  const { data, success, message } = response.data;
 
-export const getLetters = async () : Promise<Letter[]> => {
-    return mockLetters;
-}
+  if (!success) {
+    throw new Error(message || "Failed to fetch inbox letters");
+  }
 
-export const getLetterById = async (id: string): Promise<Letter | undefined> => {
-  return mockLetters.find((l) => l.id === id);
+  const inboxLetters: Letter[] = data.data;
+
+  return inboxLetters;
+};
+
+export const getOutboxLettersForUser = async (): Promise<Letter[]> => {
+  const response = await axios.get<GetUserLettersResponse>(
+    "/api/letters/outbox",
+    {
+      params: {
+        filter: {
+          status: "pending",
+        },
+      },
+    },
+  );
+
+  const { data, success, message } = response.data;
+
+  if (!success) {
+    throw new Error(message || "Failed to fetch outbox letters");
+  }
+
+  const outboxLetters: Letter[] = data.data;
+
+  return outboxLetters;
+};
+
+export const getCompletedLettersForUser = async (): Promise<Letter[]> => {
+  const response = await axios.get<GetUserLettersResponse>("/api/letters", {
+    params: {
+      filter: {
+        status: ["approved", "rejected"],
+      },
+    },
+  });
+
+  const { data, success, message } = response.data;
+
+  if (!success) {
+    throw new Error(message || "Failed to fetch completed letters");
+  }
+
+  const completedLetters: Letter[] = data.data;
+
+  return completedLetters;
 };

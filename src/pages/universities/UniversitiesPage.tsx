@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next";
-import { Search, Plus, AlertTriangle } from "lucide-react";
+import { Search, Plus } from "lucide-react";
 import {
   DataTable,
   type DataTableColumn,
