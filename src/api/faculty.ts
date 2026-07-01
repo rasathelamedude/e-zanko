@@ -37,10 +37,10 @@ export async function addFaculty(
   universityId: number,
   payload: FacultyPayload,
 ): Promise<Faculty> {
-  const response = await api.post(
-    `/api/universities/${universityId}/faculties`,
-    payload,
-  );
+  const response = await api.post(`/api/faculties`, {
+    ...payload,
+    university_id: universityId,
+  });
   const { success, message, data } = response.data;
 
   if (!success) {

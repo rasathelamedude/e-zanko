@@ -26,7 +26,7 @@ const LettersPage = () => {
       <PageHeader
         title={t("Ministry of higher educations")}
         locationTitle={t("Letters")}
-        role={user?.roles[0]?.name || ""}
+        role={user?.roles[0]?.name ?? t("No role assigned")}
         year="2023-2024"
       />
 

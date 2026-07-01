@@ -151,7 +151,7 @@ const SettingsPage = () => {
           </div>
 
           <span className="bg-teal-100 text-[#0f7576] text-xs font-bold px-3 py-1 rounded-md">
-            {t("MINISTRY")}
+            {user?.roles[0]?.name ?? t("No role assigned")}
           </span>
         </div>
       </div>
