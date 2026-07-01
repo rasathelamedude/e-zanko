@@ -5,7 +5,7 @@ import {
   type DataTableColumn,
 } from "../../components/common/DataTable";
 import type {
-  departmentPayload,
+  DepartmentPayload,
   Department,
   DepartmentStatus,
 } from "../../types/hierarchy";
@@ -44,7 +44,7 @@ function DepartmentsPage() {
   const { universityId, facultyId } = useParams();
   const navigate = useNavigate();
   const { canAccessUniversities, canAccessFaculties } = useBreadcrumbAccess();
-  const [form, setForm] = useState<departmentPayload>({
+  const [form, setForm] = useState<DepartmentPayload>({
     name: "",
     faculty_id: 0,
     is_active: false,
@@ -69,7 +69,7 @@ function DepartmentsPage() {
   });
 
   const { mutate: createDepartment, isPending } = useMutation({
-    mutationFn: (payload: departmentPayload) => addDepartment(payload),
+    mutationFn: (payload: DepartmentPayload) => addDepartment(payload),
     onSuccess: () => {
       setForm({ name: "", faculty_id: Number(facultyId), is_active: true });
       setShowPopup(false);
