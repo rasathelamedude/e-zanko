@@ -31,6 +31,7 @@ const Sidebar = () => {
     MINISTRY_ADMIN: [
       { label: t("Dashboard"), to: "/" },
       { label: t("Universities"), to: "/universities" },
+      { label: t("Zankoline"), to: "/zankoline"},
       { label: t("Letters"), to: "/letters" },
       { label: t("Reports"), to: "/reports" },
       { label: t("Settings"), to: "/settings" },
