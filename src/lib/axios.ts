@@ -41,11 +41,13 @@ api.interceptors.response.use(
   (response) => response,
   // if error found, normalize it into a UI-safe ApiError and reject
   (error) => {
-    const apiError = normalizeAxiosError(error);
+    const wasAuthenticated = Boolean(useUserStore.getState().token);
+    const apiError = normalizeAxiosError(error, {
+      authenticated: wasAuthenticated,
+    });
     const { pathname } = window.location;
 
     if (apiError.status === 401) {
-      const wasAuthenticated = Boolean(useUserStore.getState().token);
       useUserStore.getState().clearAuth();
 
       // Only force a redirect when a real session expired mid-use. Logged-out

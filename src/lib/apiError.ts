@@ -86,9 +86,16 @@ function resolveUserMessage(opts: {
   isTimeout: boolean;
   backendMessage?: string;
   fieldErrors: FieldErrors;
+  authenticated: boolean;
 }): string {
-  const { status, isNetworkError, isTimeout, backendMessage, fieldErrors } =
-    opts;
+  const {
+    status,
+    isNetworkError,
+    isTimeout,
+    backendMessage,
+    fieldErrors,
+    authenticated,
+  } = opts;
 
   if (isTimeout) return tr("The request timed out. Please try again.");
   if (isNetworkError)
@@ -98,6 +105,10 @@ function resolveUserMessage(opts: {
 
   switch (status) {
     case 401:
+      // A 401 while logged in means the session expired. A 401 while logged out
+      // is a failed login / credential check — surface the backend's specific
+      // reason (e.g. "Invalid Credentials") instead.
+      if (!authenticated && backendMessage) return backendMessage;
       return tr("Your session has expired. Please sign in again.");
     case 403:
       return tr("You don't have permission to perform this action.");
@@ -129,8 +140,14 @@ function resolveUserMessage(opts: {
  * Used by the axios response interceptor. Guarantees `.message` is friendly and
  * never leaks Laravel debug details, while keeping status / field errors /
  * network flags available for callers that want to branch on them.
+ *
+ * `context.authenticated` lets 401 handling tell an expired session (logged in)
+ * apart from a failed login / credential check (logged out).
  */
-export function normalizeAxiosError(error: unknown): ApiError {
+export function normalizeAxiosError(
+  error: unknown,
+  context: { authenticated?: boolean } = {},
+): ApiError {
   // Already normalized (e.g. re-thrown downstream) — pass through untouched.
   if (error instanceof ApiError) return error;
 
@@ -156,6 +173,7 @@ export function normalizeAxiosError(error: unknown): ApiError {
       isTimeout,
       backendMessage,
       fieldErrors,
+      authenticated: context.authenticated ?? false,
     });
 
     // Surface the real cause to developers without exposing it to users.
