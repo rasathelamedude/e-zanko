@@ -1,8 +1,6 @@
-import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Badge } from "../../../components/ui/badge";
 import type { Letter } from "../../../types/letter";
-import { getLetters, mockLetters } from "../../../api/letters";
 
 const statusStyles: Record<string, string> = {
   pending: "bg-amber-100 text-amber-700 hover:bg-amber-100",
@@ -17,22 +15,13 @@ const statusLabels: Record<string, string> = {
 };
 
 interface LetterCardProps {
-  selectedLetterId: string | number;
+  letters: Letter[];
+  selectedLetterId: string | number | null;
   onSelect: (letter: Letter) => void;
 }
 
-function LetterCard({ selectedLetterId, onSelect }: LetterCardProps) {
+function LetterCard({ letters, selectedLetterId, onSelect }: LetterCardProps) {
   const { t } = useTranslation();
-  const [letters, setLetters] = useState<Letter[]>([]);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      const data = await getLetters();
-      setLetters(data);
-    };
-
-    fetchData();
-  }, []);
 
   return (
     <div className="border border-gray-200 rounded-xl overflow-hidden bg-white h-full">
@@ -50,7 +39,7 @@ function LetterCard({ selectedLetterId, onSelect }: LetterCardProps) {
             selectedLetterId === letter.id
               ? "border-s-teal-700 bg-teal-50/50"
               : "border-s-transparent hover:bg-gray-50"
-          } ${index !== mockLetters.length - 1 ? "border-b border-gray-100" : ""}`}
+          } ${index !== letters.length - 1 ? "border-b border-gray-100" : ""}`}
         >
           <div className="flex items-center justify-between mb-1">
             <p className="font-semibold text-sm text-gray-800">
