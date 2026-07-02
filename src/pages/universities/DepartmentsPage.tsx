@@ -4,11 +4,7 @@ import {
   DataTable,
   type DataTableColumn,
 } from "../../components/common/DataTable";
-import type {
-  DepartmentPayload,
-  Department,
-  DepartmentStatus,
-} from "../../types/hierarchy";
+import type { DepartmentPayload, Department } from "../../types/hierarchy";
 import { Badge } from "../../components/ui/badge";
 import { useState } from "react";
 import { Input } from "../../components/ui/input";
@@ -24,18 +20,8 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { addDepartment, getDepartmentByFaculty } from "../../api/department";
 import { getUniversityById } from "../../api/university";
 import { notifySuccess } from "../../lib/notify";
-
-const statusStyles: Record<DepartmentStatus, string> = {
-  ACTIVE: "bg-emerald-100 text-emerald-700 hover:bg-emerald-100",
-  UNDER_REVIEW: "bg-amber-100 text-amber-700 hover:bg-amber-100",
-  INACTIVE: "bg-gray-100 text-gray-700 hover:bg-gray-100",
-};
-
-const statusLabels: Record<DepartmentStatus, string> = {
-  ACTIVE: "Active",
-  UNDER_REVIEW: "Under review",
-  INACTIVE: "Inactive",
-};
+import ErrorState from "../../components/common/ErrorState";
+import TableSkeleton from "../../components/common/TableSkeleton";
 
 function DepartmentsPage() {
   const { t } = useTranslation();
@@ -91,10 +77,29 @@ function DepartmentsPage() {
   //   enabled: !!facultyId,
   // });
 
+  if (isLoading) {
+      return (
+        <div className="min-h-screen bg-slate-50 px-8 py-8">
+          <TableSkeleton
+            gridCols="grid-cols-[2fr_1fr_1fr_80px]"
+            columnHeaders={["NAME", "DEPARTMENT HEAD", "STATUS"]}
+            extraColumns={[{ width: "w-28" }]}
+          />
+        </div>
+      );
+  }
+
+  if (isError)
+    return (
+      <ErrorState
+        title=" Couldn't load departments"
+        onClick={() => refetch()}
+      />
+    );
+
   const filteredDepartments = departments.filter(
     (d) => d.name.toLowerCase().includes(filter.toLowerCase()),
-    // d.headOfDepartment?.toLowerCase().includes(filter.toLowerCase()) ||
-    // d.status.toLowerCase().includes(filter.toLowerCase()),
+    // d.headOfDepartment?.toLowerCase().includes(filter.toLowerCase())
   );
 
   function handleModal() {
@@ -128,16 +133,22 @@ function DepartmentsPage() {
     //   header: t("Head Of Department"),
     //   render: (u) => u.headOfDepartment,
     // },
-    // {
-    //   key: "status",
-    //   header: t("Status"),
-    //   align: "right",
-    //   render: (u) => (
-    //     <Badge className={statusStyles[u.status]}>
-    //       {t(statusLabels[u.status])}
-    //     </Badge>
-    //   ),
-    // },
+    {
+      key: "status",
+      header: t("Status"),
+      align: "right",
+      render: (u) => (
+        <Badge
+          className={
+            u.is_active === 1
+              ? "bg-emerald-100 text-emerald-700"
+              : "bg-gray-100 text-gray-700"
+          }
+        >
+          {u.is_active === 1 ? t("Active") : t("Inactive")}
+        </Badge>
+      ),
+    },
   ];
 
   if (
@@ -150,7 +161,7 @@ function DepartmentsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#F7F6F2] px-8 py-8">
+    <div className="min-h-screen bg-slate-50 px-8 py-8">
       <nav className="flex items-center gap-2 text-sm text-gray-500 mb-6">
         {canAccessUniversities && (
           <>
