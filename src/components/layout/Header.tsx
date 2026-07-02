@@ -1,5 +1,5 @@
 import { type ChangeEvent, useState } from "react";
-import { Bell, Plus } from "lucide-react";
+import { Plus } from "lucide-react";
 import logo from "../../assets/images/logo.png";
 import { useUserStore } from "../../store/userStore";
 import { useTranslation } from "react-i18next";
@@ -16,7 +16,6 @@ const languages: { code: Language; label: string }[] = [
 ];
 
 const BRAND_TITLE = "e-Zanko";
-const NOTIFICATION_COUNT = 1;
 
 const getSupportedLanguage = (currentLanguage: string): Language => {
   const language = currentLanguage.split("-")[0].toLowerCase();
@@ -85,18 +84,6 @@ export default function Header() {
           >
             <Plus className="h-4 w-4" strokeWidth={2.4} aria-hidden="true" />
             <span className="max-lg:hidden">{letterButtonText}</span>
-          </button>
-
-          <button
-            type="button"
-            aria-label={t("Notifications")}
-            className="relative inline-flex h-10.5 w-10.5 items-center justify-center rounded-xl border border-[#e4e9ef] bg-white text-[#46566a] transition hover:border-[#bfe0e0] hover:bg-[#f8fbfb] hover:text-[#0f7576]"
-          >
-            <Bell className="h-5 w-5" strokeWidth={1.9} aria-hidden="true" />
-
-            {NOTIFICATION_COUNT > 0 && (
-              <span className="absolute end-2 top-2 h-2.25 w-2.25 rounded-full border-2 border-white bg-[#cc7a2b]" />
-            )}
           </button>
 
           <select

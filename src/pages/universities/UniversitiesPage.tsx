@@ -4,11 +4,7 @@ import {
   DataTable,
   type DataTableColumn,
 } from "../../components/common/DataTable";
-import type {
-  University,
-  UniversityPayload,
-  UniversityStatus,
-} from "../../types/hierarchy";
+import type { University, UniversityPayload } from "../../types/hierarchy";
 import { Badge } from "../../components/ui/badge";
 import { Pencil, Trash2 } from "lucide-react";
 import { Input } from "../../components/ui/input";
@@ -29,16 +25,14 @@ import ConfirmDialog from "../../components/common/ConfirmDialog";
 import ErrorState from "../../components/common/ErrorState";
 import { notifySuccess } from "../../lib/notify";
 
-const statusStyles: Record<UniversityStatus, string> = {
-  ACTIVE: "bg-emerald-100 text-emerald-700 hover:bg-emerald-100",
-  UNDER_REVIEW: "bg-amber-100 text-amber-700 hover:bg-amber-100",
-  INACTIVE: "bg-gray-100 text-gray-700 hover:bg-gray-100",
+const statusStyles: Record<number, string> = {
+  1: "bg-emerald-100 text-emerald-700 hover:bg-emerald-100",
+  0: "bg-gray-100 text-gray-700 hover:bg-gray-100",
 };
 
-const statusLabels: Record<UniversityStatus, string> = {
-  ACTIVE: "Active",
-  UNDER_REVIEW: "Under review",
-  INACTIVE: "Inactive",
+const statusLabels: Record<number, string> = {
+  1: "Active",
+  0: "Inactive",
 };
 
 type ModalState =
@@ -184,9 +178,12 @@ function UniversitiesPage() {
     );
 
   // error state
-    if (isError)
+  if (isError)
     return (
-      <ErrorState title=" Couldn't load universities" onClick={() => refetch()} />
+      <ErrorState
+        title=" Couldn't load universities"
+        onClick={() => refetch()}
+      />
     );
 
   const columns: DataTableColumn<University>[] = [
@@ -205,14 +202,14 @@ function UniversitiesPage() {
     {
       key: "president",
       header: t("President"),
-      render: (u) => u.president,
+      render: (u: University) => u.admin.name,
     },
     {
       key: "status",
       header: t("Status"),
       render: (u: University) => (
-        <Badge className={statusStyles[u.status]}>
-          {t(statusLabels[u.status])}
+        <Badge className={statusStyles[u.is_active]}>
+          {t(statusLabels[u.is_active])}
         </Badge>
       ),
     },
@@ -227,8 +224,8 @@ function UniversitiesPage() {
               setForm({
                 name: u.name,
                 location: u.location,
-                establishedYear: u.establishedYear,
-                isActive: u.isActive,
+                establishedYear: u.established_year,
+                isActive: u.is_active === 1 ? true : false,
               });
               setModal({ type: "edit", university: u });
             }}

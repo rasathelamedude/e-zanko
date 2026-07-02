@@ -1,6 +1,6 @@
-export type UniversityStatus = "ACTIVE" | "UNDER_REVIEW" | "INACTIVE";
-export type FacultyStatus = "ACTIVE" | "UNDER_REVIEW" | "INACTIVE";
-export type DepartmentStatus = "ACTIVE" | "UNDER_REVIEW" | "INACTIVE";
+export type UniversityStatus = "ACTIVE" | "INACTIVE";
+export type FacultyStatus = "ACTIVE" | "INACTIVE";
+export type DepartmentStatus = "ACTIVE" | "INACTIVE";
 export type CourseStatus = "ACTIVE" | "INACTIVE";
 
 export interface University {
@@ -15,7 +15,7 @@ export interface University {
   start_date: string | null; // ISO Date String (YYYY-MM-DD)
   end_date: string | null; // ISO Date String (YYYY-MM-DD)
   established_year: string; // Explicitly required in Laravel schema
-  is_active: number | null;
+  is_active: number; // 0 | 1
   created_at: string; // ISO 8601 Timestamp
   updated_at: string; // ISO 8601 Timestamp
   deleted_at?: string | null;
