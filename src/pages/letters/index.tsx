@@ -4,7 +4,7 @@ import PageHeader from "../../components/common/PageHeader";
 import { useUserStore } from "../../store/userStore";
 import InboxLetters from "./components/InboxLetters";
 import OutboxLetters from "./components/OutboxLetters";
-import ArchivedLetters from "./components/ArchivedLetters";
+import CompletedLetters from "./components/CompletedLetters";
 
 type Tab = "inbox" | "outbox" | "archived";
 
@@ -26,7 +26,7 @@ const LettersPage = () => {
       <PageHeader
         title={t("Ministry of higher educations")}
         locationTitle={t("Letters")}
-        role={user?.roles[0]?.name || ""}
+        role={user?.roles[0]?.name ?? t("No role assigned")}
         year="2023-2024"
       />
 
@@ -48,7 +48,7 @@ const LettersPage = () => {
 
       {activeTab === "inbox" && <InboxLetters />}
       {activeTab === "outbox" && <OutboxLetters />}
-      {activeTab === "archived" && <ArchivedLetters />}
+      {activeTab === "archived" && <CompletedLetters />}
     </div>
   );
 };

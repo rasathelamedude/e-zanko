@@ -238,5 +238,10 @@
   "Software Engineering": "هندسة البرمجيات",
   "University Email": "البريد الإلكتروني الجامعي",
   "Add Student": "إضافة طالب",
-  "Stage": "المرحلة"
+  "Stage": "المرحلة",
+  "Sending…": "جارٍ الإرسال…",
+  "Check your email for a link to reset your password.": "تحقق من بريدك الإلكتروني للحصول على رابط إعادة تعيين كلمة المرور.",
+  "Password reset successful": "تمت إعادة تعيين كلمة المرور بنجاح",
+  "Back to login": "العودة إلى تسجيل الدخول",
+  "Your password has been reset. You can now sign in.": "تمت إعادة تعيين كلمة مرورك. يمكنك الآن تسجيل الدخول."
 }

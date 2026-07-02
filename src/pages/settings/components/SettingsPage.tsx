@@ -9,7 +9,7 @@ import {
 } from "../../../api/auth";
 import OTPPopUp from "../../../components/common/OTPPopUp";
 import PasswordInput from "../../../components/common/PasswordInput";
-import { toast } from "react-toastify";
+import { notifyError, notifySuccess } from "../../../lib/notify";
 
 interface ChangePasswordPayload {
   currentPassword: string;
@@ -41,6 +41,8 @@ const SettingsPage = () => {
     isPending: is2FAPending,
     error: prepareError,
   } = useMutation({
+    // Error is shown inline under the 2FA row, so skip the global toast.
+    meta: { suppressErrorToast: true },
     mutationFn: prepare2FA,
     onSuccess: () => {
       setShowOTP(true);
@@ -48,11 +50,9 @@ const SettingsPage = () => {
   });
 
   // Changing password mutation
-  const {
-    mutate: changePassword,
-    isPending: isPasswordPending,
-    error: changePasswordError,
-  } = useMutation({
+  const { mutate: changePassword, isPending: isPasswordPending } = useMutation({
+    // Handled with its own toast below, so skip the global one to avoid doubles.
+    meta: { suppressErrorToast: true },
     mutationFn: (payload: Omit<ChangePasswordPayload, "confirmPassword">) =>
       changePasswordApi(payload),
     onSuccess: () => {
@@ -62,11 +62,11 @@ const SettingsPage = () => {
         newPassword: "",
         confirmPassword: "",
       });
-      toast.success(t("Password changed successfully."), { autoClose: 4500 });
+      notifySuccess(t("Password changed successfully."));
     },
-    onError: () => {
-      toast.error(t("Password change failed."), { autoClose: 4500 });
-    },
+    // Surface the real, UI-safe reason (e.g. "current password is incorrect")
+    // rather than a generic message.
+    onError: (error) => notifyError(error),
   });
 
   const handlePasswordFieldChange = (
@@ -118,8 +118,8 @@ const SettingsPage = () => {
     });
   };
 
-  const displayPasswordError =
-    passwordValidationError || changePasswordError?.message;
+  // Only client-side validation shows inline; server errors are toasted.
+  const displayPasswordError = passwordValidationError;
 
   return (
     <div className="p-8 bg-slate-50 min-h-screen space-y-8">
@@ -151,7 +151,7 @@ const SettingsPage = () => {
           </div>
 
           <span className="bg-teal-100 text-[#0f7576] text-xs font-bold px-3 py-1 rounded-md">
-            {t("MINISTRY")}
+            {user?.roles[0]?.name ?? t("No role assigned")}
           </span>
         </div>
       </div>

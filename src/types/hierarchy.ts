@@ -6,19 +6,22 @@ export type CourseStatus = "ACTIVE" | "INACTIVE";
 export interface University {
   id: number;
   name: string;
-  adminId: number | null;
-  academicYear: string | null;
+  admin: {
+    id: number | null;
+    name: string;
+  };
+  academic_year: string | null;
   location: string;
-  startDate: string | null; // ISO Date String (YYYY-MM-DD)
-  endDate: string | null; // ISO Date String (YYYY-MM-DD)
-  establishedYear: string; // Explicitly required in Laravel schema
-  isActive: boolean;
-  createdAt: string; // ISO 8601 Timestamp
-  updatedAt: string; // ISO 8601 Timestamp
-  deletedAt: string | null;
+  start_date: string | null; // ISO Date String (YYYY-MM-DD)
+  end_date: string | null; // ISO Date String (YYYY-MM-DD)
+  established_year: string; // Explicitly required in Laravel schema
+  is_active: number | null;
+  created_at: string; // ISO 8601 Timestamp
+  updated_at: string; // ISO 8601 Timestamp
+  deleted_at?: string | null;
 
   // Derived / UI Fields (Populated server-side)
-  status: "ACTIVE" | "INACTIVE";
+  status?: "ACTIVE" | "INACTIVE";
   president?: string;
 }
 
@@ -28,21 +31,10 @@ export interface Faculty {
   admin_id: number | null;
   is_active: boolean;
   university_id: number;
-  university: {
-    id: number;
-    name: string;
-    admin_id: number | null;
-    academic_year: string | null;
-    location: string | null;
-    start_date: string | null;
-    end_date: string | null;
-    established_year: string | null;
-    is_active: boolean | null;
-    created_at: string | null;
-    updated_at: string | null;
-  };
   created_at: string;
   updated_at: string;
+
+  university?: University;
 }
 
 export interface Department {
@@ -50,36 +42,26 @@ export interface Department {
   name: string;
   code: string | null;
   faculty_id: number;
-  faculty: {
-    id: number;
-    name: string;
-    admin_id: number | null;
-    is_active: boolean | null;
-    university_id: number | null;
-    created_at: string | null;
-    updated_at: string | null;
-  };
   created_at: string;
   updated_at: string;
+
+  faculty?: Faculty;
 }
 
 export interface Course {
   // Database Columns
   id: number;
-  departmentId: number;
-  code: string;
   name: string;
-  creditHours: number;
-  yearLevel: number;
-  isActive: boolean;
-  createdAt: string;
-  updatedAt: string;
-  deletedAt: string | null;
+  code: string;
+  credit_hours: number;
+  year_level: number;
+  is_active: number; // 0 | 1, not boolean
+  department_id: number;
+  created_at: string;
+  updated_at: string;
 
-  // Derived / UI Fields (Populated server-side)
-  status?: CourseStatus;
-  department?: string;
-  lecturer?: string;
+  // Relations (populated server-side)
+  department?: Department;
 }
 
 export interface ApiResponse<T = null> {
@@ -91,6 +73,7 @@ export interface ApiResponse<T = null> {
 export type ListOfFaculties = ApiResponse<{ data: Faculty[] }>;
 export type GetAllUniversities = ApiResponse<{ data: University[] }>;
 export type ListOfDepartments = ApiResponse<{ data: Department[] }>;
+export type ListOfCourses = ApiResponse<{ data: Course[] }>;
 
 export interface UniversityPayload {
   name: string;
@@ -99,7 +82,7 @@ export interface UniversityPayload {
   isActive: boolean;
 }
 
-export interface departmentPayload {
+export interface DepartmentPayload {
   faculty_id: number;
   name: string;
   is_active: boolean;
@@ -108,5 +91,14 @@ export interface departmentPayload {
 export interface FacultyPayload {
   name: string;
   admin_id: number | null;
+  is_active: boolean;
+}
+
+export interface CoursePayload {
+  department_id: number;
+  name: string;
+  code: string;
+  credit_hours: number | null;
+  year_level: number | null;
   is_active: boolean;
 }

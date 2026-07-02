@@ -67,25 +67,34 @@ const OTPPopUp = ({ mode, email, onClose, challengeToken }: OTPPopUpProps) => {
   const isLocked = attemptsLeft <= 0;
 
   const { mutate, isPending, error } = useMutation<
-    OTPVerificationResult,
+    string | OTPVerificationResult,
     Error,
     string
   >({
-    mutationFn: (otp: string): Promise<OTPVerificationResult> => {
+    // Error is shown inline (and drives the attempts counter), so skip the toast.
+    meta: { suppressErrorToast: true },
+    mutationFn: (otp: string): Promise<string | OTPVerificationResult> => {
       if (mode === "enable") return enable2FA(otp);
       if (mode === "disable") return disable2FA(otp);
       // login mode — challengeToken is guaranteed present when mode === "login"
       return login2FA(otp, challengeToken!);
     },
-    onSuccess: (result: OTPVerificationResult) => {
-      if (mode === "enable" || mode === "disable") {
-        setUser(result.user);
-        onClose();
-      } else {
-        setUser(result.user);
-        setToken(result.token);
+    onSuccess: (result) => {
+      if (mode === "login") {
+        const { user, token } = result as OTPVerificationResult;
+        setUser(user);
+        setToken(token);
         navigate("/", { replace: true });
+        return;
       }
+
+      // enable / disable — the response carries no user, so flip the flag on
+      // the current user in global state instead of overwriting it.
+      const currentUser = useUserStore.getState().user;
+      if (currentUser) {
+        setUser({ ...currentUser, is2FAEnabled: mode === "enable" });
+      }
+      onClose();
     },
     onError: () => {
       setAttemptsLeft((prev) => prev - 1);

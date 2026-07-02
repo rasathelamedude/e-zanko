@@ -15,6 +15,7 @@ import OTPPopUp from "../../components/common/OTPPopUp";
 
 function LoginPage() {
   const [validationError, setValidationError] = useState("");
+  const [forgotPasswordMessage, setForgotPasswordMessage] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loginPayload, setLoginPayload] = useState<LoginPayload>({
     email: "",
@@ -28,6 +29,8 @@ function LoginPage() {
   const { setUser, setToken } = useUserStore();
 
   const { mutate, isPending, error } = useMutation({
+    // Errors are shown inline below the form, so skip the global toast.
+    meta: { suppressErrorToast: true },
     mutationFn: (payload: LoginPayload) => login(payload),
     onSuccess: (result) => {
       if (result.requires2FA) {
@@ -52,6 +55,23 @@ function LoginPage() {
     mutate(loginPayload);
   };
 
+  const { mutate: requestPasswordReset, isPending: isRequestingReset } =
+    useMutation({
+      // Shown inline as validationError, so skip the global toast.
+      meta: { suppressErrorToast: true },
+      mutationFn: (email: string) => forgetPassword(email),
+      onSuccess: (message) => {
+        setValidationError("");
+        setForgotPasswordMessage(
+          message || t("Check your email for a link to reset your password."),
+        );
+      },
+      onError: (err) => {
+        setForgotPasswordMessage("");
+        setValidationError((err as Error).message);
+      },
+    });
+
   const handlePayloadChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setLoginPayload({
       ...loginPayload,
@@ -59,13 +79,16 @@ function LoginPage() {
     });
   };
 
-  const handleForgotPassword = async () => {
+  const handleForgotPassword = () => {
+    if (isRequestingReset) return;
     if (!loginPayload.email) {
+      setForgotPasswordMessage("");
       setValidationError(t("Please enter your email address first."));
       return;
     }
     setValidationError("");
-    await forgetPassword(loginPayload.email);
+    setForgotPasswordMessage("");
+    requestPasswordReset(loginPayload.email);
   };
 
   return (
@@ -131,12 +154,20 @@ function LoginPage() {
             </p>
           )}
 
-          <p
-            className="mt-3 cursor-pointer text-end text-sm font-bold text-teal-600"
+          <button
+            type="button"
             onClick={handleForgotPassword}
+            disabled={isRequestingReset}
+            className="mt-3 block w-full cursor-pointer text-end text-sm font-bold text-teal-600 disabled:cursor-not-allowed disabled:opacity-50"
           >
-            {t("Forgot password?")}
-          </p>
+            {isRequestingReset ? t("Sending…") : t("Forgot password?")}
+          </button>
+
+          {forgotPasswordMessage && (
+            <p className="mt-2 text-sm font-semibold text-green-600">
+              {forgotPasswordMessage}
+            </p>
+          )}
 
           {error && (
             <p className="mt-4 text-sm font-semibold text-red-500">

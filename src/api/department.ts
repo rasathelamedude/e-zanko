@@ -1,7 +1,8 @@
 import api from "../lib/axios";
 import type {
+  ApiResponse,
   Department,
-  departmentPayload,
+  DepartmentPayload,
   ListOfDepartments,
 } from "../types/hierarchy";
 
@@ -22,9 +23,9 @@ export async function getDepartmentByFaculty(
 }
 
 export async function addDepartment(
-  payload: departmentPayload,
+  payload: DepartmentPayload,
 ): Promise<Department> {
-  const response = await api.post(`/api/departments`, payload);
+  const response = await api.post<ApiResponse<Department>>(`/api/departments`, payload);
 
   const { success, message, data } = response.data;
 
@@ -36,14 +37,14 @@ export async function addDepartment(
 }
 
 export async function getDepartmentById(id: number): Promise<Department> {
-  const response = await api.get(`/api/departments/${id}`);
+  const response = await api.get<ApiResponse<Department>>(`/api/departments/${id}`);
   const { success, message, data } = response.data;
   if (!success) throw new Error(message || "Department not found");
   return data;
 }
 
 export async function deleteDepartment(id: number) {
-  const response = await api.delete(`/api/departments/${id}`);
+  const response = await api.delete<ApiResponse<null>>(`/api/departments/${id}`);
 
   const { success, message } = response.data;
 
@@ -54,9 +55,9 @@ export async function deleteDepartment(id: number) {
 
 export async function updateDepartment(
   id: number,
-  payload: departmentPayload,
+  payload: DepartmentPayload,
 ): Promise<Department> {
-  const response = await api.patch(`/api/departments/${id}`, payload);
+  const response = await api.patch<ApiResponse<Department>>(`/api/departments/${id}`, payload);
 
   const { success, message, data } = response.data;
 

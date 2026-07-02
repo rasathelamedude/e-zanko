@@ -62,9 +62,58 @@ export type LoginResponse = ApiResponse<{
 export type GetProfileResponse = ApiResponse<{ user: User }>;
 export type LogoutResponse = ApiResponse<null>;
 export type ForgotPasswordResponse = ApiResponse<null>;
+export type ResetPasswordResponse = ApiResponse<null>;
 export type ChangePasswordResponse = ApiResponse<null>;
+export type VerificationResponse = ApiResponse<VerificationData>;
 
 export interface LoginPayload {
   email: string;
   password: string;
+}
+
+export interface VerificationParticipant {
+  id: number;
+  name: string;
+}
+
+export interface VerificationFlow {
+  id: number;
+  letter_id: number;
+  action: string;
+  actor_id: number;
+  from_recipient_id: number;
+  to_recipient_id: number | null;
+  note?: string | null;
+  created_at: string;
+}
+
+export interface VerificationSignature {
+  id: number;
+  letter_id: number;
+  user_id: number;
+  role_at_time: string;
+  created_at: string;
+  user: VerificationParticipant;
+}
+
+export interface VerificationStamp {
+  id: number;
+  letter_id: number;
+  user_id: number;
+  created_at: string;
+  user: VerificationParticipant;
+}
+
+export interface VerificationData {
+  letter_number: string;
+  title: string;
+  status: string;
+  content_verified: boolean;
+  created_at: string;
+  flows: VerificationFlow[];
+  receiver: VerificationParticipant;
+  sender: VerificationParticipant;
+  signatures: VerificationSignature[];
+  stamps: VerificationStamp[];
+  letter_uuid: string;
 }

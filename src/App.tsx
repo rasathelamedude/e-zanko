@@ -15,6 +15,8 @@ import ProtectedRoutes from "./components/common/ProtectedRoute";
 import ForbiddenPage from "./pages/auth/ForbiddenPage";
 import LecturersPage from "./pages/universities/LecturersPage";
 import ResetPasswordPage from "./pages/auth/ResetPasswordPage";
+import VerificationPage from "./pages/auth/VerificationPage";
+import ZankolinePage from "./pages/zankoline/ZankolinePage";
 
 function App() {
   return (
@@ -22,6 +24,10 @@ function App() {
       <Route path="/login" element={<LoginPage />} />
       <Route path="/unauthorized" element={<UnauthorizedPage />} />
       <Route path="/forbidden" element={<ForbiddenPage />} />
+      <Route
+        path="/verify/:documentUUID"
+        element={<VerificationPage />}
+      />
 
       <Route path="/reset-password" element={<ResetPasswordPage />} />
 
@@ -50,6 +56,7 @@ function App() {
             element={<ProtectedRoutes allowedRoles={["MINISTRY_ADMIN"]} />}
           >
             <Route path="/universities" element={<UniversitiesPage />} />
+            <Route path="/zankoline" element={<ZankolinePage />} />
           </Route>
 
           {/* Dedicated Routes Level 2 (MINSITRY_ADMIN & UNIVERSITY_ADMIN) */}

@@ -31,6 +31,7 @@ const Sidebar = () => {
     MINISTRY_ADMIN: [
       { label: t("Dashboard"), to: "/" },
       { label: t("Universities"), to: "/universities" },
+      { label: t("Zankoline"), to: "/zankoline"},
       { label: t("Letters"), to: "/letters" },
       { label: t("Reports"), to: "/reports" },
       { label: t("Settings"), to: "/settings" },
@@ -80,6 +81,8 @@ const Sidebar = () => {
 
   const { mutate, isPending } = useMutation({
     mutationFn: logout,
+    // The user is logged out locally either way, so a failure isn't actionable.
+    meta: { suppressErrorToast: true },
     onSuccess: () => {
       clearAuth();
       navigate("/login", { replace: true });

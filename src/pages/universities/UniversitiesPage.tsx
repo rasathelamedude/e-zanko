@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next";
-import { Search, Plus, AlertTriangle } from "lucide-react";
+import { Search, Plus } from "lucide-react";
 import {
   DataTable,
   type DataTableColumn,
@@ -27,6 +27,7 @@ import {
 } from "../../api/university";
 import ConfirmDialog from "../../components/common/ConfirmDialog";
 import ErrorState from "../../components/common/ErrorState";
+import { notifySuccess } from "../../lib/notify";
 
 const statusStyles: Record<UniversityStatus, string> = {
   ACTIVE: "bg-emerald-100 text-emerald-700 hover:bg-emerald-100",
@@ -70,7 +71,7 @@ function UniversitiesPage() {
     queryFn: getAllUniversities,
   });
 
-  // add university
+  // add university — errors surface via the global toast handler
   const { mutate: createUniversity, isPending } = useMutation({
     mutationFn: addUniversity,
     onSuccess: () => {
@@ -82,9 +83,7 @@ function UniversitiesPage() {
         isActive: true,
       });
       refetch();
-    },
-    onError: (error: Error) => {
-      console.error(error.message);
+      notifySuccess(t("University added."));
     },
   });
 
@@ -96,8 +95,8 @@ function UniversitiesPage() {
       setModal(null);
       setForm({ name: "", location: "", establishedYear: "", isActive: true });
       refetch();
+      notifySuccess(t("University updated."));
     },
-    onError: (error: Error) => console.error(error.message),
   });
 
   // delete university
@@ -106,9 +105,7 @@ function UniversitiesPage() {
     onSuccess: () => {
       setModal(null);
       refetch();
-    },
-    onError: (error: Error) => {
-      console.error(error.message);
+      notifySuccess(t("University deleted."));
     },
   });
 

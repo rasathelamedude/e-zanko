@@ -5,7 +5,10 @@ import type {
   LoginPayload,
   LoginResponse,
   LogoutResponse,
+  ResetPasswordResponse,
   User,
+  VerificationResponse,
+  VerificationData,
 } from "../types/auth";
 import axios from "../lib/axios";
 
@@ -60,7 +63,9 @@ export async function getProfile(): Promise<User> {
   return user;
 }
 
-export async function forgetPassword(email: string): Promise<void> {
+// Ask the backend to email a reset link to the user. Returns the success
+// message so the caller can confirm to the user that the email was sent.
+export async function forgetPassword(email: string): Promise<string> {
   const response = await axios.post<ForgotPasswordResponse>(
     "/api/auth/forget-password",
     { email },
@@ -69,30 +74,38 @@ export async function forgetPassword(email: string): Promise<void> {
   const { success, message } = response.data;
 
   if (!success) {
-    throw new Error(message || "Password reset failed");
+    throw new Error(message || "Failed to send reset link");
   }
+
+  return message;
 }
 
+// Set a new password using the token + email from the reset link.
+// token and email travel as query params; the passwords go in the body.
 export async function resetPassword({
   token,
-  code,
+  email,
   password,
+  confirmPassword,
 }: {
   token: string;
-  code: string;
+  email: string;
   password: string;
-}): Promise<void> {
-  const response = await axios.post("/api/auth/reset-password", {
-    token,
-    code,
-    password,
-  });
+  confirmPassword: string;
+}): Promise<string> {
+  const response = await axios.post<ResetPasswordResponse>(
+    "/api/auth/reset-password",
+    { password, confirm_password: confirmPassword },
+    { params: { token, email } },
+  );
 
   const { success, message } = response.data;
 
   if (!success) {
     throw new Error(message || "Password reset failed");
   }
+
+  return message;
 }
 
 export async function changePassword(payload: {
@@ -116,7 +129,7 @@ export async function changePassword(payload: {
 
 // Tell backend to send the OTP code to the user's email
 export async function prepare2FA(): Promise<void> {
-  const response = await axios.post("/api/auth/prepare");
+  const response = await axios.post("/api/auth/two-factor/prepare");
 
   const { success, message } = response.data;
 
@@ -125,30 +138,30 @@ export async function prepare2FA(): Promise<void> {
   }
 }
 
-// Enable 2FA — returns updated user after successful verification
-export async function enable2FA(code: string): Promise<OTPVerificationResult> {
-  const response = await axios.post("/api/auth/two-factor/enable", { code });
+// Enable 2FA — backend only returns { success, message }; returns the message.
+export async function enable2FA(otp: string): Promise<string> {
+  const response = await axios.post("/api/auth/two-factor/enable", { otp });
 
-  const { data, success, message } = response.data;
+  const { success, message } = response.data;
 
   if (!success) {
     throw new Error(message || "Failed to enable two-factor authentication");
   }
 
-  return { user: data, token: null };
+  return message;
 }
 
-// Disable 2FA — returns updated user after successful verification
-export async function disable2FA(code: string): Promise<OTPVerificationResult> {
-  const response = await axios.post("/api/auth/two-factor/disable", { code });
+// Disable 2FA — backend only returns { success, message }; returns the message.
+export async function disable2FA(otp: string): Promise<string> {
+  const response = await axios.post("/api/auth/two-factor/disable", { otp });
 
-  const { data, success, message } = response.data;
+  const { success, message } = response.data;
 
   if (!success) {
     throw new Error(message || "Failed to disable two-factor authentication");
   }
 
-  return { user: data, token: null };
+  return message;
 }
 
 // Complete 2FA login — returns user and optional auth token
@@ -171,4 +184,20 @@ export async function login2FA(
     user: data.user,
     token: data.token ?? null,
   };
+}
+
+export async function fetchVerificationData(
+  documentUUID: string,
+): Promise<VerificationData> {
+  const response = await axios.get<VerificationResponse>(
+    `/api/verify/${documentUUID}`,
+  );
+
+  const { data, success, message } = response.data;
+
+  if (!success) {
+    throw new Error(message || "Failed to fetch verification data");
+  }
+
+  return data;
 }
