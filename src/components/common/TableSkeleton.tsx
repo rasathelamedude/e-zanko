@@ -22,7 +22,7 @@ function TableSkeleton({
   widths = [60, 52, 48, 56, 50],
 }: TableSkeletonProps) {
   return (
-    <div className="rounded-xl border border-border bg-white overflow-hidden">
+    <div className="rounded-xl border border-border bg-card overflow-hidden">
       <div className="flex items-center justify-between px-5 py-3.5">
         <div className="flex items-center gap-2">
           <div className="h-4 w-20 rounded bg-muted animate-pulse" />

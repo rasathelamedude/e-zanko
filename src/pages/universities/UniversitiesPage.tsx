@@ -55,10 +55,11 @@ interface FacultyDraft {
 interface UniversityDraft {
   name: string;
   president: string;
+  location: string;
   faculties: FacultyDraft[];
 }
 
-const emptyDraft: UniversityDraft = { name: "", president: "", faculties: [] };
+const emptyDraft: UniversityDraft = { name: "", president: "", location: "", faculties: [] };
 
 function UniversitiesPage() {
   const { t } = useTranslation();
@@ -188,7 +189,7 @@ function UniversitiesPage() {
     // university record via the existing endpoint.
     createUniversity({
       name: draft.name,
-      location: "",
+      location: draft.location,
       established_year: new Date().toISOString().split("T")[0],
       is_active: true,
     });
@@ -203,7 +204,7 @@ function UniversitiesPage() {
   // loading state
   if (isLoading)
     return (
-      <div className="min-h-screen bg-slate-50 px-8 py-8">
+      <div className="min-h-screen bg-background px-8 py-8">
         <TableSkeleton
           gridCols="grid-cols-[2fr_1fr_1fr_80px]"
           columnHeaders={["NAME", "PRESIDENT", "STATUS", "ACTIONS"]}
@@ -385,6 +386,19 @@ function UniversitiesPage() {
                   value={draft.president}
                   onChange={(e) =>
                     setDraft((d) => ({ ...d, president: e.target.value }))
+                  }
+                  type="text"
+                />
+              </div>
+              <div>
+                <Label className="mb-1 text-sm font-medium text-foreground">
+                  {t("Location")}
+                </Label>
+                <Input
+                  placeholder={t("e.g. Sulaimani")}
+                  value={draft.location}
+                  onChange={(e) =>
+                    setDraft((d) => ({ ...d, location: e.target.value }))
                   }
                   type="text"
                 />

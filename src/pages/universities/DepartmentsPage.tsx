@@ -92,15 +92,9 @@ function DepartmentsPage() {
     enabled: !!universityId,
   });
 
-  // const { data: faculty } = useQuery({
-  //   queryKey: ["faculty", facultyId],
-  //   queryFn: () => getFacultyById(Number(facultyId)),
-  //   enabled: !!facultyId,
-  // });
-
   if (isLoading) {
       return (
-        <div className="min-h-screen bg-slate-50 px-8 py-8">
+        <div className="min-h-screen bg-background px-8 py-8">
           <TableSkeleton
             gridCols="grid-cols-[2fr_1fr_1fr_80px]"
             columnHeaders={["NAME", "DEPARTMENT HEAD", "STATUS"]}
