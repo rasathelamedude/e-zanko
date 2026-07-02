@@ -55,10 +55,11 @@ interface FacultyDraft {
 interface UniversityDraft {
   name: string;
   president: string;
+  location: string;
   faculties: FacultyDraft[];
 }
 
-const emptyDraft: UniversityDraft = { name: "", president: "", faculties: [] };
+const emptyDraft: UniversityDraft = { name: "", president: "", location: "", faculties: [] };
 
 function UniversitiesPage() {
   const { t } = useTranslation();
@@ -188,9 +189,9 @@ function UniversitiesPage() {
     // university record via the existing endpoint.
     createUniversity({
       name: draft.name,
-      location: "",
-      establishedYear: new Date().toISOString().split("T")[0],
-      isActive: true,
+      location: draft.location,
+      established_year: new Date().toISOString().split("T")[0],
+      is_active: true,
     });
   }
 
@@ -203,7 +204,7 @@ function UniversitiesPage() {
   // loading state
   if (isLoading)
     return (
-      <div className="min-h-screen bg-slate-50 px-8 py-8">
+      <div className="min-h-screen bg-background px-8 py-8">
         <TableSkeleton
           gridCols="grid-cols-[2fr_1fr_1fr_80px]"
           columnHeaders={["NAME", "PRESIDENT", "STATUS", "ACTIONS"]}
@@ -245,7 +246,7 @@ function UniversitiesPage() {
       header: t("Status"),
       render: (u: University) => (
         <Badge className={statusStyles[u.is_active]}>
-          {t(statusLabels[u.is_active])}
+          {u.is_active === 1 ? statusLabels[1] : statusLabels[0]}
         </Badge>
       ),
     },
@@ -260,8 +261,8 @@ function UniversitiesPage() {
               setForm({
                 name: u.name,
                 location: u.location,
-                establishedYear: u.established_year,
-                isActive: u.is_active === 1 ? true : false,
+                established_year: u.established_year,
+                is_active: u.is_active === 1 ? true : false,
               });
               setModal({ type: "edit", university: u });
             }}
@@ -389,6 +390,19 @@ function UniversitiesPage() {
                   type="text"
                 />
               </div>
+              <div>
+                <Label className="mb-1 text-sm font-medium text-foreground">
+                  {t("Location")}
+                </Label>
+                <Input
+                  placeholder={t("e.g. Sulaimani")}
+                  value={draft.location}
+                  onChange={(e) =>
+                    setDraft((d) => ({ ...d, location: e.target.value }))
+                  }
+                  type="text"
+                />
+              </div>
             </div>
 
             {/* Structure builder */}
@@ -412,7 +426,7 @@ function UniversitiesPage() {
                   {t("Add Faculty")}
                 </button>
               </div>
-              
+
               {draft.faculties.length === 0 ? (
                 <p className="rounded-xl border border-dashed border-border py-6 text-center text-sm text-muted-foreground">
                   {t("No faculties added yet.")}
@@ -541,7 +555,9 @@ function UniversitiesPage() {
               <Input
                 placeholder={t("e.g. University of Sulaimani")}
                 value={form.name}
-                onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
+                onChange={(e) =>
+                  setForm((f) => ({ ...f, name: e.target.value }))
+                }
                 type="text"
               />
             </div>

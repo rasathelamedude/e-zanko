@@ -4,7 +4,11 @@ import {
   DataTable,
   type DataTableColumn,
 } from "../../components/common/DataTable";
-import type { FacultyPayload, Faculty } from "../../types/hierarchy";
+import type {
+  FacultyPayload,
+  Faculty,
+  FacultyStatus,
+} from "../../types/hierarchy";
 import { Badge } from "../../components/ui/badge";
 import { useState } from "react";
 import { Input } from "../../components/ui/input";
@@ -27,14 +31,11 @@ import TableSkeleton from "../../components/common/TableSkeleton";
 const statusStyles: Record<FacultyStatus, string> = {
   ACTIVE:
     "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/15",
-  UNDER_REVIEW:
-    "bg-amber-500/15 text-amber-600 dark:text-amber-400 hover:bg-amber-500/15",
   INACTIVE: "bg-muted text-muted-foreground hover:bg-muted",
 };
 
 const statusLabels: Record<FacultyStatus, string> = {
   ACTIVE: "Active",
-  UNDER_REVIEW: "Under review",
   INACTIVE: "Inactive",
 };
 
@@ -121,7 +122,7 @@ function FacultiesPage() {
   // loading state
   if (isLoading)
     return (
-      <div className="min-h-screen bg-slate-50 px-8 py-8">
+      <div className="min-h-screen bg-background px-8 py-8">
         <TableSkeleton
           gridCols="grid-cols-[2fr_1fr_1fr_80px]"
           columnHeaders={["NAME", "DEAN", "STATUS"]}
@@ -153,11 +154,11 @@ function FacultiesPage() {
         </span>
       ),
     },
-    // {
-    //   key: "dean",
-    //   header: t("Dean"),
-    //   render: (u) => u.admin.name,
-    // },
+    {
+      key: "dean",
+      header: t("Dean"),
+      render: (u) => u.admin.name,
+    },
     {
       key: "status",
       header: t("Status"),
@@ -186,7 +187,6 @@ function FacultiesPage() {
   return (
     <PageTransition className="min-h-screen bg-background px-8 py-8">
       <nav className="flex items-center gap-2 text-sm text-muted-foreground mb-6">
-
         {canAccessUniversities && (
           <>
             <BreadcrumbItem

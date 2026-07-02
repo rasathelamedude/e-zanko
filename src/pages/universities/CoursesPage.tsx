@@ -213,7 +213,7 @@ function CoursesPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-slate-50 px-8 py-8">
+      <div className="min-h-screen bg-background px-8 py-8">
         <TableSkeleton
           gridCols="grid-cols-[100px_2fr_100px_100px_80px]"
           columnHeaders={["CODE", "NAME", "YEAR LEVEL", "STATUS", "ACTIONS"]}
