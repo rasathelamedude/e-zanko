@@ -67,7 +67,13 @@ function CoursesPage() {
   });
 
   const getScopeId = (scopeType: UserScope) => {
-    return user?.scopes?.find((s) => s.scope_type === scopeType)?.scope_id || 0;
+    // Coerce to a number: the API may send scope_id as a numeric string ("5"),
+    // and the route params are always strings, so comparing them below must be
+    // done numerically — otherwise `"5" !== Number("5")` wrongly forbids access.
+    return (
+      Number(user?.scopes?.find((s) => s.scope_type === scopeType)?.scope_id) ||
+      0
+    );
   };
 
   const userUniversityId = getScopeId("UNIVERSITY");
