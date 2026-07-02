@@ -1,4 +1,5 @@
 import { useTranslation } from "react-i18next";
+import { motion } from "framer-motion";
 import {
   Table,
   TableBody,
@@ -7,6 +8,7 @@ import {
   TableHeader,
   TableRow,
 } from "../ui/table";
+import { easeOutExpo } from "../../lib/motion";
 
 export interface DataTableColumn<T> {
   key: string;
@@ -56,14 +58,25 @@ export function DataTable<T>({
           <TableRow>
             <TableCell
               colSpan={columns.length}
-              className="py-8 text-center text-gray-400"
+              className="py-8 text-center text-muted-foreground"
             >
               {resolvedEmptyMessage}
             </TableCell>
           </TableRow>
         ) : (
-          data.map((row) => (
-            <TableRow key={getRowId(row)}>
+          data.map((row, index) => (
+            <motion.tr
+              key={getRowId(row)}
+              data-slot="table-row"
+              className="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted"
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{
+                duration: 0.28,
+                delay: Math.min(index * 0.035, 0.35),
+                ease: easeOutExpo,
+              }}
+            >
               {columns.map((col) => (
                 <TableCell
                   key={col.key}
@@ -72,7 +85,7 @@ export function DataTable<T>({
                   {col.render(row)}
                 </TableCell>
               ))}
-            </TableRow>
+            </motion.tr>
           ))
         )}
       </TableBody>

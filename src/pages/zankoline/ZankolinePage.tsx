@@ -7,6 +7,7 @@ import { useState } from "react";
 import { Pen, Settings } from "lucide-react";
 import { Button } from "@base-ui/react";
 import type { Applicant } from "../../types/applicants";
+import PageTransition from "../../components/common/PageTransition";
 
 export const mockApplicants: Applicant[] = [
   {
@@ -274,7 +275,7 @@ function ZankolinePage() {
   );
 
   return (
-    <div className="min-h-screen bg-slate-50 px-8 py-8">
+    <PageTransition className="min-h-screen bg-background px-8 py-8">
       <PageHeader
         title={t("Ministry of Higher Education")}
         locationTitle={t("Zankoline")}
@@ -294,7 +295,7 @@ function ZankolinePage() {
       </div>
 
       <div className="flex justify-between">
-        <p className="text-sm text-gray-500 py-6">
+        <p className="text-sm text-muted-foreground py-6">
           {t("University admission forms submitted by high-school graduates")}
         </p>
         <Button className="inline-flex h-10.5 items-center gap-2 rounded-xl border border-[#0f7576] bg-[#0f7576] px-3.25 font-bold text-white shadow-[0_8px_18px_rgba(15,117,118,0.2)] transition hover:bg-[#0b5f60]">
@@ -303,13 +304,13 @@ function ZankolinePage() {
         </Button>
       </div>
 
-      <div className="flex gap-4 bg-white border border-slate-200 rounded-2xl overflow-hidden">
+      <div className="flex gap-4 bg-card border border-border rounded-2xl overflow-hidden">
         {/* Applicant list */}
-        <div className="w-80 border-r border-gray-100 shrink-0">
-          <div className="px-4 py-3 border-b border-gray-100">
+        <div className="w-80 border-r border-border shrink-0">
+          <div className="px-4 py-3 border-b border-border">
             <h2 className="font-semibold text-sm">
               {t("Applicants")}
-              <span className="text-gray-400 ms-1">
+              <span className="text-muted-foreground ms-1">
                 {mockApplicants.length}
               </span>
             </h2>
@@ -321,9 +322,9 @@ function ZankolinePage() {
               onClick={() => setSelectedApplicant(applicant)}
               className={`px-4 py-4 cursor-pointer transition-colors border-s-4 ${
                 selectedApplicant?.id === applicant.id
-                  ? "border-s-teal-700 bg-teal-50/50"
-                  : "border-s-transparent hover:bg-gray-50"
-              } ${index !== mockApplicants.length - 1 ? "border-b border-gray-100" : ""}`}
+                  ? "border-s-teal-700 bg-teal-500/10"
+                  : "border-s-transparent hover:bg-muted/40"
+              } ${index !== mockApplicants.length - 1 ? "border-b border-border" : ""}`}
             >
               <div className="flex justify-between items-start">
                 <div className="w-10 h-10 rounded-full bg-teal-700 text-white flex items-center justify-center text-sm font-semibold">
@@ -331,20 +332,20 @@ function ZankolinePage() {
                 </div>
                 {/* student info */}
                 <div>
-                  <p className="font-semibold text-sm text-gray-800 mb-1">
+                  <p className="font-semibold text-sm text-foreground mb-1">
                     {applicant.name}
                   </p>
-                  <p className="text-xs text-gray-500">
+                  <p className="text-xs text-muted-foreground">
                     {applicant.city} &middot; {applicant.choices} {t("choices")}
                   </p>
                 </div>
 
                 {/* grade and status */}
                 <div className="flex flex-col items-end gap-1">
-                  <p className="text-sm font-semibold text-gray-800">
+                  <p className="text-sm font-semibold text-foreground">
                     {applicant.finalGrade}
                   </p>
-                  <Badge className="bg-amber-100 text-amber-700 hover:bg-amber-100 text-xs">
+                  <Badge className="bg-amber-500/15 text-amber-600 dark:text-amber-400 hover:bg-amber-500/15 text-xs">
                     {t(applicant.status)}
                   </Badge>
                 </div>
@@ -362,61 +363,61 @@ function ZankolinePage() {
                   {selectedApplicant.initials}
                 </div>
                 <div>
-                  <h2 className="font-semibold text-gray-900">
+                  <h2 className="font-semibold text-foreground">
                     {selectedApplicant.name}
                   </h2>
-                  <p className="text-sm text-gray-500">
+                  <p className="text-sm text-muted-foreground">
                     {selectedApplicant.school} &middot; {selectedApplicant.city}
                   </p>
                 </div>
               </div>
-              <button className="flex items-center gap-1.5 text-sm text-gray-600 border border-gray-200 px-3 py-1.5 rounded-lg hover:bg-gray-50 transition-colors">
+              <button className="flex items-center gap-1.5 text-sm text-muted-foreground border border-border px-3 py-1.5 rounded-lg hover:bg-muted/40 transition-colors">
                 <Pen size={15} />
                 {t("Place manually")}
               </button>
             </div>
 
-            <div className="flex gap-8 mb-6 pb-6 border-b border-gray-100">
+            <div className="flex gap-8 mb-6 pb-6 border-b border-border">
               <div>
-                <p className="text-xs text-gray-400 mb-1">{t("Stream")}</p>
-                <p className="text-sm font-semibold text-gray-800">
+                <p className="text-xs text-muted-foreground mb-1">{t("Stream")}</p>
+                <p className="text-sm font-semibold text-foreground">
                   {selectedApplicant.stream}
                 </p>
               </div>
               <div>
-                <p className="text-xs text-gray-400 mb-1">{t("Final grade")}</p>
-                <p className="text-sm font-semibold text-gray-800">
+                <p className="text-xs text-muted-foreground mb-1">{t("Final grade")}</p>
+                <p className="text-sm font-semibold text-foreground">
                   {selectedApplicant.finalGrade}
                 </p>
               </div>
               <div>
-                <p className="text-xs text-gray-400 mb-1">
+                <p className="text-xs text-muted-foreground mb-1">
                   {t("Ranked major preferences")}
                 </p>
-                <p className="text-sm font-semibold text-gray-800">
+                <p className="text-sm font-semibold text-foreground">
                   {selectedApplicant.choices} {t("choices")}
                 </p>
               </div>
             </div>
 
             <div>
-              <h3 className="text-sm font-semibold text-gray-700 mb-3">
+              <h3 className="text-sm font-semibold text-foreground mb-3">
                 {t("Ranked major preferences")} ({selectedApplicant.choices})
               </h3>
               <div className="flex flex-col gap-2">
                 {selectedApplicant.rankedPreferences.map((pref) => (
                   <div
                     key={pref.rank}
-                    className="flex items-center gap-3 py-2 border-b border-gray-50"
+                    className="flex items-center gap-3 py-2 border-b border-border"
                   >
-                    <span className="w-6 h-6 rounded-full bg-slate-100 text-slate-500 text-xs flex items-center justify-center font-medium shrink-0">
+                    <span className="w-6 h-6 rounded-full bg-muted text-muted-foreground text-xs flex items-center justify-center font-medium shrink-0">
                       {pref.rank}
                     </span>
                     <div>
-                      <p className="text-sm font-medium text-gray-800">
+                      <p className="text-sm font-medium text-foreground">
                         {pref.major}
                       </p>
-                      <p className="text-xs text-gray-400">{pref.university}</p>
+                      <p className="text-xs text-muted-foreground">{pref.university}</p>
                     </div>
                   </div>
                 ))}
@@ -424,12 +425,12 @@ function ZankolinePage() {
             </div>
           </div>
         ) : (
-          <div className="flex-1 flex items-center justify-center text-sm text-gray-400">
+          <div className="flex-1 flex items-center justify-center text-sm text-muted-foreground">
             {t("Select an applicant to view details")}
           </div>
         )}
       </div>
-    </div>
+    </PageTransition>
   );
 }
 

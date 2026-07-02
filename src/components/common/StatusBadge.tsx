@@ -6,9 +6,9 @@ interface Props {
 }
 
 const STATUS_STYLES: Record<LetterStatus, string> = {
-  pending: "bg-[#fdf2f8] text-[#9d4b30]",
-  approved: "bg-emerald-50 text-emerald-700",
-  rejected: "bg-red-50 text-red-700",
+  pending: "bg-orange-500/15 text-orange-600 dark:text-orange-400",
+  approved: "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400",
+  rejected: "bg-red-500/15 text-red-600 dark:text-red-400",
 };
 
 const STATUS_LABEL: Record<LetterStatus, string> = {

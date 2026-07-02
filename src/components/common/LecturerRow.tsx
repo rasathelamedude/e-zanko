@@ -8,18 +8,18 @@ interface LecturerRowProps {
 }
 
 const LEVEL_STYLES: Record<string, string> = {
-  PhD: "bg-teal-100 text-teal-800",
-  MSc: "bg-teal-50 text-teal-700",
-  BSc: "bg-slate-100 text-slate-600",
+  PhD: "bg-teal-500/20 text-teal-800 dark:text-teal-300",
+  MSc: "bg-teal-500/15 text-teal-700 dark:text-teal-400",
+  BSc: "bg-muted text-muted-foreground",
 };
 
 const LecturerRow = ({ lecturer, onEdit, onDelete }: LecturerRowProps) => {
   return (
-    <tr className="border-t border-slate-100 hover:bg-slate-50 transition-colors group">
-      <td className="px-5 py-3.5 text-sm font-medium text-slate-800">
+    <tr className="border-t border-border hover:bg-muted transition-colors group">
+      <td className="px-5 py-3.5 text-sm font-medium text-foreground">
         {lecturer.name}
       </td>
-      <td className="px-5 py-3.5 text-sm text-slate-500 font-mono tracking-tight">
+      <td className="px-5 py-3.5 text-sm text-muted-foreground font-mono tracking-tight">
         {lecturer.email}
       </td>
       <td className="px-5 py-3.5">
@@ -33,14 +33,14 @@ const LecturerRow = ({ lecturer, onEdit, onDelete }: LecturerRowProps) => {
         <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity justify-end">
           <button
             onClick={() => onEdit(lecturer.id)}
-            className="p-1.5 rounded-lg hover:bg-teal-50 text-slate-400 hover:text-teal-700 transition-colors"
+            className="p-1.5 rounded-lg hover:bg-teal-500/10 text-muted-foreground hover:text-teal-700 dark:hover:text-teal-400 transition-colors"
             aria-label={`Edit ${lecturer.name}`}
           >
             <Pencil size={15} strokeWidth={1.8} />
           </button>
           <button
             onClick={() => onDelete(lecturer.id)}
-            className="p-1.5 rounded-lg hover:bg-red-50 text-slate-400 hover:text-red-500 transition-colors"
+            className="p-1.5 rounded-lg hover:bg-red-500/10 text-muted-foreground hover:text-red-500 dark:hover:text-red-400 transition-colors"
             aria-label={`Delete ${lecturer.name}`}
           >
             <Trash2 size={15} strokeWidth={1.8} />

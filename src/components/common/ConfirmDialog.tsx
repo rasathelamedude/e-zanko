@@ -1,6 +1,8 @@
 import { useTranslation } from "react-i18next";
+import { motion } from "framer-motion";
 import { Button } from "../ui/button";
 import { AlertTriangle } from "lucide-react";
+import { easeOutExpo } from "../../lib/motion";
 
 interface ConfirmDialogProps {
   title: string;
@@ -20,33 +22,48 @@ function ConfirmDialog({
   const { t } = useTranslation();
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-      <div className="bg-white p-6 rounded-lg shadow-md w-full max-w-sm mx-4">
+    <motion.div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.2 }}
+      onClick={onClose}
+    >
+      <motion.div
+        role="alertdialog"
+        aria-modal="true"
+        onClick={(e) => e.stopPropagation()}
+        initial={{ opacity: 0, y: -24, scale: 0.98 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        transition={{ duration: 0.3, ease: easeOutExpo }}
+        className="w-full max-w-sm rounded-2xl border border-border bg-card p-6 shadow-2xl"
+      >
         <div className="flex flex-col items-center gap-3 text-center">
-          <div className="w-12 h-12 rounded-full bg-red-50 flex items-center justify-center text-red-500">
-            <AlertTriangle className="w-5 h-5" />
+          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-red-500/10 text-red-500">
+            <AlertTriangle className="h-5 w-5" />
           </div>
-          <h2 className="text-lg font-semibold text-gray-900">{title}</h2>
-          <p className="text-sm text-gray-500">{description}</p>
+          <h2 className="text-lg font-semibold text-foreground">{title}</h2>
+          <p className="text-sm text-muted-foreground">{description}</p>
         </div>
-        <div className="flex justify-end gap-3 mt-6">
+        <div className="mt-6 flex justify-end gap-3">
           <Button
+            variant="outline"
             disabled={isLoading}
             onClick={onClose}
-            className="bg-white border border-gray-300 text-gray-700 hover:bg-gray-50"
+            className="h-9 px-4"
           >
             {t("Cancel")}
           </Button>
           <Button
             disabled={isLoading}
             onClick={onConfirm}
-            className="bg-red-600 hover:bg-red-700 text-white disabled:opacity-60 disabled:cursor-not-allowed"
+            className="h-9 bg-red-600 px-4 text-white hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-60"
           >
             {isLoading ? t("Deleting...") : t("Delete")}
           </Button>
         </div>
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 }
 

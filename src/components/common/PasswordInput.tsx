@@ -28,7 +28,7 @@ const PasswordInput = ({
 
   return (
     <div>
-      <label className="block text-xs text-gray-400 mb-1" htmlFor={id}>
+      <label className="mb-1 block text-xs text-muted-foreground" htmlFor={id}>
         {label}
       </label>
       <div className="relative">
@@ -40,12 +40,12 @@ const PasswordInput = ({
           onChange={onChange}
           onKeyDown={onKeyDown}
           placeholder={placeholder}
-          className="w-full border border-slate-200 rounded-lg px-3 py-2 pr-10 text-sm text-slate-900 placeholder-slate-300 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+          className="w-full rounded-lg border border-border bg-background px-3 py-2 pr-10 text-sm text-foreground placeholder-muted-foreground focus:border-transparent focus:outline-none focus:ring-2 focus:ring-teal-500"
         />
         <button
           type="button"
           onClick={onToggle}
-          className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+          className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
           aria-label={show ? t("Hide password") : t("Show password")}
         >
           {show ? <EyeOff size={15} /> : <Eye size={15} />}

@@ -13,11 +13,13 @@ function OutboxLetters() {
   });
 
   return (
-    <div className="border border-gray-200 rounded-xl overflow-hidden bg-white">
-      <div className="px-4 py-3 border-b border-gray-100">
+    <div className="border border-border rounded-xl overflow-hidden bg-card">
+      <div className="px-4 py-3 border-b border-border">
         <h2 className="font-semibold text-sm">
           {t("Outbox")}
-          <span className="text-gray-400 ms-1">{outboxLetters.length}</span>
+          <span className="text-muted-foreground ms-1">
+            {outboxLetters.length}
+          </span>
         </h2>
       </div>
       {outboxLetters.map((letter) => (

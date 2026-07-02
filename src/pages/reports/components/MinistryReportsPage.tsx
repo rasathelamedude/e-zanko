@@ -18,7 +18,7 @@ const MinistryReportsPage = () => {
   ];
 
   return (
-    <div className="p-8 bg-slate-50 min-h-screen space-y-8">
+    <div className="p-8 bg-background min-h-screen space-y-8">
       {/* Page Header */}
       <PageHeader
         title={t("Ministry of higher education")}

@@ -28,12 +28,12 @@ function Popup({
   const { t } = useTranslation();
 
   return (
-    <div className="bg-white shadow-md px-6 py-8 rounded-xl">
+    <div className="bg-card shadow-md px-6 py-8 rounded-xl">
       <div className="flex items-center">
-        <div className="bg-teal-50 rounded-2xl p-3">{icon}</div>
+        <div className="bg-teal-500/10 rounded-2xl p-3">{icon}</div>
         <div className="ms-3">
           <p className="font-bold text-xl">{title}</p>
-          <p className="text-gray-500 text-sm">{subtitle}</p>
+          <p className="text-muted-foreground text-sm">{subtitle}</p>
         </div>
       </div>
 
@@ -42,7 +42,7 @@ function Popup({
       <div className="flex gap-2 mt-4">
         <Button
           onClick={onCancel}
-          className="bg-white border-teal-700 text-gray-800 hover:bg-white"
+          className="bg-card border-teal-700 text-foreground hover:bg-card"
         >
           {cancelLabel ?? t("Cancel")}
         </Button>

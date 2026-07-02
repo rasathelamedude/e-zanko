@@ -5,6 +5,7 @@ import { useUserStore } from "../../store/userStore";
 import InboxLetters from "./components/InboxLetters";
 import OutboxLetters from "./components/OutboxLetters";
 import CompletedLetters from "./components/CompletedLetters";
+import PageTransition from "../../components/common/PageTransition";
 
 type Tab = "inbox" | "outbox" | "archived";
 
@@ -22,7 +23,7 @@ const LettersPage = () => {
   ];
 
   return (
-    <div>
+    <PageTransition>
       <PageHeader
         title={t("Ministry of higher educations")}
         locationTitle={t("Letters")}
@@ -38,7 +39,7 @@ const LettersPage = () => {
             className={`px-4 py-2 text-sm font-medium transition-colors border-b-2 -mb-px ${
               activeTab === tab.value
                 ? "bg-teal-700 text-white rounded-lg"
-                : "bg-white rounded-lg border-b border-gray-200 text-gray-500 hover:text-gray-700"
+                : "bg-card rounded-lg border-b border-border text-muted-foreground hover:text-foreground"
             }`}
           >
             {tab.label}
@@ -49,7 +50,7 @@ const LettersPage = () => {
       {activeTab === "inbox" && <InboxLetters />}
       {activeTab === "outbox" && <OutboxLetters />}
       {activeTab === "archived" && <CompletedLetters />}
-    </div>
+    </PageTransition>
   );
 };
 

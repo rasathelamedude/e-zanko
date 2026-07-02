@@ -6,9 +6,9 @@ const Breadcrumb = () => {
       className="flex items-center gap-1 text-sm mb-1"
       aria-label="Breadcrumb"
     >
-      <span className="text-slate-400">College of Engineering</span>
-      <ChevronRight size={14} className="text-slate-300" />
-      <span className="font-semibold text-teal-700">Software Engineering</span>
+      <span className="text-muted-foreground">College of Engineering</span>
+      <ChevronRight size={14} className="text-muted-foreground" />
+      <span className="font-semibold text-teal-700 dark:text-teal-400">Software Engineering</span>
     </nav>
   );
 };

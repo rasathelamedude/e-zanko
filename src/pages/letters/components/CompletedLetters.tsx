@@ -14,12 +14,12 @@ function CompletedLetters() {
   });
 
   return (
-    <div className="border border-gray-200 rounded-xl overflow-hidden bg-white">
-      <div className="px-4 py-3 border-b border-gray-100">
+    <div className="border border-border rounded-xl overflow-hidden bg-card">
+      <div className="px-4 py-3 border-b border-border">
         <h2 className="font-semibold text-sm">
           {t("Archived")}
           {!isLoading && (
-            <span className="text-gray-400 ms-1">
+            <span className="text-muted-foreground ms-1">
               {completedLetters?.length}
             </span>
           )}

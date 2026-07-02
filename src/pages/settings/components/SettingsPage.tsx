@@ -1,14 +1,17 @@
+import { type ChangeEvent, useState } from "react";
 import { useTranslation } from "react-i18next";
-import PageHeader from "../../../components/common/PageHeader";
-import { useUserStore } from "../../../store/userStore";
-import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
+import { ShieldCheck, KeyRound, Monitor } from "lucide-react";
+import PageHeader from "../../../components/common/PageHeader";
+import PageTransition from "../../../components/common/PageTransition";
+import { useUserStore } from "../../../store/userStore";
 import {
   prepare2FA,
   changePassword as changePasswordApi,
 } from "../../../api/auth";
 import OTPPopUp from "../../../components/common/OTPPopUp";
 import PasswordInput from "../../../components/common/PasswordInput";
+import { Button } from "../../../components/ui/button";
 import { notifyError, notifySuccess } from "../../../lib/notify";
 
 interface ChangePasswordPayload {
@@ -17,7 +20,19 @@ interface ChangePasswordPayload {
   confirmPassword: string;
 }
 
+const getInitials = (name?: string): string => {
+  if (!name) return "?";
+  return name
+    .split(" ")
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase())
+    .join("");
+};
+
 const SettingsPage = () => {
+  const { t } = useTranslation();
+  const { user } = useUserStore();
   const [showOTP, setShowOTP] = useState(false);
 
   // Change password section
@@ -31,9 +46,6 @@ const SettingsPage = () => {
     confirmPassword: "",
   });
   const [passwordValidationError, setPasswordValidationError] = useState("");
-
-  const { t } = useTranslation();
-  const { user } = useUserStore();
 
   // Enabling 2FA mutation
   const {
@@ -69,16 +81,13 @@ const SettingsPage = () => {
     onError: (error) => notifyError(error),
   });
 
-  const handlePasswordFieldChange = (
-    e: React.ChangeEvent<HTMLInputElement>,
-  ) => {
+  const handlePasswordFieldChange = (e: ChangeEvent<HTMLInputElement>) => {
     setPasswordFields((prev) => ({ ...prev, [e.target.name]: e.target.value }));
     setPasswordValidationError("");
   };
 
   const handlePasswordToggle = () => {
     setPasswordOpen((prev) => !prev);
-
     // Reset fields when reopening
     if (passwordOpen) {
       setPasswordFields({
@@ -98,19 +107,16 @@ const SettingsPage = () => {
       setPasswordValidationError(t("Please fill in all password fields."));
       return;
     }
-
     if (passwordFields.newPassword.length < 8) {
       setPasswordValidationError(
         t("New password must be at least 8 characters."),
       );
       return;
     }
-
     if (passwordFields.newPassword !== passwordFields.confirmPassword) {
       setPasswordValidationError(t("New passwords don't match."));
       return;
     }
-
     setPasswordValidationError("");
     changePassword({
       currentPassword: passwordFields.currentPassword,
@@ -118,145 +124,129 @@ const SettingsPage = () => {
     });
   };
 
-  // Only client-side validation shows inline; server errors are toasted.
-  const displayPasswordError = passwordValidationError;
+  const scopeLabel = user?.scopes?.[0]?.scope_type ?? "MINISTRY";
 
   return (
-    <div className="p-8 bg-slate-50 min-h-screen space-y-8">
+    <PageTransition className="min-h-screen space-y-6 bg-background p-8">
       <PageHeader
-        title={t("Ministry of higher education")}
+        title={t("Ministry of Higher Education")}
         locationTitle={t("Settings")}
-        role={user?.roles[0]?.name ?? ""}
-        year="2023-2024"
+        role={user?.roles[0]?.name ?? t("System Administrator")}
+        year="2025-2026"
       />
 
-      <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
-        <div className="px-6 py-4 border-b border-slate-200">
-          <h2 className="text-lg font-semibold text-slate-900">
+      {/* Profile */}
+      <section className="overflow-hidden rounded-xl border border-border bg-card">
+        <div className="border-b border-border px-6 py-4">
+          <h2 className="text-lg font-semibold text-foreground">
             {t("Profile")}
           </h2>
         </div>
 
-        <div className="p-6 flex items-center justify-between">
+        <div className="flex items-center justify-between gap-4 p-6">
           <div className="flex items-center gap-5">
-            <div className="w-20 h-20 rounded-full bg-teal-100 text-[#0f7576] flex items-center justify-center text-xl font-bold">
-              AM
+            <div className="flex h-16 w-16 items-center justify-center rounded-full bg-teal-500/15 text-lg font-bold text-teal-600 dark:text-teal-300">
+              {getInitials(user?.name)}
             </div>
-
             <div>
-              <h3 className="text-xl font-bold text-slate-900">{user?.name}</h3>
-              <p className="text-slate-500">{t("System Administrator")}</p>
-              <p className="text-slate-500">{user?.email}</p>
+              <h3 className="text-lg font-bold text-foreground">
+                {user?.name ?? t("System Administrator")}
+              </h3>
+              <p className="text-sm text-muted-foreground">
+                {user?.roles[0]?.name
+                  ? t(user.roles[0].name)
+                  : t("System Administrator")}
+              </p>
+              <p className="text-sm text-muted-foreground">{user?.email}</p>
             </div>
           </div>
-
-          <span className="bg-teal-100 text-[#0f7576] text-xs font-bold px-3 py-1 rounded-md">
-            {user?.roles[0]?.name ?? t("No role assigned")}
+          <span className="rounded-md bg-teal-500/15 px-3 py-1 text-xs font-bold text-teal-600 dark:text-teal-300">
+            {t(scopeLabel)}
           </span>
         </div>
-      </div>
+      </section>
 
-      <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
-        <div className="px-6 py-4 border-b border-slate-200">
-          <h2 className="text-lg font-semibold text-slate-900">
-            {t("System Preferences")}
-          </h2>
-          <p className="text-sm text-slate-500">
-            {t("Configure system options.")}
-          </p>
-        </div>
-
-        <div className="p-6 grid grid-cols-[repeat(auto-fit,minmax(250px,1fr))] gap-6">
-          <div>
-            <label className="block text-sm font-semibold text-slate-900 mb-2">
-              {t("Date format")}
-            </label>
-            <select className="w-full rounded-lg border border-slate-300 px-3 py-2 bg-white">
-              <option>{t("Gregorian")}</option>
-              <option>{t("Kurdish / Local")}</option>
-            </select>
-          </div>
-
-          <div>
-            <label className="block text-sm font-semibold text-slate-900 mb-2">
-              {t("Theme")}
-            </label>
-            <select className="w-full rounded-lg border border-slate-300 px-3 py-2 bg-white">
-              <option>{t("Light")}</option>
-              <option>{t("Dark")}</option>
-            </select>
-          </div>
-        </div>
-      </div>
-
-      <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
-        <div className="px-6 py-4 border-b border-slate-200">
-          <h2 className="text-lg font-semibold text-slate-900">
+      {/* Security */}
+      <section className="overflow-hidden rounded-xl border border-border bg-card">
+        <div className="border-b border-border px-6 py-4">
+          <h2 className="text-lg font-semibold text-foreground">
             {t("Security")}
           </h2>
-          <p className="text-sm text-slate-500">
+          <p className="text-sm text-muted-foreground">
             {t("Manage your account security options.")}
           </p>
         </div>
 
         <div className="px-6">
-          <div className="py-4 flex items-center justify-between border-b border-slate-100">
-            <div>
-              <h3 className="text-sm font-semibold text-slate-900">
-                {t("Two-factor authentication")}
-              </h3>
-              <p className="text-sm text-slate-500">
-                {t("Add an extra layer of security to your account.")}
-              </p>
-              {prepareError && (
-                <p className="text-xs text-red-500 mt-1">
-                  {prepareError.message}
+          {/* Two-factor */}
+          <div className="flex items-center justify-between gap-4 border-b border-border py-4">
+            <div className="flex items-start gap-3">
+              <span className="mt-0.5 flex h-9 w-9 items-center justify-center rounded-lg bg-teal-500/15 text-teal-600 dark:text-teal-300">
+                <ShieldCheck className="h-4.5 w-4.5" />
+              </span>
+              <div>
+                <h3 className="text-sm font-semibold text-foreground">
+                  {t("Two-factor authentication")}
+                </h3>
+                <p className="text-sm text-muted-foreground">
+                  {t("Require a one-time code at sign-in.")}
                 </p>
-              )}
+                {prepareError && (
+                  <p className="mt-1 text-xs text-red-500">
+                    {prepareError.message}
+                  </p>
+                )}
+              </div>
             </div>
-
-            <button
-              className={`border border-[#0f7576] text-[#0f7576] px-5 py-2 rounded-lg text-sm font-medium ${is2FAPending ? "pointer-events-none opacity-40" : "cursor-pointer"}`}
+            <Button
+              variant="outline"
+              disabled={is2FAPending}
               onClick={() => prepare()}
+              className="h-9 border-teal-600/40 px-4 text-teal-700 hover:bg-teal-500/10 hover:text-teal-700 dark:text-teal-300"
             >
               {is2FAPending
                 ? t("Sending code…")
                 : user?.is2FAEnabled
                   ? t("Disable")
                   : t("Enable")}
-            </button>
+            </Button>
           </div>
 
-          {/* Password row */}
+          {/* Password */}
           <div className="py-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <h3 className="text-sm font-semibold text-slate-900">
-                  {t("Password")}
-                </h3>
-                <p className="text-sm text-slate-500">
-                  {t("Change your account password.")}
-                </p>
+            <div className="flex items-center justify-between gap-4">
+              <div className="flex items-start gap-3">
+                <span className="mt-0.5 flex h-9 w-9 items-center justify-center rounded-lg bg-teal-500/15 text-teal-600 dark:text-teal-300">
+                  <KeyRound className="h-4.5 w-4.5" />
+                </span>
+                <div>
+                  <h3 className="text-sm font-semibold text-foreground">
+                    {t("Password")}
+                  </h3>
+                  <p className="text-sm text-muted-foreground">
+                    {t("Change your account password.")}
+                  </p>
+                </div>
               </div>
-
-              <button
+              <Button
+                variant="outline"
                 onClick={handlePasswordToggle}
-                className="border border-[#0f7576] text-[#0f7576] px-5 py-2 rounded-lg text-sm font-medium transition-colors hover:bg-teal-50"
+                className="h-9 border-teal-600/40 px-4 text-teal-700 hover:bg-teal-500/10 hover:text-teal-700 dark:text-teal-300"
               >
                 {passwordOpen ? t("Cancel") : t("Change")}
-              </button>
+              </Button>
             </div>
 
-            {/* Expandable form of password inputs */}
+            {/* Expandable password form */}
             <div
               className={`grid transition-all duration-300 ease-in-out ${
                 passwordOpen
-                  ? "grid-rows-[1fr] opacity-100 mt-5"
-                  : "grid-rows-[0fr] opacity-0 mt-0"
+                  ? "mt-5 grid-rows-[1fr] opacity-100"
+                  : "mt-0 grid-rows-[0fr] opacity-0"
               }`}
             >
               <div className="overflow-hidden">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
                   <PasswordInput
                     id="currentPassword"
                     name="currentPassword"
@@ -286,25 +276,26 @@ const SettingsPage = () => {
                   />
                 </div>
 
-                {displayPasswordError && (
-                  <p className="text-xs text-red-500 mt-3">
-                    {displayPasswordError}
+                {passwordValidationError && (
+                  <p className="mt-3 text-xs text-red-500">
+                    {passwordValidationError}
                   </p>
                 )}
 
-                <div className="flex justify-end mt-4">
-                  <button
-                    className={`bg-teal-600 hover:bg-teal-700 text-white text-sm font-medium px-5 py-2 rounded-lg transition-colors ${isPasswordPending ? "pointer-events-none opacity-40" : "cursor-pointer"}`}
+                <div className="mt-4 flex justify-end">
+                  <Button
+                    disabled={isPasswordPending}
                     onClick={handlePasswordChange}
+                    className="h-9 bg-teal-600 px-5 text-white hover:bg-teal-700"
                   >
                     {isPasswordPending ? t("Saving…") : t("Save new password")}
-                  </button>
+                  </Button>
                 </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
+      </section>
 
       {showOTP && (
         <OTPPopUp
@@ -313,7 +304,7 @@ const SettingsPage = () => {
           onClose={() => setShowOTP(false)}
         />
       )}
-    </div>
+    </PageTransition>
   );
 };
 

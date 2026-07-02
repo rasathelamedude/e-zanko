@@ -6,6 +6,7 @@ import type { Lecturer } from "../../types/lecturer";
 import EmptyTable from "../../components/common/EmptyTable";
 import LecturerRow from "../../components/common/LecturerRow";
 import Breadcrumb from "../../components/common/Breadcrumb";
+import PageTransition from "../../components/common/PageTransition";
 
 const LECTURERS: Lecturer[] = [
   {
@@ -55,7 +56,7 @@ const LecturersPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#F7F6F2] px-8 py-8">
+    <PageTransition className="min-h-screen bg-background px-8 py-8">
       <Breadcrumb />
 
       {/* Page header + Add button row */}
@@ -73,14 +74,14 @@ const LecturersPage = () => {
       </div>
 
       {/* Table card */}
-      <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden">
+      <div className="bg-card border border-border rounded-2xl overflow-hidden">
         {/* Table toolbar */}
-        <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100">
+        <div className="flex items-center justify-between px-5 py-4 border-b border-border">
           <div className="flex items-center gap-2">
-            <span className="text-sm font-semibold text-slate-700">
+            <span className="text-sm font-semibold text-foreground">
               {t("Lecturers")}
             </span>
-            <span className="text-xs font-medium text-slate-400 bg-slate-100 px-2 py-0.5 rounded-full">
+            <span className="text-xs font-medium text-muted-foreground bg-muted px-2 py-0.5 rounded-full">
               {t("{{count}} records", { count: filtered.length })}
             </span>
           </div>
@@ -90,14 +91,14 @@ const LecturersPage = () => {
             <Search
               size={14}
               strokeWidth={2}
-              className="absolute start-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"
+              className="absolute start-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none"
             />
             <input
               type="text"
               placeholder={t("Filter...")}
               value={filter}
               onChange={(e) => setFilter(e.target.value)}
-              className="ps-8 pe-4 py-2 text-sm border border-slate-200 rounded-xl w-52 bg-slate-50 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-500/30 focus:border-teal-400 transition-all"
+              className="ps-8 pe-4 py-2 text-sm border border-border rounded-xl w-52 bg-background text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-teal-500/30 focus:border-teal-400 transition-all"
             />
           </div>
         </div>
@@ -105,17 +106,17 @@ const LecturersPage = () => {
         {/* Table */}
         <table className="w-full">
           <thead>
-            <tr className="text-start bg-slate-50">
-              <th className="px-5 py-3 text-xs font-semibold text-slate-400 uppercase tracking-wider">
+            <tr className="text-start bg-muted">
+              <th className="px-5 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                 {t("Name")}
               </th>
-              <th className="px-5 py-3 text-xs font-semibold text-slate-400 uppercase tracking-wider">
+              <th className="px-5 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                 {t("University Email")}
               </th>
-              <th className="px-5 py-3 text-xs font-semibold text-slate-400 uppercase tracking-wider">
+              <th className="px-5 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                 {t("Academic Level")}
               </th>
-              <th className="px-5 py-3 text-xs font-semibold text-slate-400 uppercase tracking-wider text-end">
+              <th className="px-5 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider text-end">
                 {t("Actions")}
               </th>
             </tr>
@@ -136,7 +137,7 @@ const LecturersPage = () => {
           </tbody>
         </table>
       </div>
-    </div>
+    </PageTransition>
   );
 };
 
