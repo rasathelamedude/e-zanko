@@ -26,6 +26,16 @@ import ErrorState from "../../components/common/ErrorState";
 import { notifySuccess } from "../../lib/notify";
 import TableSkeleton from "../../components/common/TableSkeleton";
 
+const statusStyles: Record<number, string> = {
+  1: "bg-emerald-100 text-emerald-700 hover:bg-emerald-100",
+  0: "bg-gray-100 text-gray-700 hover:bg-gray-100",
+};
+
+const statusLabels: Record<number, string> = {
+  1: "Active",
+  0: "Inactive",
+};
+
 type ModalState =
   | { type: "add" }
   | { type: "edit"; university: University }
@@ -148,20 +158,14 @@ function UniversitiesPage() {
     {
       key: "president",
       header: t("President"),
-      render: (u) => u.admin.name,
+      render: (u: University) => u.admin.name,
     },
     {
       key: "status",
       header: t("Status"),
       render: (u: University) => (
-        <Badge
-          className={
-            u.is_active === 1
-              ? "bg-emerald-100 text-emerald-700"
-              : "bg-gray-100 text-gray-700"
-          }
-        >
-          {u.is_active === 1 ? t("Active") : t("Inactive")}
+        <Badge className={statusStyles[u.is_active]}>
+          {t(statusLabels[u.is_active])}
         </Badge>
       ),
     },
@@ -176,8 +180,8 @@ function UniversitiesPage() {
               setForm({
                 name: u.name,
                 location: u.location,
-                established_year: u.established_year,
-                is_active: Boolean(u.is_active),
+                establishedYear: u.established_year,
+                isActive: u.is_active === 1 ? true : false,
               });
               setModal({ type: "edit", university: u });
             }}

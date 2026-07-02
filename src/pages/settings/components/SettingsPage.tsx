@@ -169,16 +169,6 @@ const SettingsPage = () => {
         <div className="p-6 grid grid-cols-[repeat(auto-fit,minmax(250px,1fr))] gap-6">
           <div>
             <label className="block text-sm font-semibold text-slate-900 mb-2">
-              {t("Date format")}
-            </label>
-            <select className="w-full rounded-lg border border-slate-300 px-3 py-2 bg-white">
-              <option>{t("Gregorian")}</option>
-              <option>{t("Kurdish / Local")}</option>
-            </select>
-          </div>
-
-          <div>
-            <label className="block text-sm font-semibold text-slate-900 mb-2">
               {t("Theme")}
             </label>
             <select className="w-full rounded-lg border border-slate-300 px-3 py-2 bg-white">

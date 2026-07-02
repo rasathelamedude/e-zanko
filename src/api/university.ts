@@ -22,7 +22,12 @@ export async function getAllUniversities() {
 export async function addUniversity(
   payload: UniversityPayload,
 ): Promise<University> {
-  const response = await axios.post("/api/universities", payload);
+  const response = await axios.post("/api/universities", {
+    name: payload.name,
+    location: payload.location,
+    established_year: payload.establishedYear,
+    is_active: payload.isActive ? 1 : 0,
+  });
 
   const { success, message, data } = response.data;
 
@@ -54,7 +59,12 @@ export const updateUniversity = async (
   id: number,
   payload: UniversityPayload,
 ): Promise<University> => {
-  const response = await axios.patch(`/api/universities/${id}`, payload);
+  const response = await axios.patch(`/api/universities/${id}`, {
+    name: payload.name,
+    location: payload.location,
+    established_year: payload.establishedYear,
+    is_active: payload.isActive ? 1 : 0,
+  });
   const { success, message, data } = response.data;
 
   if (!success) throw new Error(message || "Couldn't update university");
