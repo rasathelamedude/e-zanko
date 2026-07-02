@@ -64,7 +64,7 @@ const Sidebar = () => {
       { label: t("Reports"), to: "/reports" },
       { label: t("Settings"), to: "/settings" },
     ],
-    DEPARTMENT_HEAD: [
+    HEAD_OF_DEPARTMENT: [
       { label: t("Dashboard"), to: "/" },
       {
         label: t("Courses"),

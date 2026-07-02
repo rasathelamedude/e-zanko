@@ -1,5 +1,5 @@
 import { type ChangeEvent, useState } from "react";
-import { Bell, Moon, Plus, Sun } from "lucide-react";
+import { Moon, Plus, Sun } from "lucide-react";
 import logo from "../../assets/images/logo.png";
 import { useUserStore } from "../../store/userStore";
 import { useThemeStore } from "../../store/themeStore";

@@ -24,10 +24,7 @@ function App() {
       <Route path="/login" element={<LoginPage />} />
       <Route path="/unauthorized" element={<UnauthorizedPage />} />
       <Route path="/forbidden" element={<ForbiddenPage />} />
-      <Route
-        path="/verify/:documentUUID"
-        element={<VerificationPage />}
-      />
+      <Route path="/verify/:documentUUID" element={<VerificationPage />} />
 
       <Route path="/reset-password" element={<ResetPasswordPage />} />
 
@@ -45,7 +42,7 @@ function App() {
 
           {/* Department Head only Routes */}
           <Route
-            element={<ProtectedRoutes allowedRoles={["DEPARTMENT_HEAD"]} />}
+            element={<ProtectedRoutes allowedRoles={["HEAD_OF_DEPARTMENT"]} />}
           >
             <Route path="/students" element={<StudentsPage />} />
             <Route path="/lecturers" element={<LecturersPage />} />
@@ -95,7 +92,7 @@ function App() {
                   "MINISTRY_ADMIN",
                   "UNIVERSITY_ADMIN",
                   "DEAN",
-                  "DEPARTMENT_HEAD",
+                  "HEAD_OF_DEPARTMENT",
                 ]}
               />
             }
