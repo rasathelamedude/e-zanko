@@ -1,8 +1,10 @@
 import type {
   ComposeLetterPayload,
   ComposeLetterResponse,
+  GetReceiversResopnse,
   GetUserLettersResponse,
   Letter,
+  LetterReceiver,
 } from "../types/letter";
 import axios from "../lib/axios";
 
@@ -70,6 +72,20 @@ export const getCompletedLettersForUser = async (): Promise<Letter[]> => {
   const completedLetters: Letter[] = data.data;
 
   return completedLetters;
+};
+
+export const getReceivers = async (): Promise<LetterReceiver[]> => {
+  const response = await axios.get<GetReceiversResopnse>(
+    "/api/users/superior-roles",
+  );
+
+  const { data, success, message } = response.data;
+
+  if (!success) {
+    throw new Error(message || "Failed to fetch receivers");
+  }
+
+  return data;
 };
 
 export const composeLetter = async (

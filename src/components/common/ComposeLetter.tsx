@@ -4,8 +4,8 @@ import { Input } from "../ui/input";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "../ui/button";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { composeLetter } from "../../api/letters";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { composeLetter, getReceivers } from "../../api/letters";
 import type {
   ComposeLetterPayload,
   LetterActionOption,
@@ -40,7 +40,7 @@ function ComposeLetter({ onClose }: ComposeLetterProps) {
     title: "",
     body: "",
     type: "hire_teacher",
-    receiver_id: 4,
+    receiver_id: 0,
     academic_year_id: 1,
     payload: {},
   });
@@ -57,6 +57,14 @@ function ComposeLetter({ onClose }: ComposeLetterProps) {
 
   const userRole = user?.roles?.[0]?.name;
   const userScopeType = user?.scopes?.[0]?.scope_type;
+
+  const { data: receivers = [] } = useQuery({
+    queryKey: ["superiorReceivers"],
+    queryFn: getReceivers,
+    staleTime: Infinity,
+  });
+
+  const selectedReceiverId = form.receiver_id || receivers[0]?.user_id || 0;
 
   const availableActions = useMemo(() => {
     const roleActions: Record<string, LetterActionOption[]> = {
@@ -96,7 +104,7 @@ function ComposeLetter({ onClose }: ComposeLetterProps) {
     mutationFn: (payload: ComposeLetterPayload) => composeLetter(payload),
     onSuccess: () => {
       notifySuccess(t("Letter sent successfully."));
-      queryClient.invalidateQueries({ queryKey: ["outboxLetters"] });
+      queryClient.invalidateQueries({ queryKey: ["outboxLetters"] }); // to refresh the outbox letters list
       onClose();
     },
     onError: (error) => {
@@ -138,7 +146,7 @@ function ComposeLetter({ onClose }: ComposeLetterProps) {
       original_sender_id: user.id,
       title: form.title,
       body: form.body,
-      receiver_id: form.receiver_id,
+      receiver_id: selectedReceiverId,
       academic_year_id: form.academic_year_id,
       payload: {
         ...form.payload,
@@ -225,19 +233,25 @@ function ComposeLetter({ onClose }: ComposeLetterProps) {
                   {t("Recipient")}
                 </Label>
                 <select
-                  value={form.receiver_id}
+                  value={selectedReceiverId}
                   onChange={(e) =>
                     setForm((prev) => ({
                       ...prev,
                       receiver_id: Number(e.target.value),
                     }))
                   }
-                  className="w-full rounded-lg border border-border bg-card px-3 py-2 text-sm text-foreground focus:border-teal-600 focus:outline-none focus:ring-2 focus:ring-teal-600"
+                  disabled={receivers.length === 0}
+                  className="w-full rounded-lg border border-border bg-card px-3 py-2 text-sm text-foreground focus:border-teal-600 focus:outline-none focus:ring-2 focus:ring-teal-600 disabled:cursor-not-allowed disabled:opacity-60"
                 >
-                  <option value={2}>{t("University president")}</option>
-                  <option value={4}>
-                    {t("Dean of College of Engineering")}
-                  </option>
+                  {receivers.length > 0 ? (
+                    receivers.map((receiver) => (
+                      <option key={receiver.user_id} value={receiver.user_id}>
+                        {receiver.role}
+                      </option>
+                    ))
+                  ) : (
+                    <option value={0}>{t("Loading recipients...")}</option>
+                  )}
                 </select>
               </div>
             </div>

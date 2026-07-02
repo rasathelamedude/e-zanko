@@ -47,6 +47,12 @@ export interface LetterParticipant {
   name: string;
 }
 
+export interface LetterReceiver {
+  user_id: number;
+  name: string;
+  role: string;
+}
+
 export interface Letter {
   id: string | number;
   letter_number: string;
@@ -76,3 +82,4 @@ export interface Letter {
 
 export type GetUserLettersResponse = ApiResponse<{ data: Letter[] }>;
 export type ComposeLetterResponse = ApiResponse<Letter>;
+export type GetReceiversResopnse = ApiResponse<LetterReceiver[]>;
