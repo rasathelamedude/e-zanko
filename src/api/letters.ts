@@ -1,6 +1,7 @@
-import type { Letter } from "../types/letter";
+import type { BroadcastLetterPayload, Letter } from "../types/letter";
 import axios from "../lib/axios";
 import type { GetUserLettersResponse } from "../types/letter";
+import api from "../lib/axios";
 
 export const getInboxLettersForUser = async (): Promise<Letter[]> => {
   const response = await axios.get<GetUserLettersResponse>(
@@ -66,4 +67,24 @@ export const getCompletedLettersForUser = async (): Promise<Letter[]> => {
   const completedLetters: Letter[] = data.data;
 
   return completedLetters;
+};
+
+export const broadcastLetter = async (
+  payload: BroadcastLetterPayload,
+): Promise<Letter> => {
+  const formData = new FormData();
+  formData.append("title", payload.title);
+  formData.append("body", payload.body);
+
+  payload.files?.forEach((file) => {
+    formData.append("files[]", file);
+  });
+
+  const { data } = await api.post("/api/letter-broadcast", formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+
+  return data;
 };
