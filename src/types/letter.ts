@@ -47,6 +47,12 @@ export interface LetterParticipant {
   name: string;
 }
 
+export interface BroadcastLetterPayload{
+  title: string;
+  body: string;
+  files?: File[];
+}
+
 export interface Letter {
   id: string | number;
   letter_number: string;
