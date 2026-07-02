@@ -4,11 +4,7 @@ import {
   DataTable,
   type DataTableColumn,
 } from "../../components/common/DataTable";
-import type {
-  University,
-  UniversityPayload,
-  UniversityStatus,
-} from "../../types/hierarchy";
+import type { University, UniversityPayload } from "../../types/hierarchy";
 import { Badge } from "../../components/ui/badge";
 import { Input } from "../../components/ui/input";
 import { useNavigate } from "react-router-dom";
@@ -28,19 +24,16 @@ import {
 import ConfirmDialog from "../../components/common/ConfirmDialog";
 import ErrorState from "../../components/common/ErrorState";
 import { notifySuccess } from "../../lib/notify";
+import TableSkeleton from "../../components/common/TableSkeleton";
 
-const statusStyles: Record<UniversityStatus, string> = {
-  ACTIVE:
-    "bg-emerald-500/15 text-emerald-600 hover:bg-emerald-500/15 dark:text-emerald-400",
-  UNDER_REVIEW:
-    "bg-amber-500/15 text-amber-600 hover:bg-amber-500/15 dark:text-amber-400",
-  INACTIVE: "bg-muted text-muted-foreground hover:bg-muted",
+const statusStyles: Record<number, string> = {
+  1: "bg-emerald-100 text-emerald-700 hover:bg-emerald-100",
+  0: "bg-gray-100 text-gray-700 hover:bg-gray-100",
 };
 
-const statusLabels: Record<UniversityStatus, string> = {
-  ACTIVE: "Active",
-  UNDER_REVIEW: "Under review",
-  INACTIVE: "Inactive",
+const statusLabels: Record<number, string> = {
+  1: "Active",
+  0: "Inactive",
 };
 
 type ModalState =
@@ -76,8 +69,8 @@ function UniversitiesPage() {
   const [form, setForm] = useState<UniversityPayload>({
     name: "",
     location: "",
-    establishedYear: new Date().toISOString().split("T")[0],
-    isActive: true,
+    established_year: new Date().toISOString().split("T")[0],
+    is_active: true,
   });
   const [draft, setDraft] = useState<UniversityDraft>(emptyDraft);
 
@@ -109,7 +102,12 @@ function UniversitiesPage() {
       updateUniversity(id, payload),
     onSuccess: () => {
       setModal(null);
-      setForm({ name: "", location: "", establishedYear: "", isActive: true });
+      setForm({
+        name: "",
+        location: "",
+        established_year: "",
+        is_active: true,
+      });
       refetch();
       notifySuccess(t("University updated."));
     },
@@ -205,70 +203,23 @@ function UniversitiesPage() {
   // loading state
   if (isLoading)
     return (
-      <div className="bg-background px-8 py-8">
-        <div className="overflow-hidden rounded-xl border border-border bg-card">
-          <div className="flex items-center justify-between px-5 py-3.5">
-            <div className="flex items-center gap-2">
-              <div className="h-4 w-24 rounded bg-muted animate-pulse" />
-              <div className="h-3 w-14 rounded bg-muted/50 animate-pulse" />
-            </div>
-            <div className="h-8 w-40 rounded-full bg-muted/50 animate-pulse" />
-          </div>
-
-          <div className="grid grid-cols-[2fr_1.5fr_1fr_80px] border-y border-border px-5 py-2.5">
-            {["NAME", "PRESIDENT", "STATUS", "ACTIONS"].map((col) => (
-              <span
-                key={col}
-                className={`text-[11px] font-medium tracking-widest text-muted-foreground uppercase ${col === "ACTIONS" ? "text-right" : ""}`}
-              >
-                {col}
-              </span>
-            ))}
-          </div>
-
-          {[...Array(5)].map((_, i) => (
-            <div
-              key={i}
-              className="grid grid-cols-[2fr_1.5fr_1fr_80px] items-center border-b border-border px-5 py-4.5 last:border-0"
-            >
-              <div
-                className="h-3.5 rounded bg-muted animate-pulse"
-                style={{
-                  width: `${[62, 55, 70, 50, 65][i]}%`,
-                  animationDelay: `${i * 80}ms`,
-                }}
-              />
-              <div
-                className="h-3 rounded bg-muted/60 animate-pulse"
-                style={{
-                  width: `${[55, 48, 60, 52, 45][i]}%`,
-                  animationDelay: `${i * 80 + 50}ms`,
-                }}
-              />
-              <div
-                className="h-6 w-16 rounded-full bg-muted/60 animate-pulse"
-                style={{ animationDelay: `${i * 80 + 100}ms` }}
-              />
-              <div className="flex justify-end gap-2">
-                <div
-                  className="h-7 w-7 rounded-full bg-muted/60 animate-pulse"
-                  style={{ animationDelay: `${i * 80 + 140}ms` }}
-                />
-                <div
-                  className="h-7 w-7 rounded-full bg-muted/60 animate-pulse"
-                  style={{ animationDelay: `${i * 80 + 170}ms` }}
-                />
-              </div>
-            </div>
-          ))}
-        </div>
+      <div className="min-h-screen bg-slate-50 px-8 py-8">
+        <TableSkeleton
+          gridCols="grid-cols-[2fr_1fr_1fr_80px]"
+          columnHeaders={["NAME", "PRESIDENT", "STATUS", "ACTIONS"]}
+          extraColumns={[{ width: "w-28" }]}
+          hasActions
+        />
       </div>
     );
 
   // error state
   if (isError)
     return (
-      <ErrorState title=" Couldn't load universities" onClick={() => refetch()} />
+      <ErrorState
+        title=" Couldn't load universities"
+        onClick={() => refetch()}
+      />
     );
 
   const columns: DataTableColumn<University>[] = [
@@ -287,14 +238,14 @@ function UniversitiesPage() {
     {
       key: "president",
       header: t("President"),
-      render: (u) => u.president,
+      render: (u: University) => u.admin.name,
     },
     {
       key: "status",
       header: t("Status"),
       render: (u: University) => (
-        <Badge className={statusStyles[u.status]}>
-          {t(statusLabels[u.status])}
+        <Badge className={statusStyles[u.is_active]}>
+          {t(statusLabels[u.is_active])}
         </Badge>
       ),
     },
@@ -309,8 +260,8 @@ function UniversitiesPage() {
               setForm({
                 name: u.name,
                 location: u.location,
-                establishedYear: u.establishedYear,
-                isActive: u.isActive,
+                establishedYear: u.established_year,
+                isActive: u.is_active === 1 ? true : false,
               });
               setModal({ type: "edit", university: u });
             }}
@@ -334,7 +285,7 @@ function UniversitiesPage() {
   const filteredUniversities = universities.filter(
     (u) =>
       u.name.toLowerCase().includes(filter.toLowerCase()) ||
-      u.president?.toLowerCase().includes(filter.toLowerCase()) ||
+      // u.admin.name?.toLowerCase().includes(filter.toLowerCase()) ||
       u.location.toLowerCase().includes(filter.toLowerCase()),
   );
 
@@ -461,7 +412,7 @@ function UniversitiesPage() {
                   {t("Add Faculty")}
                 </button>
               </div>
-
+              
               {draft.faculties.length === 0 ? (
                 <p className="rounded-xl border border-dashed border-border py-6 text-center text-sm text-muted-foreground">
                   {t("No faculties added yet.")}
@@ -614,11 +565,11 @@ function UniversitiesPage() {
                 {t("Established Year")}
               </Label>
               <Input
-                value={form.establishedYear}
+                value={form.established_year}
                 onChange={(e) =>
                   setForm((f) => ({
                     ...f,
-                    establishedYear: e.target.value,
+                    established_year: e.target.value,
                   }))
                 }
                 type="date"
@@ -631,9 +582,9 @@ function UniversitiesPage() {
               </Label>
               <input
                 type="checkbox"
-                checked={form.isActive}
+                checked={form.is_active}
                 onChange={(e) =>
-                  setForm((f) => ({ ...f, isActive: e.target.checked }))
+                  setForm((f) => ({ ...f, is_active: e.target.checked }))
                 }
                 className="h-4 w-4 accent-teal-700"
               />

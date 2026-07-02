@@ -37,6 +37,7 @@ import {
 } from "../../api/department";
 import ErrorState from "../../components/common/ErrorState";
 import ConfirmDialog from "../../components/common/ConfirmDialog";
+import TableSkeleton from "../../components/common/TableSkeleton";
 
 const statusStyles: Record<CourseStatus, string> = {
   ACTIVE:
@@ -174,8 +175,7 @@ function CoursesPage() {
       !form.name.trim() ||
       !form.code.trim() ||
       !form.credit_hours ||
-      !form.year_level ||
-      !form.department_id
+      !form.year_level
     )
       return;
     createCourse({ ...form, department_id: Number(departmentId) });
@@ -210,6 +210,19 @@ function CoursesPage() {
   const shouldShowDepartmentColumn =
     user?.roles.some((role) => role.name === "DEAN") &&
     userFacultyId === Number(facultyId);
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-slate-50 px-8 py-8">
+        <TableSkeleton
+          gridCols="grid-cols-[100px_2fr_100px_100px_80px]"
+          columnHeaders={["CODE", "NAME", "YEAR LEVEL", "STATUS", "ACTIONS"]}
+          extraColumns={[{ width: "w-16" }]}
+          hasActions
+        />
+      </div>
+    );
+  }
 
   if (isError)
     return (
@@ -309,6 +322,7 @@ function CoursesPage() {
   return (
     <PageTransition className="min-h-screen bg-background px-8 py-8">
       <nav className="flex items-center gap-2 text-sm text-muted-foreground mb-6">
+
         {canAccessUniversities && (
           <>
             <BreadcrumbItem

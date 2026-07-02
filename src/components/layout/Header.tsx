@@ -17,7 +17,6 @@ const languages: { code: Language; label: string }[] = [
 ];
 
 const BRAND_TITLE = "e-Zanko";
-const NOTIFICATION_COUNT = 1;
 
 const getSupportedLanguage = (currentLanguage: string): Language => {
   const language = currentLanguage.split("-")[0].toLowerCase();
@@ -101,19 +100,6 @@ export default function Header() {
               <Moon className="h-5 w-5" strokeWidth={1.9} aria-hidden="true" />
             )}
           </button>
-
-          <button
-            type="button"
-            aria-label={t("Notifications")}
-            className="relative inline-flex h-10.5 w-10.5 items-center justify-center rounded-xl border border-border bg-card text-muted-foreground transition hover:border-[#bfe0e0] hover:bg-muted hover:text-[#0f7576] dark:hover:text-teal-400"
-          >
-            <Bell className="h-5 w-5" strokeWidth={1.9} aria-hidden="true" />
-
-            {NOTIFICATION_COUNT > 0 && (
-              <span className="absolute end-2 top-2 h-2.25 w-2.25 rounded-full border-2 border-card bg-[#cc7a2b]" />
-            )}
-          </button>
-
           <select
             aria-label={t("Language")}
             value={language}

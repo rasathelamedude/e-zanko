@@ -1,7 +1,7 @@
 import { X, Send, FileText, Paperclip } from "lucide-react";
 import { Label } from "../ui/label";
 import { Input } from "../ui/input";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { Button } from "../ui/button";
 import { useTranslation } from "react-i18next";
 
@@ -9,19 +9,9 @@ interface ComposeLetterProps {
   onClose: () => void;
 }
 
-const recipentUniversities = [
-  { label: "University of Salahaddin", value: 18 },
-  { label: "University of Sulaimani", value: 15 },
-  { label: "University of Duhok", value: 12 },
-  { label: "University of Halabja", value: 11 },
-  { label: "University of Garmian", value: 9 },
-  { label: "University of Raparin", value: 8 },
-];
-
 function BroadcastLetter({ onClose }: ComposeLetterProps) {
   const popupRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
-  const [selectedRecipients, setSelectedRecipients] = useState<number[]>([]);
   const { t } = useTranslation();
 
   useEffect(() => {
@@ -66,7 +56,7 @@ function BroadcastLetter({ onClose }: ComposeLetterProps) {
             />
           </div>
 
-          {/* letter type */}
+
           <div className="flex flex-col gap-1.5">
             <Label className="text-sm font-medium text-foreground">
               {t("Letter type")}
@@ -84,49 +74,6 @@ function BroadcastLetter({ onClose }: ComposeLetterProps) {
                 {t("Recipent universities")}
               </Label>
               <button
-                type="button"
-                onClick={() =>
-                  setSelectedRecipients(
-                    recipentUniversities.map((r) => r.value),
-                  )
-                }
-                className="text-sm font-semibold text-teal-600 dark:text-teal-400 hover:text-teal-700 dark:hover:text-teal-300"
-              >
-                {t("Select All")}
-              </button>
-            </div>
-            <div className="border-1 border-border rounded-md p-2">
-              {recipentUniversities.map((recipent) => (
-                <label
-                  key={recipent.value}
-                  className="flex items-center gap-2.5 cursor-pointer"
-                >
-                  <input
-                    type="checkbox"
-                    value={recipent.value}
-                    checked={selectedRecipients.includes(recipent.value)}
-                    onChange={(e) => {
-                      if (e.target.checked) {
-                        setSelectedRecipients((prev) => [
-                          ...prev,
-                          recipent.value,
-                        ]);
-                      } else {
-                        setSelectedRecipients((prev) =>
-                          prev.filter((v) => v !== recipent.value),
-                        );
-                      }
-                    }}
-                    className="h-4 w-4 rounded border-border text-teal-600 focus:ring-teal-600"
-                  />
-                  <span className="text-sm text-foreground">
-                    {recipent.label}
-                  </span>
-                </label>
-              ))}
-            </div>
-          </div>
-
           {/* letter content */}
           <div className="flex flex-col gap-1.5">
             <Label className="text-sm font-medium text-foreground">
@@ -159,7 +106,7 @@ function BroadcastLetter({ onClose }: ComposeLetterProps) {
           >
             {t("Cancel")}
           </Button>
-          <Button className="text-sm bg-teal-700 hover:bg-teal-800 text-white flex items-center gap-2">
+          <Button className="text-sm bg-teal-700 hover:bg-teal-800 text-white flex items-center gap-2 cursor-pointer">
             <Send size={14} />
             {t("Send Broadcast")}
           </Button>
