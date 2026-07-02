@@ -4,11 +4,7 @@ import {
   DataTable,
   type DataTableColumn,
 } from "../../components/common/DataTable";
-import type {
-  FacultyPayload,
-  Faculty,
-  FacultyStatus,
-} from "../../types/hierarchy";
+import type { FacultyPayload, Faculty } from "../../types/hierarchy";
 import { Badge } from "../../components/ui/badge";
 import { useState } from "react";
 import { Input } from "../../components/ui/input";
@@ -19,27 +15,13 @@ import { Navigate, useNavigate, useParams } from "react-router-dom";
 import { Label } from "../../components/ui/label";
 import { BreadcrumbItem } from "../../components/common/BreadcrumbItem";
 import { useBreadcrumbAccess } from "../../hooks/useBreadcrumbAccess";
-import {
-  addFaculty,
-  getFacultiesByUniversity,
-} from "../../api/faculty";
+import { addFaculty, getFacultiesByUniversity } from "../../api/faculty";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import ErrorState from "../../components/common/ErrorState";
 import { getUniversityById } from "../../api/university";
 import type { UserScope } from "../../types/auth";
 import { notifySuccess } from "../../lib/notify";
-
-const statusStyles: Record<FacultyStatus, string> = {
-  ACTIVE: "bg-emerald-100 text-emerald-700 hover:bg-emerald-100",
-  UNDER_REVIEW: "bg-amber-100 text-amber-700 hover:bg-amber-100",
-  INACTIVE: "bg-gray-100 text-gray-700 hover:bg-gray-100",
-};
-
-const statusLabels: Record<FacultyStatus, string> = {
-  ACTIVE: "Active",
-  UNDER_REVIEW: "Under review",
-  INACTIVE: "Inactive",
-};
+import TableSkeleton from "../../components/common/TableSkeleton";
 
 function FacultiesPage() {
   const { t } = useTranslation();
@@ -101,10 +83,9 @@ function FacultiesPage() {
   });
 
   const filteredFaculties = faculties.filter(
-    (f) =>
-      f.name.toLowerCase().includes(filter.toLowerCase()) 
-      // f.dean.toLowerCase().includes(filter.toLowerCase()) ||
-      // f.status.toLowerCase().includes(filter.toLowerCase()),
+    (f) => f.name.toLowerCase().includes(filter.toLowerCase()),
+    // f.dean.toLowerCase().includes(filter.toLowerCase()) ||
+    // f.status.toLowerCase().includes(filter.toLowerCase()),
   );
 
   function handleModal() {
@@ -119,63 +100,12 @@ function FacultiesPage() {
   // loading state
   if (isLoading)
     return (
-      <div className="min-h-screen bg-[#F7F6F2] px-8 py-8">
-        <div className="rounded-xl border border-border bg-white overflow-hidden">
-          <div className="flex items-center justify-between px-5 py-3.5">
-            <div className="flex items-center gap-2">
-              <div className="h-4 w-20 rounded bg-muted animate-pulse" />
-              <div className="h-3 w-14 rounded bg-muted/50 animate-pulse" />
-            </div>
-            <div className="h-8 w-32 rounded-full bg-muted/50 animate-pulse" />
-          </div>
-
-          <div className="grid grid-cols-[2fr_1fr_40px] px-5 py-2.5 border-y border-border">
-            {["NAME", "STATUS", ""].map((col, i) => (
-              <span
-                key={i}
-                className={`text-[11px] font-medium tracking-widest text-muted-foreground uppercase ${col === "STATUS" ? "text-right" : ""}`}
-              >
-                {col}
-              </span>
-            ))}
-          </div>
-
-          {[...Array(5)].map((_, i) => (
-            <div
-              key={i}
-              className="grid grid-cols-[2fr_1fr_40px] items-center px-5 py-[18px] border-b border-border last:border-0"
-            >
-              <div className="flex flex-col gap-1.5">
-                <div
-                  className="h-3.5 rounded bg-muted animate-pulse"
-                  style={{
-                    width: `${[60, 52, 48, 56, 50][i]}%`,
-                    animationDelay: `${i * 80}ms`,
-                  }}
-                />
-                <div
-                  className="h-3 rounded bg-muted/60 animate-pulse"
-                  style={{
-                    width: `${[40, 36, 38, 34, 42][i]}%`,
-                    animationDelay: `${i * 80 + 40}ms`,
-                  }}
-                />
-              </div>
-              <div className="flex justify-end">
-                <div
-                  className="h-6 w-16 rounded-full bg-muted/60 animate-pulse"
-                  style={{ animationDelay: `${i * 80 + 100}ms` }}
-                />
-              </div>
-              <div className="flex justify-end">
-                <div
-                  className="h-3 w-3 rounded bg-muted/50 animate-pulse"
-                  style={{ animationDelay: `${i * 80 + 140}ms` }}
-                />
-              </div>
-            </div>
-          ))}
-        </div>
+      <div className="min-h-screen bg-slate-50 px-8 py-8">
+        <TableSkeleton
+          gridCols="grid-cols-[2fr_1fr_1fr_80px]"
+          columnHeaders={["NAME", "DEAN", "STATUS"]}
+          extraColumns={[{ width: "w-24" }]}
+        />
       </div>
     );
 
@@ -205,18 +135,24 @@ function FacultiesPage() {
     // {
     //   key: "dean",
     //   header: t("Dean"),
-    //   render: (u) => u.dean,
+    //   render: (u) => u.admin.name,
     // },
-    // {
-    //   key: "status",
-    //   header: t("Status"),
-    //   align: "right",
-    //   render: (u) => (
-    //     <Badge className={statusStyles[u.status]}>
-    //       {t(statusLabels[u.status])}
-    //     </Badge>
-    //   ),
-    // },
+    {
+      key: "status",
+      header: t("Status"),
+      align: "right",
+      render: (u) => (
+        <Badge
+          className={
+            u.is_active === 1
+              ? "bg-emerald-100 text-emerald-700"
+              : "bg-gray-100 text-gray-700"
+          }
+        >
+          {u.is_active === 1 ? t("Active") : t("Inactive")}
+        </Badge>
+      ),
+    },
   ];
 
   if (
@@ -227,7 +163,7 @@ function FacultiesPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#F7F6F2] px-8 py-8">
+    <div className="min-h-screen bg-slate-50 px-8 py-8">
       <nav className="flex items-center gap-2 text-sm text-gray-500 mb-6">
         {canAccessUniversities && (
           <>

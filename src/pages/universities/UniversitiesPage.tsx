@@ -4,11 +4,7 @@ import {
   DataTable,
   type DataTableColumn,
 } from "../../components/common/DataTable";
-import type {
-  University,
-  UniversityPayload,
-  UniversityStatus,
-} from "../../types/hierarchy";
+import type { University, UniversityPayload } from "../../types/hierarchy";
 import { Badge } from "../../components/ui/badge";
 import { Pencil, Trash2 } from "lucide-react";
 import { Input } from "../../components/ui/input";
@@ -28,18 +24,7 @@ import {
 import ConfirmDialog from "../../components/common/ConfirmDialog";
 import ErrorState from "../../components/common/ErrorState";
 import { notifySuccess } from "../../lib/notify";
-
-const statusStyles: Record<UniversityStatus, string> = {
-  ACTIVE: "bg-emerald-100 text-emerald-700 hover:bg-emerald-100",
-  UNDER_REVIEW: "bg-amber-100 text-amber-700 hover:bg-amber-100",
-  INACTIVE: "bg-gray-100 text-gray-700 hover:bg-gray-100",
-};
-
-const statusLabels: Record<UniversityStatus, string> = {
-  ACTIVE: "Active",
-  UNDER_REVIEW: "Under review",
-  INACTIVE: "Inactive",
-};
+import TableSkeleton from "../../components/common/TableSkeleton";
 
 type ModalState =
   | { type: "add" }
@@ -56,8 +41,8 @@ function UniversitiesPage() {
   const [form, setForm] = useState<UniversityPayload>({
     name: "",
     location: "",
-    establishedYear: new Date().toISOString().split("T")[0],
-    isActive: true,
+    established_year: new Date().toISOString().split("T")[0],
+    is_active: true,
   });
 
   // get all universities
@@ -79,8 +64,8 @@ function UniversitiesPage() {
       setForm({
         name: "",
         location: "",
-        establishedYear: "",
-        isActive: true,
+        established_year: "",
+        is_active: true,
       });
       refetch();
       notifySuccess(t("University added."));
@@ -93,7 +78,12 @@ function UniversitiesPage() {
       updateUniversity(id, payload),
     onSuccess: () => {
       setModal(null);
-      setForm({ name: "", location: "", establishedYear: "", isActive: true });
+      setForm({
+        name: "",
+        location: "",
+        established_year: "",
+        is_active: true,
+      });
       refetch();
       notifySuccess(t("University updated."));
     },
@@ -123,70 +113,23 @@ function UniversitiesPage() {
   // loading state
   if (isLoading)
     return (
-      <div className="min-h-screen bg-[#F7F6F2] px-8 py-8">
-        <div className="rounded-xl border border-border bg-white overflow-hidden">
-          <div className="flex items-center justify-between px-5 py-3.5">
-            <div className="flex items-center gap-2">
-              <div className="h-4 w-24 rounded bg-muted animate-pulse" />
-              <div className="h-3 w-14 rounded bg-muted/50 animate-pulse" />
-            </div>
-            <div className="h-8 w-40 rounded-full bg-muted/50 animate-pulse" />
-          </div>
-
-          <div className="grid grid-cols-[2fr_1.5fr_1fr_80px] px-5 py-2.5 border-y border-border">
-            {["NAME", "PRESIDENT", "STATUS", "ACTIONS"].map((col) => (
-              <span
-                key={col}
-                className={`text-[11px] font-medium tracking-widest text-muted-foreground uppercase ${col === "ACTIONS" ? "text-right" : ""}`}
-              >
-                {col}
-              </span>
-            ))}
-          </div>
-
-          {[...Array(5)].map((_, i) => (
-            <div
-              key={i}
-              className="grid grid-cols-[2fr_1.5fr_1fr_80px] items-center px-5 py-4.5 border-b border-border last:border-0"
-            >
-              <div
-                className="h-3.5 rounded bg-muted animate-pulse"
-                style={{
-                  width: `${[62, 55, 70, 50, 65][i]}%`,
-                  animationDelay: `${i * 80}ms`,
-                }}
-              />
-              <div
-                className="h-3 rounded bg-muted/60 animate-pulse"
-                style={{
-                  width: `${[55, 48, 60, 52, 45][i]}%`,
-                  animationDelay: `${i * 80 + 50}ms`,
-                }}
-              />
-              <div
-                className="h-6 w-16 rounded-full bg-muted/60 animate-pulse"
-                style={{ animationDelay: `${i * 80 + 100}ms` }}
-              />
-              <div className="flex justify-end gap-2">
-                <div
-                  className="w-7 h-7 rounded-full bg-muted/60 animate-pulse"
-                  style={{ animationDelay: `${i * 80 + 140}ms` }}
-                />
-                <div
-                  className="w-7 h-7 rounded-full bg-muted/60 animate-pulse"
-                  style={{ animationDelay: `${i * 80 + 170}ms` }}
-                />
-              </div>
-            </div>
-          ))}
-        </div>
+      <div className="min-h-screen bg-slate-50 px-8 py-8">
+        <TableSkeleton
+          gridCols="grid-cols-[2fr_1fr_1fr_80px]"
+          columnHeaders={["NAME", "PRESIDENT", "STATUS", "ACTIONS"]}
+          extraColumns={[{ width: "w-28" }]}
+          hasActions
+        />
       </div>
     );
 
   // error state
-    if (isError)
+  if (isError)
     return (
-      <ErrorState title=" Couldn't load universities" onClick={() => refetch()} />
+      <ErrorState
+        title=" Couldn't load universities"
+        onClick={() => refetch()}
+      />
     );
 
   const columns: DataTableColumn<University>[] = [
@@ -205,14 +148,20 @@ function UniversitiesPage() {
     {
       key: "president",
       header: t("President"),
-      render: (u) => u.president,
+      render: (u) => u.admin.name,
     },
     {
       key: "status",
       header: t("Status"),
       render: (u: University) => (
-        <Badge className={statusStyles[u.status]}>
-          {t(statusLabels[u.status])}
+        <Badge
+          className={
+            u.is_active === 1
+              ? "bg-emerald-100 text-emerald-700"
+              : "bg-gray-100 text-gray-700"
+          }
+        >
+          {u.is_active === 1 ? t("Active") : t("Inactive")}
         </Badge>
       ),
     },
@@ -227,8 +176,8 @@ function UniversitiesPage() {
               setForm({
                 name: u.name,
                 location: u.location,
-                establishedYear: u.establishedYear,
-                isActive: u.isActive,
+                established_year: u.established_year,
+                is_active: Boolean(u.is_active),
               });
               setModal({ type: "edit", university: u });
             }}
@@ -252,12 +201,12 @@ function UniversitiesPage() {
   const filteredUniversities = universities.filter(
     (u) =>
       u.name.toLowerCase().includes(filter.toLowerCase()) ||
-      u.president?.toLowerCase().includes(filter.toLowerCase()) ||
+      // u.admin.name?.toLowerCase().includes(filter.toLowerCase()) ||
       u.location.toLowerCase().includes(filter.toLowerCase()),
   );
 
   return (
-    <div className="min-h-screen bg-[#F7F6F2] px-8 py-8">
+    <div className="min-h-screen bg-slate-50 px-8 py-8">
       {/* Page header + Add button row */}
       <div className="flex items-start justify-between mb-6">
         <PageHeader
@@ -357,11 +306,11 @@ function UniversitiesPage() {
                 {t("Established Year")}
               </Label>
               <Input
-                value={form.establishedYear}
+                value={form.established_year}
                 onChange={(e) =>
                   setForm((f) => ({
                     ...f,
-                    establishedYear: e.target.value,
+                    established_year: e.target.value,
                   }))
                 }
                 type="date"
@@ -374,7 +323,7 @@ function UniversitiesPage() {
               </Label>
               <input
                 type="checkbox"
-                checked={form.isActive}
+                checked={form.is_active}
                 onChange={(e) =>
                   setForm((f) => ({ ...f, isActive: e.target.checked }))
                 }
@@ -429,11 +378,11 @@ function UniversitiesPage() {
                 {t("Established Year")}
               </Label>
               <Input
-                value={form.establishedYear}
+                value={form.established_year}
                 onChange={(e) =>
                   setForm((f) => ({
                     ...f,
-                    establishedYear: e.target.value,
+                    established_year: e.target.value,
                   }))
                 }
                 type="date"
@@ -446,9 +395,9 @@ function UniversitiesPage() {
               </Label>
               <input
                 type="checkbox"
-                checked={form.isActive}
+                checked={form.is_active}
                 onChange={(e) =>
-                  setForm((f) => ({ ...f, isActive: e.target.checked }))
+                  setForm((f) => ({ ...f, is_active: e.target.checked }))
                 }
                 defaultChecked={true}
                 className="w-4 h-4 accent-teal-700"
