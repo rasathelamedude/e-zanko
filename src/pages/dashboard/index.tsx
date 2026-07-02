@@ -28,7 +28,7 @@ const DashboardPage = () => {
         <UniversityStaffDashboard />
       </PageTransition>
     );
-  if (user?.roles[0]?.name === "DEPARTMENT_HEAD")
+  if (user?.roles[0]?.name === "HEAD_OF_DEPARTMENT")
     return (
       <PageTransition>
         <DepartmentHeadDashboard />

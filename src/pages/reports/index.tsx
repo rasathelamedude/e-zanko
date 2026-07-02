@@ -20,7 +20,7 @@ const ReportsPage = () => {
         <UniversityReportPage />
       </PageTransition>
     );
-  if (user?.roles[0]?.name === "DEPARTMENT_HEAD")
+  if (user?.roles[0]?.name === "HEAD_OF_DEPARTMENT")
     return (
       <PageTransition>
         <DepartmentHeadReportsPage />

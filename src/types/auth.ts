@@ -4,7 +4,7 @@ export type UserRole =
   | "UNIVERSITY_ADMIN"
   | "UNIVERSITY_STAFF"
   | "DEAN"
-  | "DEPARTMENT_HEAD"
+  | "HEAD_OF_DEPARTMENT"
   | "LECTURER"
   | "STUDENT";
 
