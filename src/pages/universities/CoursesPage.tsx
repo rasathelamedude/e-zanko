@@ -14,6 +14,7 @@ import { Badge } from "../../components/ui/badge";
 import { Pencil, Trash2 } from "lucide-react";
 import { Input } from "../../components/ui/input";
 import PageHeader from "../../components/common/PageHeader";
+import PageTransition from "../../components/common/PageTransition";
 import { useUserStore } from "../../store/userStore";
 import Modal from "../../components/common/Modal";
 import { Label } from "../../components/ui/label";
@@ -39,8 +40,9 @@ import ConfirmDialog from "../../components/common/ConfirmDialog";
 import TableSkeleton from "../../components/common/TableSkeleton";
 
 const statusStyles: Record<CourseStatus, string> = {
-  ACTIVE: "bg-emerald-100 text-emerald-700 hover:bg-emerald-100",
-  INACTIVE: "bg-gray-100 text-gray-700 hover:bg-gray-100",
+  ACTIVE:
+    "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/15",
+  INACTIVE: "bg-muted text-muted-foreground hover:bg-muted",
 };
 
 type ModalState =
@@ -68,7 +70,13 @@ function CoursesPage() {
   });
 
   const getScopeId = (scopeType: UserScope) => {
-    return user?.scopes?.find((s) => s.scope_type === scopeType)?.scope_id || 0;
+    // Coerce to a number: the API may send scope_id as a numeric string ("5"),
+    // and the route params are always strings, so comparing them below must be
+    // done numerically — otherwise `"5" !== Number("5")` wrongly forbids access.
+    return (
+      Number(user?.scopes?.find((s) => s.scope_type === scopeType)?.scope_id) ||
+      0
+    );
   };
 
   const userUniversityId = getScopeId("UNIVERSITY");
@@ -225,7 +233,7 @@ function CoursesPage() {
       key: "code",
       header: t("Code"),
       render: (u) => (
-        <span className="font-medium text-teal-700 cursor-pointer">
+        <span className="font-medium text-teal-700 dark:text-teal-400 cursor-pointer">
           {u.code}
         </span>
       ),
@@ -284,14 +292,14 @@ function CoursesPage() {
               setModal({ type: "edit", course: u });
             }}
             aria-label={`${t("Edit")} ${u.name}`}
-            className="rounded-md p-2 text-teal-600 hover:bg-teal-50"
+            className="rounded-md p-2 text-teal-600 dark:text-teal-400 hover:bg-teal-500/10"
           >
             <Pencil className="h-4 w-4 cursor-pointer" />
           </button>
           <button
             onClick={() => setModal({ type: "delete", course: u })}
             aria-label={`${t("Delete")} ${u.name}`}
-            className="rounded-md p-2 text-red-600 hover:bg-red-50"
+            className="rounded-md p-2 text-red-600 dark:text-red-400 hover:bg-red-500/10"
           >
             <Trash2 className="h-4 w-4 cursor-pointer" />
           </button>
@@ -312,8 +320,9 @@ function CoursesPage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 px-8 py-8">
-      <nav className="flex items-center gap-2 text-sm text-gray-500 mb-6">
+    <PageTransition className="min-h-screen bg-background px-8 py-8">
+      <nav className="flex items-center gap-2 text-sm text-muted-foreground mb-6">
+
         {canAccessUniversities && (
           <>
             <BreadcrumbItem
@@ -368,14 +377,14 @@ function CoursesPage() {
       </div>
 
       {/* Table card */}
-      <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden">
+      <div className="bg-card border border-border rounded-2xl overflow-hidden">
         {/* Table toolbar */}
-        <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100">
+        <div className="flex items-center justify-between px-5 py-4 border-b border-border">
           <div className="flex items-center gap-2">
-            <span className="text-sm font-semibold text-slate-700">
+            <span className="text-sm font-semibold text-foreground">
               {t("Courses")}
             </span>
-            <span className="text-xs font-medium text-slate-400 bg-slate-100 px-2 py-0.5 rounded-full">
+            <span className="text-xs font-medium text-muted-foreground bg-muted px-2 py-0.5 rounded-full">
               {filteredCourses.length} record
               {filteredCourses.length !== 1 ? "s" : ""}
             </span>
@@ -386,14 +395,14 @@ function CoursesPage() {
             <Search
               size={14}
               strokeWidth={2}
-              className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"
+              className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none"
             />
             <input
               type="text"
               placeholder={t("Filter...")}
               value={filter}
               onChange={(e) => setFilter(e.target.value)}
-              className="pl-8 pr-4 py-2 text-sm border border-slate-200 rounded-xl w-52 bg-slate-50 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-500/30 focus:border-teal-400 transition-all"
+              className="pl-8 pr-4 py-2 text-sm border border-border rounded-xl w-52 bg-muted placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-teal-500/30 focus:border-teal-400 transition-all"
             />
           </div>
         </div>
@@ -416,7 +425,7 @@ function CoursesPage() {
         >
           <div className="flex flex-col gap-3">
             <div>
-              <Label className="text-sm font-medium text-gray-700 mb-1">
+              <Label className="text-sm font-medium text-foreground mb-1">
                 {t("Course Name")}
               </Label>
               <Input
@@ -430,7 +439,7 @@ function CoursesPage() {
             </div>
 
             <div>
-              <Label className="text-sm font-medium text-gray-700 mb-1">
+              <Label className="text-sm font-medium text-foreground mb-1">
                 {t("Course Code")}
               </Label>
               <Input
@@ -444,7 +453,7 @@ function CoursesPage() {
             </div>
 
             <div>
-              <Label className="text-sm font-medium text-gray-700 mb-1">
+              <Label className="text-sm font-medium text-foreground mb-1">
                 {t("Credit hours")}
               </Label>
               <Input
@@ -464,7 +473,7 @@ function CoursesPage() {
             </div>
 
             <div>
-              <Label className="text-sm font-medium text-gray-700 mb-1">
+              <Label className="text-sm font-medium text-foreground mb-1">
                 {t("Year Level")}
               </Label>
               <select
@@ -476,7 +485,7 @@ function CoursesPage() {
                       e.target.value === "" ? null : Number(e.target.value),
                   }))
                 }
-                className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-teal-500"
+                className="w-full border border-border rounded-md px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-teal-500"
               >
                 <option value="">{t("Select year level")}</option>
                 <option value="1">{t("Year 1")}</option>
@@ -502,7 +511,7 @@ function CoursesPage() {
         >
           <div className="flex flex-col gap-3">
             <div>
-              <Label className="text-sm font-medium text-gray-700 mb-1">
+              <Label className="text-sm font-medium text-foreground mb-1">
                 {t("Name")}
               </Label>
               <Input
@@ -516,7 +525,7 @@ function CoursesPage() {
             </div>
 
             <div>
-              <Label className="text-sm font-medium text-gray-700 mb-1">
+              <Label className="text-sm font-medium text-foreground mb-1">
                 {t("Code")}
               </Label>
               <Input
@@ -530,7 +539,7 @@ function CoursesPage() {
             </div>
 
             <div>
-              <Label className="text-sm font-medium text-gray-700 mb-1">
+              <Label className="text-sm font-medium text-foreground mb-1">
                 {t("Credit Hours")}
               </Label>
               <Input
@@ -549,7 +558,7 @@ function CoursesPage() {
             </div>
 
             <div>
-              <Label className="text-sm font-medium text-gray-700 mb-1">
+              <Label className="text-sm font-medium text-foreground mb-1">
                 {t("Year Level")}
               </Label>
               <Input
@@ -568,7 +577,7 @@ function CoursesPage() {
             </div>
 
             <div>
-              <Label className="text-sm font-medium text-gray-700 mb-1">
+              <Label className="text-sm font-medium text-foreground mb-1">
                 {t("Department")}
               </Label>
               <select
@@ -593,7 +602,7 @@ function CoursesPage() {
             </div>
 
             <div className="flex items-center justify-between py-1">
-              <Label className="text-sm font-medium text-gray-700">
+              <Label className="text-sm font-medium text-foreground">
                 {t("Active")}
               </Label>
               <input
@@ -619,7 +628,7 @@ function CoursesPage() {
           isLoading={isDeleting}
         />
       )}
-    </div>
+    </PageTransition>
   );
 }
 

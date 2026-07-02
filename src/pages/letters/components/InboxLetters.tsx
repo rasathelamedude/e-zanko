@@ -31,7 +31,7 @@ function InboxLetters() {
 
   if (!letters || letters.length === 0) {
     return (
-      <div className="flex items-center justify-center h-full text-sm text-gray-400 border border-gray-200 rounded-xl bg-white p-10">
+      <div className="flex items-center justify-center h-full text-sm text-muted-foreground border border-border rounded-xl bg-card p-10">
         No letters in your inbox.
       </div>
     );

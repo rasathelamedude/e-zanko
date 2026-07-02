@@ -4,8 +4,10 @@ import { useUserStore } from "../../store/userStore";
 import type { UserRole, UserScope } from "../../types/auth";
 import { Button } from "../ui/button";
 import { LogOut } from "lucide-react";
+import { motion } from "framer-motion";
 import { useMutation } from "@tanstack/react-query";
 import { logout } from "../../api/auth";
+import { easeOutExpo } from "../../lib/motion";
 
 type NavItem = {
   label: string;
@@ -98,33 +100,43 @@ const Sidebar = () => {
   };
 
   return (
-    <aside className="flex h-full w-64 flex-col border-e border-slate-200 bg-white">
+    <aside className="flex h-full w-64 flex-col border-e border-border bg-card">
       <nav className="flex-1 space-y-1 overflow-y-auto px-3 py-4">
-        {navItems.map((item) => (
-          <NavLink
+        {navItems.map((item, index) => (
+          <motion.div
             key={item.to}
-            to={item.to}
-            className={({ isActive }) =>
-              `flex items-center justify-between rounded-lg px-4 py-2.5 text-sm transition-colors ${
-                isActive
-                  ? "bg-[#e0f0f0] font-semibold text-[#0f7576]"
-                  : "font-medium text-slate-600 hover:bg-slate-50"
-              }`
-            }
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{
+              duration: 0.28,
+              delay: index * 0.04,
+              ease: easeOutExpo,
+            }}
           >
-            <span>{item.label}</span>
-          </NavLink>
+            <NavLink
+              to={item.to}
+              className={({ isActive }) =>
+                `flex items-center justify-between rounded-lg px-4 py-2.5 text-sm transition-colors ${
+                  isActive
+                    ? "bg-teal-600/10 font-semibold text-teal-700 dark:bg-teal-500/15 dark:text-teal-300"
+                    : "font-medium text-muted-foreground hover:bg-muted hover:text-foreground"
+                }`
+              }
+            >
+              <span>{item.label}</span>
+            </NavLink>
+          </motion.div>
         ))}
       </nav>
 
-      <div className="space-y-3 border-t border-slate-100 px-3 py-4">
+      <div className="space-y-3 border-t border-border px-3 py-4">
         <div className="flex items-center gap-3 px-1">
           <div className="min-w-0 text-start">
-            <p className="truncate text-sm font-bold text-slate-900">
+            <p className="truncate text-sm font-bold text-foreground">
               {user?.name || t("Dr. A. Mahmoud")}
             </p>
 
-            <p className="truncate text-xs text-slate-500">
+            <p className="truncate text-xs text-muted-foreground">
               {roleName ? t(roleName) : t("System Administrator")}
             </p>
           </div>
@@ -132,9 +144,10 @@ const Sidebar = () => {
       </div>
 
       <Button
+        variant="outline"
         disabled={isPending}
         onClick={handleLogout}
-        className="bg-white border-red-500 text-red-500 hover:bg-red-50 m-3"
+        className="m-3 h-9 border-red-500/60 text-red-500 hover:bg-red-500/10 hover:text-red-500"
       >
         <LogOut />
         {isPending ? t("Logging out...") : t("Logout")}

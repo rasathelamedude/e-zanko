@@ -13,11 +13,11 @@ interface Props {
 
 const BarChartCard = ({ title, subtitle, data }: Props) => {
   return (
-    <div className="lg:col-span-2 bg-white rounded-xl p-6 border border-slate-200 shadow-sm">
-      <h3 className="font-bold text-slate-800 mb-8">
+    <div className="lg:col-span-2 bg-card rounded-xl p-6 border border-border shadow-sm">
+      <h3 className="font-bold text-foreground mb-8">
         {title}{" "}
         {subtitle && (
-          <span className="text-slate-400 font-normal">
+          <span className="text-muted-foreground font-normal">
             &middot; {subtitle}
           </span>
         )}
@@ -34,7 +34,7 @@ const BarChartCard = ({ title, subtitle, data }: Props) => {
             tickLine={false}
             axisLine={false}
             interval={0}
-            tick={{ fill: "#64748b", fontSize: 12 }}
+            tick={{ fill: "var(--muted-foreground)", fontSize: 12 }}
             dy={10}
           />
           <Bar dataKey="value" fill="#14746f" radius={[6, 6, 0, 0]}>

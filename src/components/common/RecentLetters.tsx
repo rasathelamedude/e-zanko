@@ -12,19 +12,19 @@ const RecentLetters = ({ letters, inboxHref = "/letters" }: Props) => {
   const { t } = useTranslation();
 
   return (
-    <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
-      <div className="px-6 py-4 border-b border-slate-200 flex items-center justify-between">
-        <h3 className="font-bold text-slate-800">{t("Recent letters")}</h3>
+    <div className="bg-card rounded-xl border border-border shadow-sm overflow-hidden">
+      <div className="px-6 py-4 border-b border-border flex items-center justify-between">
+        <h3 className="font-bold text-foreground">{t("Recent letters")}</h3>
         <Link
           to={inboxHref}
-          className="text-sm font-medium text-teal-700 hover:text-teal-800 transition-colors"
+          className="text-sm font-medium text-teal-700 dark:text-teal-400 hover:text-teal-800 transition-colors"
         >
           {t("View inbox")}{" "}
           <span className="inline-block rtl:rotate-180">&rarr;</span>
         </Link>
       </div>
 
-      <div className="divide-y divide-slate-100">
+      <div className="divide-y divide-border">
         {letters.map((letter) => (
           <LetterRow key={letter.id} {...letter} />
         ))}

@@ -1,18 +1,18 @@
 import { useTranslation } from "react-i18next";
-import { Search, Plus } from "lucide-react";
+import { Search, Plus, Building2, Pencil, Trash2, X } from "lucide-react";
 import {
   DataTable,
   type DataTableColumn,
 } from "../../components/common/DataTable";
 import type { University, UniversityPayload } from "../../types/hierarchy";
 import { Badge } from "../../components/ui/badge";
-import { Pencil, Trash2 } from "lucide-react";
 import { Input } from "../../components/ui/input";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import Modal from "../../components/common/Modal";
 import { Label } from "../../components/ui/label";
 import PageHeader from "../../components/common/PageHeader";
+import PageTransition from "../../components/common/PageTransition";
 import { useUserStore } from "../../store/userStore";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import {
@@ -42,6 +42,24 @@ type ModalState =
   | { type: "delete"; university: University }
   | null;
 
+// --- Draft shape for the "Add University" structure builder (UI only) --------
+interface DepartmentDraft {
+  name: string;
+  head: string;
+}
+interface FacultyDraft {
+  name: string;
+  dean: string;
+  departments: DepartmentDraft[];
+}
+interface UniversityDraft {
+  name: string;
+  president: string;
+  faculties: FacultyDraft[];
+}
+
+const emptyDraft: UniversityDraft = { name: "", president: "", faculties: [] };
+
 function UniversitiesPage() {
   const { t } = useTranslation();
   const [modal, setModal] = useState<ModalState>(null);
@@ -54,6 +72,7 @@ function UniversitiesPage() {
     established_year: new Date().toISOString().split("T")[0],
     is_active: true,
   });
+  const [draft, setDraft] = useState<UniversityDraft>(emptyDraft);
 
   // get all universities
   const {
@@ -71,12 +90,7 @@ function UniversitiesPage() {
     mutationFn: addUniversity,
     onSuccess: () => {
       setModal(null);
-      setForm({
-        name: "",
-        location: "",
-        established_year: "",
-        is_active: true,
-      });
+      setDraft(emptyDraft);
       refetch();
       notifySuccess(t("University added."));
     },
@@ -109,9 +123,75 @@ function UniversitiesPage() {
     },
   });
 
+  // --- Draft builder helpers -------------------------------------------------
+  const addFaculty = () =>
+    setDraft((d) => ({
+      ...d,
+      faculties: [...d.faculties, { name: "", dean: "", departments: [] }],
+    }));
+
+  const removeFaculty = (fi: number) =>
+    setDraft((d) => ({
+      ...d,
+      faculties: d.faculties.filter((_, i) => i !== fi),
+    }));
+
+  const updateFaculty = (fi: number, patch: Partial<FacultyDraft>) =>
+    setDraft((d) => ({
+      ...d,
+      faculties: d.faculties.map((f, i) => (i === fi ? { ...f, ...patch } : f)),
+    }));
+
+  const addDepartment = (fi: number) =>
+    setDraft((d) => ({
+      ...d,
+      faculties: d.faculties.map((f, i) =>
+        i === fi
+          ? { ...f, departments: [...f.departments, { name: "", head: "" }] }
+          : f,
+      ),
+    }));
+
+  const removeDepartment = (fi: number, di: number) =>
+    setDraft((d) => ({
+      ...d,
+      faculties: d.faculties.map((f, i) =>
+        i === fi
+          ? { ...f, departments: f.departments.filter((_, j) => j !== di) }
+          : f,
+      ),
+    }));
+
+  const updateDepartment = (
+    fi: number,
+    di: number,
+    patch: Partial<DepartmentDraft>,
+  ) =>
+    setDraft((d) => ({
+      ...d,
+      faculties: d.faculties.map((f, i) =>
+        i === fi
+          ? {
+              ...f,
+              departments: f.departments.map((dep, j) =>
+                j === di ? { ...dep, ...patch } : dep,
+              ),
+            }
+          : f,
+      ),
+    }));
+
   function handleAddUniversity() {
-    if (!form.name.trim() || !form.location.trim()) return;
-    createUniversity(form);
+    if (!draft.name.trim()) return;
+    // TODO: send `draft.president` + `draft.faculties` (with departments) once
+    // the backend accepts the nested structure. For now we create the core
+    // university record via the existing endpoint.
+    createUniversity({
+      name: draft.name,
+      location: "",
+      establishedYear: new Date().toISOString().split("T")[0],
+      isActive: true,
+    });
   }
 
   function handleUpdateUniversity() {
@@ -149,7 +229,7 @@ function UniversitiesPage() {
       render: (u) => (
         <span
           onClick={() => navigate(`/universities/${u.id}/faculties`)}
-          className="font-medium text-teal-700 cursor-pointer"
+          className="cursor-pointer font-medium text-teal-700 dark:text-teal-400"
         >
           {u.name}
         </span>
@@ -186,14 +266,14 @@ function UniversitiesPage() {
               setModal({ type: "edit", university: u });
             }}
             aria-label={`${t("Edit")} ${u.name}`}
-            className="rounded-md p-2 text-teal-600 hover:bg-teal-50"
+            className="rounded-md p-2 text-teal-600 hover:bg-teal-500/10 dark:text-teal-400"
           >
             <Pencil className="h-4 w-4 cursor-pointer" />
           </button>
           <button
             onClick={() => setModal({ type: "delete", university: u })}
             aria-label={`${t("Delete")} ${u.name}`}
-            className="rounded-md p-2 text-red-600 hover:bg-red-50"
+            className="rounded-md p-2 text-red-600 hover:bg-red-500/10 dark:text-red-400"
           >
             <Trash2 className="h-4 w-4 cursor-pointer" />
           </button>
@@ -210,9 +290,9 @@ function UniversitiesPage() {
   );
 
   return (
-    <div className="min-h-screen bg-slate-50 px-8 py-8">
+    <PageTransition className="bg-background px-8 py-8">
       {/* Page header + Add button row */}
-      <div className="flex items-start justify-between mb-6">
+      <div className="mb-6 flex items-start justify-between">
         <PageHeader
           title={t("Ministry of Higher Education")}
           locationTitle={t("Universities")}
@@ -220,8 +300,11 @@ function UniversitiesPage() {
           year="2025-2026"
         />
         <button
-          className="flex items-center gap-1.5 bg-teal-700 hover:bg-teal-800 active:bg-teal-900 text-white text-sm font-medium px-4 py-2.5 rounded-xl transition-colors mt-1 cursor-pointer"
-          onClick={() => setModal({ type: "add" })}
+          className="mt-1 flex cursor-pointer items-center gap-1.5 rounded-xl bg-teal-700 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-teal-800 active:bg-teal-900"
+          onClick={() => {
+            setDraft(emptyDraft);
+            setModal({ type: "add" });
+          }}
         >
           <Plus size={16} strokeWidth={2.5} />
           {t("Add University")}
@@ -229,14 +312,14 @@ function UniversitiesPage() {
       </div>
 
       {/* Table card */}
-      <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden">
+      <div className="overflow-hidden rounded-2xl border border-border bg-card">
         {/* Table toolbar */}
-        <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100">
+        <div className="flex items-center justify-between border-b border-border px-5 py-4">
           <div className="flex items-center gap-2">
-            <span className="text-sm font-semibold text-slate-700">
+            <span className="text-sm font-semibold text-foreground">
               {t("Universities")}
             </span>
-            <span className="text-xs font-medium text-slate-400 bg-slate-100 px-2 py-0.5 rounded-full">
+            <span className="rounded-full bg-muted px-2 py-0.5 text-xs font-medium text-muted-foreground">
               {filteredUniversities.length} record
               {filteredUniversities.length !== 1 ? "s" : ""}
             </span>
@@ -247,14 +330,14 @@ function UniversitiesPage() {
             <Search
               size={14}
               strokeWidth={2}
-              className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"
+              className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
             />
             <input
               type="text"
               placeholder={t("Filter...")}
               value={filter}
               onChange={(e) => setFilter(e.target.value)}
-              className="pl-8 pr-4 py-2 text-sm border border-slate-200 rounded-xl w-52 bg-slate-50 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-500/30 focus:border-teal-400 transition-all"
+              className="w-52 rounded-xl border border-border bg-muted/40 py-2 pl-8 pr-4 text-sm text-foreground placeholder-muted-foreground transition-all focus:border-teal-400 focus:outline-none focus:ring-2 focus:ring-teal-500/30"
             />
           </div>
         </div>
@@ -267,7 +350,7 @@ function UniversitiesPage() {
         />
       </div>
 
-      {/* add university popup */}
+      {/* add university popup — structure builder */}
       {modal?.type === "add" && (
         <Modal
           title={t("Add University")}
@@ -275,65 +358,167 @@ function UniversitiesPage() {
           onClose={() => setModal(null)}
           onConfirm={handleAddUniversity}
           isLoading={isPending}
+          size="lg"
         >
-          <div className="flex flex-col gap-3">
-            <div>
-              <Label className="text-sm font-medium text-gray-700 mb-1">
-                {t("Name")}
-              </Label>
-              <Input
-                placeholder={t("e.g. University of Sulaimani")}
-                value={form.name}
-                onChange={(e) =>
-                  setForm((f) => ({ ...f, name: e.target.value }))
-                }
-                type="text"
-              />
+          <div className="flex flex-col gap-5">
+            {/* Core fields */}
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <div>
+                <Label className="mb-1 text-sm font-medium text-foreground">
+                  {t("Name")}
+                </Label>
+                <Input
+                  placeholder={t("e.g. University of Sulaimani")}
+                  value={draft.name}
+                  onChange={(e) =>
+                    setDraft((d) => ({ ...d, name: e.target.value }))
+                  }
+                  type="text"
+                />
+              </div>
+              <div>
+                <Label className="mb-1 text-sm font-medium text-foreground">
+                  {t("President")}
+                </Label>
+                <Input
+                  placeholder={t("e.g. Dr. Aram Qadir")}
+                  value={draft.president}
+                  onChange={(e) =>
+                    setDraft((d) => ({ ...d, president: e.target.value }))
+                  }
+                  type="text"
+                />
+              </div>
             </div>
 
-            <div>
-              <Label className="text-sm font-medium text-gray-700 mb-1">
-                {t("Location")}
-              </Label>
-              <Input
-                placeholder={t("e.g. Sulaimani")}
-                value={form.location}
-                onChange={(e) =>
-                  setForm((f) => ({ ...f, location: e.target.value }))
-                }
-                type="text"
-              />
-            </div>
+            {/* Structure builder */}
+            <div className="border-t border-border pt-4">
+              <div className="mb-3 flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Building2 className="h-4 w-4 text-teal-600 dark:text-teal-400" />
+                  <span className="text-sm font-semibold text-foreground">
+                    {t("University structure")}
+                  </span>
+                  <span className="text-xs font-medium text-muted-foreground">
+                    · {draft.faculties.length}
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  onClick={addFaculty}
+                  className="inline-flex items-center gap-1.5 rounded-lg border border-teal-600/40 px-3 py-1.5 text-xs font-semibold text-teal-700 transition-colors hover:bg-teal-500/10 dark:text-teal-400"
+                >
+                  <Plus size={14} strokeWidth={2.5} />
+                  {t("Add Faculty")}
+                </button>
+              </div>
+              
+              {draft.faculties.length === 0 ? (
+                <p className="rounded-xl border border-dashed border-border py-6 text-center text-sm text-muted-foreground">
+                  {t("No faculties added yet.")}
+                </p>
+              ) : (
+                <div className="flex flex-col gap-3">
+                  {draft.faculties.map((faculty, fi) => (
+                    <div
+                      key={fi}
+                      className="rounded-xl border border-border bg-muted/30 p-3"
+                    >
+                      {/* Faculty row */}
+                      <div className="flex items-center gap-2">
+                        <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-teal-600/15 text-xs font-bold text-teal-700 dark:text-teal-300">
+                          {fi + 1}
+                        </span>
+                        <Input
+                          placeholder={t("Faculty name")}
+                          value={faculty.name}
+                          onChange={(e) =>
+                            updateFaculty(fi, { name: e.target.value })
+                          }
+                          className="flex-1"
+                        />
+                        <Input
+                          placeholder={t("Dean")}
+                          value={faculty.dean}
+                          onChange={(e) =>
+                            updateFaculty(fi, { dean: e.target.value })
+                          }
+                          className="flex-1"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => removeFaculty(fi)}
+                          aria-label={t("Remove faculty")}
+                          className="rounded-md p-2 text-red-500 transition-colors hover:bg-red-500/10"
+                        >
+                          <X className="h-4 w-4" />
+                        </button>
+                      </div>
 
-            <div>
-              <Label className="text-sm font-medium text-gray-700 mb-1">
-                {t("Established Year")}
-              </Label>
-              <Input
-                value={form.established_year}
-                onChange={(e) =>
-                  setForm((f) => ({
-                    ...f,
-                    established_year: e.target.value,
-                  }))
-                }
-                type="date"
-              />
-            </div>
+                      {/* Departments */}
+                      <div className="mt-3 pl-9">
+                        <div className="mb-2 flex items-center justify-between">
+                          <span className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+                            {t("Departments")} · {faculty.departments.length}
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => addDepartment(fi)}
+                            className="inline-flex items-center gap-1 text-xs font-semibold text-teal-700 transition-colors hover:text-teal-800 dark:text-teal-400"
+                          >
+                            <Plus size={13} strokeWidth={2.5} />
+                            {t("Add Department")}
+                          </button>
+                        </div>
 
-            <div className="flex items-center justify-between py-1">
-              <Label className="text-sm font-medium text-gray-700">
-                {t("Active")}
-              </Label>
-              <input
-                type="checkbox"
-                checked={form.is_active}
-                onChange={(e) =>
-                  setForm((f) => ({ ...f, isActive: e.target.checked }))
-                }
-                defaultChecked={true}
-                className="w-4 h-4 accent-teal-700"
-              />
+                        {faculty.departments.length === 0 ? (
+                          <p className="text-xs text-muted-foreground">
+                            {t("No departments added yet.")}
+                          </p>
+                        ) : (
+                          <div className="flex flex-col gap-2">
+                            {faculty.departments.map((dep, di) => (
+                              <div key={di} className="flex items-center gap-2">
+                                <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-muted text-[11px] font-bold text-muted-foreground">
+                                  {di + 1}
+                                </span>
+                                <Input
+                                  placeholder={t("Department name")}
+                                  value={dep.name}
+                                  onChange={(e) =>
+                                    updateDepartment(fi, di, {
+                                      name: e.target.value,
+                                    })
+                                  }
+                                  className="flex-1"
+                                />
+                                <Input
+                                  placeholder={t("Department head")}
+                                  value={dep.head}
+                                  onChange={(e) =>
+                                    updateDepartment(fi, di, {
+                                      head: e.target.value,
+                                    })
+                                  }
+                                  className="flex-1"
+                                />
+                                <button
+                                  type="button"
+                                  onClick={() => removeDepartment(fi, di)}
+                                  aria-label={t("Remove department")}
+                                  className="rounded-md p-2 text-red-500 transition-colors hover:bg-red-500/10"
+                                >
+                                  <X className="h-4 w-4" />
+                                </button>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
         </Modal>
@@ -350,21 +535,19 @@ function UniversitiesPage() {
         >
           <div className="flex flex-col gap-3">
             <div>
-              <Label className="text-sm font-medium text-gray-700 mb-1">
+              <Label className="mb-1 text-sm font-medium text-foreground">
                 {t("Name")}
               </Label>
               <Input
                 placeholder={t("e.g. University of Sulaimani")}
                 value={form.name}
-                onChange={(e) =>
-                  setForm((f) => ({ ...f, name: e.target.value }))
-                }
+                onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
                 type="text"
               />
             </div>
 
             <div>
-              <Label className="text-sm font-medium text-gray-700 mb-1">
+              <Label className="mb-1 text-sm font-medium text-foreground">
                 {t("Location")}
               </Label>
               <Input
@@ -378,7 +561,7 @@ function UniversitiesPage() {
             </div>
 
             <div>
-              <Label className="text-sm font-medium text-gray-700 mb-1">
+              <Label className="mb-1 text-sm font-medium text-foreground">
                 {t("Established Year")}
               </Label>
               <Input
@@ -394,7 +577,7 @@ function UniversitiesPage() {
             </div>
 
             <div className="flex items-center justify-between py-1">
-              <Label className="text-sm font-medium text-gray-700">
+              <Label className="text-sm font-medium text-foreground">
                 {t("Active")}
               </Label>
               <input
@@ -403,8 +586,7 @@ function UniversitiesPage() {
                 onChange={(e) =>
                   setForm((f) => ({ ...f, is_active: e.target.checked }))
                 }
-                defaultChecked={true}
-                className="w-4 h-4 accent-teal-700"
+                className="h-4 w-4 accent-teal-700"
               />
             </div>
           </div>
@@ -421,7 +603,7 @@ function UniversitiesPage() {
           isLoading={isDeleting}
         />
       )}
-    </div>
+    </PageTransition>
   );
 }
 

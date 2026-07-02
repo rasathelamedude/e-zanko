@@ -10,6 +10,7 @@ import { useState } from "react";
 import { Input } from "../../components/ui/input";
 import Modal from "../../components/common/Modal";
 import PageHeader from "../../components/common/PageHeader";
+import PageTransition from "../../components/common/PageTransition";
 import { useUserStore } from "../../store/userStore";
 import { Navigate, useNavigate, useParams } from "react-router-dom";
 import { Label } from "../../components/ui/label";
@@ -22,6 +23,20 @@ import { getUniversityById } from "../../api/university";
 import { notifySuccess } from "../../lib/notify";
 import ErrorState from "../../components/common/ErrorState";
 import TableSkeleton from "../../components/common/TableSkeleton";
+
+const statusStyles: Record<DepartmentStatus, string> = {
+  ACTIVE:
+    "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/15",
+  UNDER_REVIEW:
+    "bg-amber-500/15 text-amber-600 dark:text-amber-400 hover:bg-amber-500/15",
+  INACTIVE: "bg-muted text-muted-foreground hover:bg-muted",
+};
+
+const statusLabels: Record<DepartmentStatus, string> = {
+  ACTIVE: "Active",
+  UNDER_REVIEW: "Under review",
+  INACTIVE: "Inactive",
+};
 
 function DepartmentsPage() {
   const { t } = useTranslation();
@@ -38,7 +53,13 @@ function DepartmentsPage() {
   });
 
   const getScopeId = (scopeType: UserScope) => {
-    return user?.scopes?.find((s) => s.scope_type === scopeType)?.scope_id || 0;
+    // Coerce to a number: the API may send scope_id as a numeric string ("5"),
+    // and the route params are always strings, so comparing them below must be
+    // done numerically — otherwise `"5" !== Number("5")` wrongly forbids access.
+    return (
+      Number(user?.scopes?.find((s) => s.scope_type === scopeType)?.scope_id) ||
+      0
+    );
   };
 
   const userUniversityId = getScopeId("UNIVERSITY");
@@ -122,17 +143,17 @@ function DepartmentsPage() {
               `/universities/${universityId}/faculties/${facultyId}/departments/${u.id}/courses`,
             )
           }
-          className="font-medium text-teal-700 cursor-pointer"
+          className="font-medium text-teal-700 dark:text-teal-400 cursor-pointer"
         >
           {u.name}
         </span>
       ),
     },
-    // {
-    //   key: "headOfDepartment",
-    //   header: t("Head Of Department"),
-    //   render: (u) => u.headOfDepartment,
-    // },
+    {
+      key: "headOfDepartment",
+      header: t("Head Of Department"),
+      render: (u) => u.admin.name,
+    },
     {
       key: "status",
       header: t("Status"),
@@ -161,8 +182,9 @@ function DepartmentsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 px-8 py-8">
-      <nav className="flex items-center gap-2 text-sm text-gray-500 mb-6">
+    <PageTransition className="min-h-screen bg-background px-8 py-8">
+      <nav className="flex items-center gap-2 text-sm text-muted-foreground mb-6">
+
         {canAccessUniversities && (
           <>
             <BreadcrumbItem
@@ -205,14 +227,14 @@ function DepartmentsPage() {
       </div>
 
       {/* Table card */}
-      <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden">
+      <div className="bg-card border border-border rounded-2xl overflow-hidden">
         {/* Table toolbar */}
-        <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100">
+        <div className="flex items-center justify-between px-5 py-4 border-b border-border">
           <div className="flex items-center gap-2">
-            <span className="text-sm font-semibold text-slate-700">
+            <span className="text-sm font-semibold text-foreground">
               {t("Departments")}
             </span>
-            <span className="text-xs font-medium text-slate-400 bg-slate-100 px-2 py-0.5 rounded-full">
+            <span className="text-xs font-medium text-muted-foreground bg-muted px-2 py-0.5 rounded-full">
               {filteredDepartments.length} record
               {filteredDepartments.length !== 1 ? "s" : ""}
             </span>
@@ -223,14 +245,14 @@ function DepartmentsPage() {
             <Search
               size={14}
               strokeWidth={2}
-              className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"
+              className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none"
             />
             <input
               type="text"
               placeholder={t("Filter...")}
               value={filter}
               onChange={(e) => setFilter(e.target.value)}
-              className="pl-8 pr-4 py-2 text-sm border border-slate-200 rounded-xl w-52 bg-slate-50 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-500/30 focus:border-teal-400 transition-all"
+              className="pl-8 pr-4 py-2 text-sm border border-border rounded-xl w-52 bg-muted placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-teal-500/30 focus:border-teal-400 transition-all"
             />
           </div>
         </div>
@@ -253,7 +275,7 @@ function DepartmentsPage() {
         >
           <div className="flex flex-col gap-3">
             <div>
-              <Label className="text-sm font-medium text-gray-700 mb-1">
+              <Label className="text-sm font-medium text-foreground mb-1">
                 {t("Name")}
               </Label>
               <Input
@@ -268,7 +290,7 @@ function DepartmentsPage() {
           </div>
         </Modal>
       )}
-    </div>
+    </PageTransition>
   );
 }
 

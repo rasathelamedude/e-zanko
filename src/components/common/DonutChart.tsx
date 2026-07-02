@@ -17,8 +17,8 @@ const DonutChartCard = ({ title, segments }: Props) => {
   const total = segments.reduce((sum, s) => sum + s.value, 0);
 
   return (
-    <div className="bg-white rounded-xl p-6 border border-slate-200 shadow-sm flex flex-col">
-      <h3 className="font-bold text-slate-800 mb-8">{title}</h3>
+    <div className="bg-card rounded-xl p-6 border border-border shadow-sm flex flex-col">
+      <h3 className="font-bold text-foreground mb-8">{title}</h3>
 
       <div className="flex items-center justify-between flex-1">
         <div className="relative w-32 h-32 shrink-0">
@@ -42,10 +42,12 @@ const DonutChartCard = ({ title, segments }: Props) => {
           </ResponsiveContainer>
 
           <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-            <span className="text-xl font-bold text-slate-800 leading-none">
+            <span className="text-xl font-bold text-foreground leading-none">
               {total}
             </span>
-            <span className="text-xs text-slate-500 mt-1">{t("total")}</span>
+            <span className="text-xs text-muted-foreground mt-1">
+              {t("total")}
+            </span>
           </div>
         </div>
 
@@ -60,7 +62,7 @@ const DonutChartCard = ({ title, segments }: Props) => {
                   className="w-3 h-3 rounded"
                   style={{ backgroundColor: s.color }}
                 ></span>
-                <span className="text-slate-600">{s.label}</span>
+                <span className="text-muted-foreground">{s.label}</span>
               </div>
               <span className="font-bold">{s.value}</span>
             </div>

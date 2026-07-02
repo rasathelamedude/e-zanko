@@ -154,26 +154,26 @@ const OTPPopUp = ({ mode, email, onClose, challengeToken }: OTPPopUpProps) => {
   const displayError = validationError || (error as Error)?.message;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
-      <div className="bg-white rounded-xl shadow-lg w-full max-w-sm p-6 relative">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4 backdrop-blur-sm">
+      <div className="relative w-full max-w-sm rounded-xl border border-border bg-card p-6 shadow-2xl">
         {/* Close */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 text-slate-400 hover:text-slate-600"
+          className="absolute right-4 top-4 text-muted-foreground hover:text-foreground"
           aria-label={t("Close")}
         >
           <X size={18} />
         </button>
 
         {/* Icon + heading */}
-        <div className="flex flex-col items-center text-center mb-6">
-          <div className="w-12 h-12 rounded-full bg-teal-50 flex items-center justify-center mb-3">
-            <ShieldCheck size={22} className="text-teal-600" />
+        <div className="mb-6 flex flex-col items-center text-center">
+          <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-teal-500/15">
+            <ShieldCheck size={22} className="text-teal-600 dark:text-teal-400" />
           </div>
-          <h2 className="text-base font-semibold text-slate-900">{t(title)}</h2>
-          <p className="text-sm text-slate-500 mt-1 max-w-65">
+          <h2 className="text-base font-semibold text-foreground">{t(title)}</h2>
+          <p className="mt-1 max-w-65 text-sm text-muted-foreground">
             {t(description)}{" "}
-            <span className="font-medium text-slate-700">{email}</span>.
+            <span className="font-medium text-foreground">{email}</span>.
           </p>
         </div>
 
@@ -192,13 +192,13 @@ const OTPPopUp = ({ mode, email, onClose, challengeToken }: OTPPopUpProps) => {
               onChange={(e) => handleChange(i, e.target.value)}
               onKeyDown={(e) => handleKeyDown(i, e)}
               disabled={isExpired || isLocked || isPending}
-              className="w-10 h-12 text-center text-lg font-semibold border border-slate-200 rounded-lg text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent disabled:opacity-40 disabled:bg-slate-50"
+              className="h-12 w-10 rounded-lg border border-border bg-background text-center text-lg font-semibold text-foreground focus:border-transparent focus:outline-none focus:ring-2 focus:ring-teal-500 disabled:bg-muted disabled:opacity-40"
             />
           ))}
         </div>
 
         {/* Timer + attempts */}
-        <div className="flex justify-between text-xs text-slate-400 mb-4 px-1">
+        <div className="mb-4 flex justify-between px-1 text-xs text-muted-foreground">
           <span>
             {isExpired
               ? t("Code expired")
@@ -223,7 +223,7 @@ const OTPPopUp = ({ mode, email, onClose, challengeToken }: OTPPopUpProps) => {
 
         {/* Locked / expired message */}
         {(isLocked || isExpired) && (
-          <p className="text-xs text-slate-500 text-center mb-3">
+          <p className="mb-3 text-center text-xs text-muted-foreground">
             {t("Request a new code from the settings page.")}
           </p>
         )}

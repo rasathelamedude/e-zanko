@@ -15,9 +15,9 @@ const StatCard = ({ label, value, highlight = false }: Props) => {
   }
 
   return (
-    <div className="bg-white rounded-xl p-6 border border-slate-200 shadow-sm flex flex-col justify-between h-32">
-      <span className="text-sm font-medium text-slate-500">{label}</span>
-      <span className="text-4xl font-bold text-slate-900">{value}</span>
+    <div className="bg-card rounded-xl p-6 border border-border shadow-sm flex flex-col justify-between h-32">
+      <span className="text-sm font-medium text-muted-foreground">{label}</span>
+      <span className="text-4xl font-bold text-foreground">{value}</span>
     </div>
   );
 };

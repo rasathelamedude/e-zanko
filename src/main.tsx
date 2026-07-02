@@ -2,6 +2,9 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import "./index.css";
 import "./i18n";
+// Imported for its side effect: applies the saved (or default dark) theme to
+// <html> before React paints, avoiding a flash of the wrong theme.
+import "./store/themeStore";
 import App from "./App.tsx";
 import AuthProvider from "./components/auth/AuthProvider.tsx";
 import { ToastContainer } from "react-toastify";

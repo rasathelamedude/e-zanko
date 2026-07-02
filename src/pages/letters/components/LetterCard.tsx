@@ -3,9 +3,12 @@ import { Badge } from "../../../components/ui/badge";
 import type { Letter } from "../../../types/letter";
 
 const statusStyles: Record<string, string> = {
-  pending: "bg-amber-100 text-amber-700 hover:bg-amber-100",
-  approved: "bg-emerald-100 text-emerald-700 hover:bg-emerald-100",
-  rejected: "bg-red-100 text-red-700 hover:bg-red-100",
+  pending:
+    "bg-amber-500/15 text-amber-600 dark:text-amber-400 hover:bg-amber-500/15",
+  approved:
+    "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/15",
+  rejected:
+    "bg-red-500/15 text-red-600 dark:text-red-400 hover:bg-red-500/15",
 };
 
 const statusLabels: Record<string, string> = {
@@ -24,11 +27,11 @@ function LetterCard({ letters, selectedLetterId, onSelect }: LetterCardProps) {
   const { t } = useTranslation();
 
   return (
-    <div className="border border-gray-200 rounded-xl overflow-hidden bg-white h-full">
-      <div className="px-4 py-3 border-b border-gray-100">
+    <div className="border border-border rounded-xl overflow-hidden bg-card h-full">
+      <div className="px-4 py-3 border-b border-border">
         <h2 className="font-semibold text-sm">
           {t("Inbox")}
-          <span className="text-gray-400 ms-1">{letters.length}</span>
+          <span className="text-muted-foreground ms-1">{letters.length}</span>
         </h2>
       </div>
       {letters.map((letter, index) => (
@@ -37,20 +40,20 @@ function LetterCard({ letters, selectedLetterId, onSelect }: LetterCardProps) {
           onClick={() => onSelect(letter)}
           className={`px-4 py-4 cursor-pointer transition-colors border-s-4 ${
             selectedLetterId === letter.id
-              ? "border-s-teal-700 bg-teal-50/50"
-              : "border-s-transparent hover:bg-gray-50"
-          } ${index !== letters.length - 1 ? "border-b border-gray-100" : ""}`}
+              ? "border-s-teal-700 bg-teal-500/10"
+              : "border-s-transparent hover:bg-muted"
+          } ${index !== letters.length - 1 ? "border-b border-border" : ""}`}
         >
           <div className="flex items-center justify-between mb-1">
-            <p className="font-semibold text-sm text-gray-800">
+            <p className="font-semibold text-sm text-foreground">
               {letter.university}
             </p>
             <Badge className={statusStyles[letter.status]}>
               {t(statusLabels[letter.status])}
             </Badge>
           </div>
-          <p className="text-sm font-medium text-gray-700">{letter.title}</p>
-          <p className="text-xs text-gray-400 mt-1">{letter.date}</p>
+          <p className="text-sm font-medium text-foreground">{letter.title}</p>
+          <p className="text-xs text-muted-foreground mt-1">{letter.date}</p>
         </div>
       ))}
     </div>

@@ -4,7 +4,7 @@ import { Outlet } from "react-router-dom";
 
 const AppLayout = () => {
   return (
-    <div className="h-screen bg-[#f5f7fa] overflow-hidden">
+    <div className="h-screen bg-background overflow-hidden">
       <Header />
       <div className="flex h-full pt-20.5">
         <Sidebar />
