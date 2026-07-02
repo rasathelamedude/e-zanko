@@ -28,7 +28,7 @@ function BroadcastLetter({ onClose }: ComposeLetterProps) {
     <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
       <div
         ref={popupRef}
-        className="w-[560px] bg-card rounded-xl shadow-xl overflow-hidden border border-border"
+        className="w-140 bg-card rounded-xl shadow-xl overflow-hidden border border-border"
       >
         <div className="flex justify-between items-center px-6 py-4 border-b border-border">
           <div className="flex items-center gap-2">
@@ -56,24 +56,6 @@ function BroadcastLetter({ onClose }: ComposeLetterProps) {
             />
           </div>
 
-
-          <div className="flex flex-col gap-1.5">
-            <Label className="text-sm font-medium text-foreground">
-              {t("Letter type")}
-            </Label>
-            <select className="w-full border border-border rounded-lg px-3 py-2 text-sm text-foreground bg-card focus:outline-none focus:ring-2 focus:ring-teal-600 focus:border-teal-600">
-              <option>General request</option>
-              <option>Open a university</option>
-              <option>Close a university</option>
-            </select>
-          </div>
-
-          <div className="flex flex-col gap-1.5">
-            <div className="flex justify-between">
-              <Label className="text-sm font-medium text-foreground">
-                {t("Recipent universities")}
-              </Label>
-              <button
           {/* letter content */}
           <div className="flex flex-col gap-1.5">
             <Label className="text-sm font-medium text-foreground">
@@ -93,7 +75,9 @@ function BroadcastLetter({ onClose }: ComposeLetterProps) {
           className="flex items-center gap-2 ml-6 mb-3 px-3 py-2 border border-dashed border-border rounded-lg cursor-pointer hover:border-teal-600 hover:bg-teal-500/10 transition-colors w-fit"
         >
           <Paperclip size={15} className="text-muted-foreground" />
-          <span className="text-sm text-muted-foreground">{t("Attach file")}</span>
+          <span className="text-sm text-muted-foreground">
+            {t("Attach file")}
+          </span>
           <input ref={inputRef} type="file" className="hidden" />
         </div>
 
@@ -106,7 +90,7 @@ function BroadcastLetter({ onClose }: ComposeLetterProps) {
           >
             {t("Cancel")}
           </Button>
-          <Button className="text-sm bg-teal-700 hover:bg-teal-800 text-white flex items-center gap-2 cursor-pointer">
+          <Button className="text-sm bg-teal-700 hover:bg-teal-800 text-white flex items-center gap-2">
             <Send size={14} />
             {t("Send Broadcast")}
           </Button>

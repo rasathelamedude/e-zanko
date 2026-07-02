@@ -189,8 +189,8 @@ function UniversitiesPage() {
     createUniversity({
       name: draft.name,
       location: "",
-      establishedYear: new Date().toISOString().split("T")[0],
-      isActive: true,
+      established_year: new Date().toISOString().split("T")[0],
+      is_active: true,
     });
   }
 
@@ -245,7 +245,7 @@ function UniversitiesPage() {
       header: t("Status"),
       render: (u: University) => (
         <Badge className={statusStyles[u.is_active]}>
-          {t(statusLabels[u.is_active])}
+          {u.is_active === 1 ? statusLabels[1] : statusLabels[0]}
         </Badge>
       ),
     },
@@ -260,8 +260,8 @@ function UniversitiesPage() {
               setForm({
                 name: u.name,
                 location: u.location,
-                establishedYear: u.established_year,
-                isActive: u.is_active === 1 ? true : false,
+                established_year: u.established_year,
+                is_active: u.is_active === 1 ? true : false,
               });
               setModal({ type: "edit", university: u });
             }}
@@ -412,7 +412,7 @@ function UniversitiesPage() {
                   {t("Add Faculty")}
                 </button>
               </div>
-              
+
               {draft.faculties.length === 0 ? (
                 <p className="rounded-xl border border-dashed border-border py-6 text-center text-sm text-muted-foreground">
                   {t("No faculties added yet.")}
@@ -541,7 +541,9 @@ function UniversitiesPage() {
               <Input
                 placeholder={t("e.g. University of Sulaimani")}
                 value={form.name}
-                onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
+                onChange={(e) =>
+                  setForm((f) => ({ ...f, name: e.target.value }))
+                }
                 type="text"
               />
             </div>

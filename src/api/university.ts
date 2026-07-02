@@ -25,8 +25,8 @@ export async function addUniversity(
   const response = await axios.post("/api/universities", {
     name: payload.name,
     location: payload.location,
-    established_year: payload.establishedYear,
-    is_active: payload.isActive ? 1 : 0,
+    established_year: payload.established_year,
+    is_active: payload.is_active ? 1 : 0,
   });
 
   const { success, message, data } = response.data;
@@ -62,8 +62,8 @@ export const updateUniversity = async (
   const response = await axios.patch(`/api/universities/${id}`, {
     name: payload.name,
     location: payload.location,
-    established_year: payload.establishedYear,
-    is_active: payload.isActive ? 1 : 0,
+    established_year: payload.established_year,
+    is_active: payload.is_active ? 1 : 0,
   });
   const { success, message, data } = response.data;
 
